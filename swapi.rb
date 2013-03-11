@@ -3,7 +3,6 @@
 
 # SuccessWhale's API, powered by Sinatra
 
-require 'rubygems'
 require 'sinatra'
 require 'mysql'
 require 'digest/md5'
