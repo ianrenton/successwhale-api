@@ -16,14 +16,19 @@ get '/v3/listcolumns.?:format?' do
     secret = session[:secret]
 
     # Fetch a DB row for the given uid and secret
-    users = con.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}' AND secret='#{Mysql.escape_string(secret)}'")
+    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}' AND secret='#{Mysql.escape_string(secret)}'")
 
     if users.num_rows == 1
       # A user matched the supplied sw_uid and secret, so authentication is OK
       user = users.fetch_hash
 
       returnHash[:success] = true
-      returnHash[:columns] = user['columns'].split(';')
+      columns = user['columns'].split(';')
+      returnHash[:columns] = []
+      columns.each do |col|
+        feeds = col.split('|')
+        returnHash[:columns] << feeds
+      end
 
     else
       returnHash[:success] = false

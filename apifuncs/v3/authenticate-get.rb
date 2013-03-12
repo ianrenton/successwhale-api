@@ -4,7 +4,7 @@
 # SuccessWhale API function to authenticate a user using their SuccessWhale login
 
 
-post '/v3/authenticate.?:format?' do
+get '/v3/authenticate.?:format?' do
 
   returnHash = {}
 

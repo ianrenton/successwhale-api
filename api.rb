@@ -24,10 +24,11 @@ end
 enable :sessions
 
 # Connect to the DB, we will need this for all our API functions
-con = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
+CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.
+require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/listcolumns'
 
