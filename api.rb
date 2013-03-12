@@ -63,7 +63,7 @@ def checkAuth(session, params)
   end
 
   # Fetch a DB row for the given uid and secret
-  users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}' AND secret='#{Mysql.escape_string(secret)}'")
+  users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
 
   # If we didn't find a match, set UID to zero
   if users.num_rows != 1
