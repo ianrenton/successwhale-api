@@ -28,13 +28,13 @@ con = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.
-require_relative 'apifuncs/v3/login'
+require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/listcolumns'
 
 
 # 404
 not_found do
-  '<h1>SuccessWhale API</h3><p>List of valid SuccessWhale API calls:</p><ul><li>POST /v1/login[.json|.xml] - Required parameters: username, password</li><li>GET /v1/listcolumns[.json|.xml] (Requires authentication)</li></ul>'
+  '<h1>SuccessWhale API - Invalid Request</h3><p>You have made an invalid API call. For a list of valid calls, please see the <a href="https://github.com/ianrenton/successwhale-api/blob/master/APIDOCS.md">API docs</a>.</p>'
 end
 
 

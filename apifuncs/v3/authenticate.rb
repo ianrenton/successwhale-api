@@ -1,10 +1,10 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-# SuccessWhale API function to log a user in
+# SuccessWhale API function to authenticate a user using their SuccessWhale login
 
 
-post '/v3/login.?:format?' do
+post '/v3/authenticate.?:format?' do
 
   returnHash = {}
 

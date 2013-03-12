@@ -1,3 +1,3 @@
 # encoding: UTF-8
-require './swapi'
+require './api'
 run Sinatra::Application
