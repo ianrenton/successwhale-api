@@ -14,3 +14,7 @@ DB_HOST = '' # e.g. 'localhost'
 DB_USER = '' # e.g. 'myuser'
 DB_PASS = '' # e.g. 'mypassword'
 DB_NAME = '' # e.g. 'successwhaledb'
+
+# Twitter REST API keys
+TWITTER_CONSUMER_KEY = ''    # Set up your app on http://dev.twitter.com
+TWITTER_CONSUMER_SECRET = '' # to get these values for your app

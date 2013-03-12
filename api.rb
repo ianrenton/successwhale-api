@@ -13,6 +13,7 @@ require 'json'
 require 'builder'
 require 'active_support/core_ext'
 require 'php_serialize'
+require 'twitter'
 
 # Get the configuration
 if File.file?('config_local.rb')
@@ -30,6 +31,12 @@ NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and e
 # Connect to the DB, we will need this for all our API functions
 CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 
+# Configure a Twitter object
+Twitter.configure do |config|
+  config.consumer_key = TWITTER_CONSUMER_KEY
+  config.consumer_secret = TWITTER_CONSUMER_SECRET
+end
+
 # Import API function files.  These contain all the main Sinatra processing
 # code.
 require_relative 'apifuncs/v3/authenticate-get'
@@ -39,6 +46,7 @@ require_relative 'apifuncs/v3/columns'
 require_relative 'apifuncs/v3/bannedphrases'
 require_relative 'apifuncs/v3/posttoaccounts'
 require_relative 'apifuncs/v3/displaysettings'
+require_relative 'apifuncs/v3/feed'
 
 
 # 404

@@ -26,7 +26,7 @@ get '/v3/columns.?:format?' do
       feeds.each do |feed|
         parts = feed.split(':')
         feedHash = {:service => parts[0],
-                    :user => parts[1],
+                    :username => parts[1],
                     :url => parts[2]}
         feedsWithHashes << feedHash
       end

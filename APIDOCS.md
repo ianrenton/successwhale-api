@@ -97,26 +97,26 @@ Example Response (JSON):
       [
         [
           {"service":"twitter",
-          "user":"tsuki_chama",
+          "username":"tsuki_chama",
           "url":"tsuki_chama/lists/soton-kiddies/statuses"}
         ],
         [
           {"service":"twitter",
-          "user":"tsuki_chama",
+          "username":"tsuki_chama",
           "url":"statuses/home_timeline"}
         ],
         [
           {"service":"facebook",
-          "user":"Ian Renton",
+          "username":"Ian Renton",
           "url":"/me/home"}
         ],
         [
           {"service":"twitter",
-          "user":"tsuki_chama",
+          "username":"tsuki_chama",
           "url":"statuses/mentions"},
 
           {"service":"facebook",
-          "user":"Ian Renton",
+          "username":"Ian Renton",
           "url":"notifications"}
         ]
       ]
