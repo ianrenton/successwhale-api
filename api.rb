@@ -12,6 +12,7 @@ require 'digest/md5'
 require 'json'
 require 'builder'
 require 'active_support/core_ext'
+require 'php_serialize'
 
 # Get the configuration
 if File.file?('config_local.rb')
@@ -33,6 +34,7 @@ CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 # code.
 require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
+require_relative 'apifuncs/v3/accounts'
 require_relative 'apifuncs/v3/columns'
 require_relative 'apifuncs/v3/bannedphrases'
 require_relative 'apifuncs/v3/posttoaccounts'
