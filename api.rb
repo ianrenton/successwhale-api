@@ -34,6 +34,7 @@ CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/listcolumns'
+require_relative 'apifuncs/v3/getbannedphrases'
 
 
 # 404
