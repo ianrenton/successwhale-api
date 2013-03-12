@@ -22,3 +22,6 @@ config_local.rb
 
 # Mac
 .DS_Store
+
+# Sublime Text
+._*
