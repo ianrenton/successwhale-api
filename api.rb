@@ -35,6 +35,7 @@ require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/listcolumns'
 require_relative 'apifuncs/v3/getbannedphrases'
+require_relative 'apifuncs/v3/getposttoaccounts'
 
 
 # 404
