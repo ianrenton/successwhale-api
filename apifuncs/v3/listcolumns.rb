@@ -20,14 +20,24 @@ get '/v3/listcolumns.?:format?' do
 
     if users.num_rows == 1
       # A user matched the supplied sw_uid and secret, so authentication is OK
-      user = users.fetch_hash
 
+      user = users.fetch_hash
       returnHash[:success] = true
+
+      # Get the column data and put it into hashes and arrays as appropriate
       columns = user['columns'].split(';')
       returnHash[:columns] = []
       columns.each do |col|
         feeds = col.split('|')
-        returnHash[:columns] << feeds
+        feedsWithHashes = []
+        feeds.each do |feed|
+          parts = feed.split(':')
+          feedHash = {:service => parts[0],
+                      :user => parts[1],
+                      :url => parts[2]}
+          feedsWithHashes << feedHash
+        end
+        returnHash[:columns] << feedsWithHashes
       end
 
     else

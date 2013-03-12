@@ -21,20 +21,20 @@ Note: For test purposes, a GET version of this API call is also available.  This
 URL Format:
 
     /v3/authenticate[.json|.xml]
-    
+
 Example Response (JSON):
 
     {
       "success":true,
       "userid":"1",
-      "username":"myusername",
+      "username":"tsuki_chama",
       "secret":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
      }
 
 List Columns
 ------------
 
-Returns the list of columns (`columns`) that the current user has set up in SuccessWhale. This is an array with one element for each column. Each element consists of the "friendly name" of the column (`friendlyName`) and an array (`feeds`) of one or more feeds that is pulled into that column.
+Returns the list of columns (`columns`) that the current user has set up in SuccessWhale. This is an array with one element for each column. Each element itself consists of an array of one or more feeds that is pulled into that column. Each feed is a hash which contains three items: the service the feed comes from (`service`) e.g. Twitter, the user name to access that service as (`user`), and the URL of the feed relative to the base URL of the service (`url`) e.g. "statuses/home_timeline".
 
 * Request type: GET
 * Authentication required: yes
@@ -51,17 +51,30 @@ Example Response (JSON):
     {
       "success":true,
       "columns":
+      [
         [
-          ["twitter:tsuki_chama:tsuki_chama/lists/soton-kiddies/statuses"],
-          ["twitter:tsuki_chama:statuses/home_timeline"],
-          ["facebook:Ian Renton:/me/home"],
-          [
-            "twitter:tsuki_chama:statuses/mentions",
-            "twitter:WestminsterHub:statuses/mentions",
-            "twitter:PokemonReview:statuses/mentions",
-            "twitter:WanderingAUV:statuses/mentions",
-            "facebook:Ian Renton:notifications"
-          ],
-          ["twitter:WanderingAUV:statuses/home_timeline"]
+          {"service":"twitter",
+          "user":"tsuki_chama",
+          "url":"tsuki_chama/lists/soton-kiddies/statuses"}
+        ],
+        [
+          {"service":"twitter",
+          "user":"tsuki_chama",
+          "url":"statuses/home_timeline"}
+        ],
+        [
+          {"service":"facebook",
+          "user":"Ian Renton",
+          "url":"/me/home"}
+        ],
+        [
+          {"service":"twitter",
+          "user":"tsuki_chama",
+          "url":"statuses/mentions"},
+
+          {"service":"facebook",
+          "user":"Ian Renton",
+          "url":"notifications"}
         ]
+      ]
     }
