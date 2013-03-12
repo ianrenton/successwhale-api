@@ -31,8 +31,8 @@ Example Response (JSON):
       "secret":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
      }
 
-List Columns
-------------
+Get Columns
+-----------
 
 Returns the list of columns (`columns`) that the current user has set up in SuccessWhale. This is an array with one element for each column. Each element itself consists of an array of one or more feeds that is pulled into that column. Each feed is a hash which contains three items: the service the feed comes from (`service`) e.g. Twitter, the user name to access that service as (`user`), and the URL of the feed relative to the base URL of the service (`url`) e.g. "statuses/home_timeline".
 
@@ -44,7 +44,7 @@ Returns the list of columns (`columns`) that the current user has set up in Succ
 
 URL Format:
 
-    /v3/listcolumns[.json|.xml]
+    /v3/columns[.json|.xml]
 
 Example Response (JSON):
 
@@ -93,7 +93,7 @@ Returns the list of banned phrases (`bannedphrases`) that the current user has s
 
 URL Format:
 
-    /v3/getbannedphrases[.json|.xml]
+    /v3/bannedphrases[.json|.xml]
 
 Example Response (JSON):
 
@@ -124,7 +124,7 @@ Returns the list of accounts (`posttoaccounts`) that the current user has set to
 
 URL Format:
 
-    /v3/getposttoaccounts[.json|.xml]
+    /v3/posttoaccounts[.json|.xml]
 
 Example Response (JSON):
 
@@ -135,4 +135,31 @@ Example Response (JSON):
         {"service":"twitter","user":"tsuki_chama"},
         {"service":"facebook","user":"Ian Renton"}
       ]
+    }
+
+
+Get Web UI Display Settings
+---------------------------
+
+Returns the display settings that the current user uses in the web UI. I'm not sure if this will ever be useful to a client, but I'm including it for completeness anyway. There should be no comparable POST method, as the user should be setting this stuff up in the web UI itself.
+
+The returned parameters are the theme (`theme`), the number of columns displayed horizontally on a screen before scrolling (`colsperscreen`) and the maximum age of items (in minutes) to draw a "this is new!" highlight box around (`highlighttime`).
+
+* Request type: GET
+* Authentication required: yes
+* Required parameters: none
+* Optional parameters: `sw_uid`, `secret`
+* Return formats supported: JSON, XML
+
+URL Format:
+
+    /v3/displaysettings[.json|.xml]
+
+Example Response (JSON):
+
+    {
+      "success":true,
+      "theme":"default",
+      "colsperscreen":"4",
+      "highlighttime":"15"
     }

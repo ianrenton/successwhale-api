@@ -4,7 +4,7 @@
 # SuccessWhale API function to retrieve a user's banned phrases list
 
 
-get '/v3/getbannedphrases.?:format?' do
+get '/v3/bannedphrases.?:format?' do
 
   returnHash = {}
 

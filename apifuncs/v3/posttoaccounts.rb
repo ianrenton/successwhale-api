@@ -5,7 +5,7 @@
 # currently set to post to when they type in the main post box
 
 
-get '/v3/getposttoaccounts.?:format?' do
+get '/v3/posttoaccounts.?:format?' do
 
   returnHash = {}
 

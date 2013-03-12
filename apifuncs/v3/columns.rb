@@ -4,7 +4,7 @@
 # SuccessWhale API function to retrieve column list
 
 
-get '/v3/listcolumns.?:format?' do
+get '/v3/columns.?:format?' do
 
   returnHash = {}
 
