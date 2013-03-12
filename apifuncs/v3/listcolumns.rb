@@ -8,46 +8,34 @@ get '/v3/listcolumns.?:format?' do
 
   returnHash = {}
 
-  # Check user is logged in
-  if session.has_key?('sw_uid') && session.has_key?('secret')
+  sw_uid = checkAuth(session, params)
 
-    # Get parameters
-    sw_uid = session[:sw_uid]
-    secret = session[:secret]
+  if sw_uid > 0
+    # A user matched the supplied sw_uid and secret, so authentication is OK
 
-    # Fetch a DB row for the given uid and secret
-    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}' AND secret='#{Mysql.escape_string(secret)}'")
+    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+    user = users.fetch_hash
+    returnHash[:success] = true
 
-    if users.num_rows == 1
-      # A user matched the supplied sw_uid and secret, so authentication is OK
-
-      user = users.fetch_hash
-      returnHash[:success] = true
-
-      # Get the column data and put it into hashes and arrays as appropriate
-      columns = user['columns'].split(';')
-      returnHash[:columns] = []
-      columns.each do |col|
-        feeds = col.split('|')
-        feedsWithHashes = []
-        feeds.each do |feed|
-          parts = feed.split(':')
-          feedHash = {:service => parts[0],
-                      :user => parts[1],
-                      :url => parts[2]}
-          feedsWithHashes << feedHash
-        end
-        returnHash[:columns] << feedsWithHashes
+    # Get the column data and put it into hashes and arrays as appropriate
+    columns = user['columns'].split(';')
+    returnHash[:columns] = []
+    columns.each do |col|
+      feeds = col.split('|')
+      feedsWithHashes = []
+      feeds.each do |feed|
+        parts = feed.split(':')
+        feedHash = {:service => parts[0],
+                    :user => parts[1],
+                    :url => parts[2]}
+        feedsWithHashes << feedHash
       end
-
-    else
-      returnHash[:success] = false
-      returnHash[:error] = 'User is logged in with invalid credentials.'
+      returnHash[:columns] << feedsWithHashes
     end
 
   else
     returnHash[:success] = false
-    returnHash[:error] = 'User is not logged in. Log in at /v1/login first.'
+    returnHash[:error] = NOT_AUTH_ERROR
   end
 
   makeOutput(returnHash, params[:format], 'user')

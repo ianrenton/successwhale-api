@@ -23,6 +23,9 @@ end
 # Enable sessions so that we can store the user's authentication in a cookie
 enable :sessions
 
+# Globals
+NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and either use cookies to preserve the session, or provide sw_uid and secret as paramters to each API call.'
+
 # Connect to the DB, we will need this for all our API functions
 CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 
@@ -36,6 +39,33 @@ require_relative 'apifuncs/v3/listcolumns'
 # 404
 not_found do
   '<h1>SuccessWhale API - Invalid Request</h3><p>You have made an invalid API call. For a list of valid calls, please see the <a href="https://github.com/ianrenton/successwhale-api/blob/master/APIDOCS.md">API docs</a>.</p>'
+end
+
+
+# Check authentication was provided by session or params, if so return sw_uid
+# otherwise return 0.
+def checkAuth(session, params)
+
+  if session.has_key?('sw_uid') && session.has_key?('secret')
+    sw_uid = session[:sw_uid]
+    secret = session[:secret]
+  elsif params.has_key?('sw_uid') && params.has_key?('secret')
+    sw_uid = params[:sw_uid]
+    secret = params[:secret]
+  else
+    sw_uid = 0
+    secret = ""
+  end
+
+  # Fetch a DB row for the given uid and secret
+  users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}' AND secret='#{Mysql.escape_string(secret)}'")
+
+  # If we didn't find a match, set UID to zero
+  if users.num_rows != 1
+    sw_uid = 0
+  end
+
+  return sw_uid.to_i
 end
 
 
