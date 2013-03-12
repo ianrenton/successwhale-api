@@ -1,13 +1,13 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-# SuccessWhale API configuration parameters
+# This is a dummy configuration file.  If you are setting up the SuccessWhale
+# API for the first time, you should edit the contents of
+# config_local_sample.rb and rename it to config_local.rb.  Do not edit this
+# file. 
 
-# Salt for password strings, to increase resilience against rainbow table attacks
 PASSWORD_SALT = ''
-
-# mySQL connection parameters
-DB_HOST = 'localhost'
+DB_HOST = ''
 DB_USER = ''
 DB_PASS = ''
 DB_NAME = ''

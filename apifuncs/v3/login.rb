@@ -4,7 +4,7 @@
 # SuccessWhale API function to log a user in
 
 
-post '/v1/login.?:format?' do
+post '/v3/login.?:format?' do
 
   returnHash = {}
 
