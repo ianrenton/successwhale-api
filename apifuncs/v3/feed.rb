@@ -20,8 +20,22 @@ get '/v3/feed.?:format?' do
     # Check we have been given the 'sources' parameter
     if params.has_key?('sources')
 
+      # Default to returning 20 items if we weren't given a number
+      if params.has_key?('count')
+        count = params[:count].to_i
+      else
+        count = 20
+      end
+
+      # Grab the sources requested, assuming the input is either JSON
+      # or XML depending on the output type requested
+      if params[:format] == 'xml'
+        sources = XmlSimple.xml_in(URI.unescape(params[:sources]))
+      else
+        sources = JSON.parse(URI.unescape(params[:sources]))
+      end
+
       # For each individual source feed that makes up this SW feed...
-      sources = JSON.parse(URI.unescape(params[:sources]))
       sources.each do |source|
 
         if source['service'] == 'twitter'
@@ -43,13 +57,11 @@ get '/v3/feed.?:format?' do
               )
 
               # Fetch the feed
-              #twitterURL = "/1/#{source['url']}.json"
-              # sourceFeed = twitterClient.get("/1/statuses/home_timeline.json", {}).map do |status|
-              #   items << status
-              # end
-              sourceFeed = twitterClient.home_timeline
+              sourceFeed = getTwitterSourceFeedFromURL(source['url'], twitterClient, count)
               sourceFeed.each do |tweet|
-                items << tweet.full_text
+                item = Item.new
+                item.populateFromTweet(tweet)
+                items << item
               end
 
             else
@@ -63,9 +75,18 @@ get '/v3/feed.?:format?' do
 
         end
 
+        # TODO Facebook
+        # TODO Linkedin
+
       end
 
-      returnHash[:items] = items
+      # TODO Remove items that match the blocklist
+
+      # Sort all items in the feed by date
+      items.sort { |i1, i2| i2.getTime <=> i1.getTime }
+
+      # Truncate after required number of items and return
+      returnHash[:items] = items[0,count]
 
     else
       returnHash[:success] = false
@@ -77,5 +98,31 @@ get '/v3/feed.?:format?' do
     returnHash[:error] = NOT_AUTH_ERROR
   end
 
-  makeOutput(returnHash, params[:format], 'user')
+  makeOutput(returnHash, params[:format], 'feed')
+end
+
+
+# For some reason, the Twitter gem doesn't like us performing raw API
+# calls with the URLs we already know. This is due to a weird text encoding
+# problem that I don't know how to fix. Until then, we have this function.
+# Depending on the URL passed, it will execute one of the Twitter gem's
+# higher-level functions. Maybe this is a better way of doing it anyway?
+# It means if Twitter changes its API, all we have to do is update the
+# Twitter gem, not SuccessWhale's code.
+def getTwitterSourceFeedFromURL(url, twitterClient, count)
+  sourcefeed = {}
+  if url == 'statuses/home_timeline'
+    sourceFeed = twitterClient.home_timeline :per_page => count
+  elsif url == 'statuses/user_timeline'
+    sourceFeed = twitterClient.user_timeline :per_page => count
+  elsif url == 'statuses/mentions'
+    sourceFeed = twitterClient.mentions_timeline :per_page => count
+  elsif url == 'direct_messages'
+    sourceFeed = twitterClient.direct_messages_received :per_page => count
+  elsif url == 'direct_messages/sent'
+    sourceFeed = twitterClient.direct_messages_sent :per_page => count
+  end
+
+  # support USERNAME/lists/LISTNAME/statuses, @USERNAME and @USERNAME/LISTNAME
+  return sourceFeed
 end
