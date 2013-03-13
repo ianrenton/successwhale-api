@@ -15,6 +15,7 @@ class Item
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
     @content.merge!(:text => tweet.full_text)
+    @content.merge!(:id => tweet.id)
     @content.merge!(:time => tweet.created_at)
     @content.merge!(:fromuser => tweet.from_user)
     @content.merge!(:fromusername => tweet.user.name)
@@ -31,6 +32,7 @@ class Item
     if tweet.retweet?
       @content.merge!(:retweet => {})
       @content[:retweet].merge!(:text => tweet.retweeted_status.full_text)
+      @content[:retweet].merge!(:id => tweet.retweeted_status.id)
       @content[:retweet].merge!(:time => tweet.retweeted_status.created_at)
       @content[:retweet].merge!(:fromuser => tweet.retweeted_status.from_user)
       @content[:retweet].merge!(:fromusername => tweet.retweeted_status.user.name)

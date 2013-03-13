@@ -155,6 +155,7 @@ Example Response (JSON):
           "content":
           {
             "text":"RT @Tri_2_Be: @Raspberry_Pi Top billing today - cover page of the E&T members magazine. Does it get any better :)) http://t.co/tqXeIXnafK",
+            "id":311959518093377536,
             "time":"2013-03-13T21:58:39+00:00",
             "fromuser":"Raspberry_Pi",
             "fromusername":"Raspberry Pi"
@@ -169,6 +170,7 @@ Example Response (JSON):
             "retweet":
             {
               "text":"@Raspberry_Pi Top billing today - cover page of the E&T members magazine. Does it get any better :)) http://t.co/tqXeIXnafK",
+              "id":311958235995324418,
               "time":"2013-03-13T21:53:34+00:00",
               "fromuser":"Tri_2_Be",
               "fromusername":"David Owen",
