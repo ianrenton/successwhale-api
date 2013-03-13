@@ -132,7 +132,7 @@ The `count` parameter sets the number of items that should be returned in the fe
 
 The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters) and `actions` (a hash of calls the user can make to act on the item).
 
-The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case `content` will contain a `retweet` component with all the details of the _original_ tweet inside it.
+The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case `content` will contain a `retweet` component with all the details of the _original_ tweet inside it.
 
 * Request type: GET
 * Authentication required: yes
