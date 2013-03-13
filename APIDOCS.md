@@ -35,7 +35,7 @@ Example Response (JSON):
 Get Accounts
 ------------
 
-Returns an array of all social network accounts (`accounts`) associated with the current user.  Each one contains three parameters: the service (`service`) e.g. twitter, the username on that service (`username`), a unique user ID on that service (`userid`) and some kind of service-specific block authentication data (`tokens`) so that the SuccessWhale client can then authenticate itself transparently with the social network.  Note that currently we do not store a `username` for Facebook as it is not guaranteed to be unique. This may change in future.
+Returns an array of all social network accounts (`accounts`) associated with the current user.  Each one contains three or four parameters: the service (`service`) e.g. twitter, the username on that service (`username`), a unique user ID on that service (`userid`) and some kind of service-specific block authentication data (`tokens`) so that the SuccessWhale client can then authenticate itself transparently with the social network.  Note that currently we do not store a `username` for Facebook as it is not guaranteed to be unique. This may change in future.
 
 * Request type: GET
 * Authentication required: yes
@@ -126,7 +126,7 @@ Example Response (JSON):
 Get Banned Phrases
 ------------------
 
-Returns the list of banned phrases (`bannedphrases`) that the current user has set up in SuccessWhale. This is an array with one element for each phrase that the user has chosen. (Setting a Banned Phrase hides all items that contain a matching phrase from the user's view. API calls such as `fetchcolumn` apply the banned phrases masking automatically.)
+Returns the list of banned phrases (`bannedphrases`) that the current user has set up in SuccessWhale. This is an array with one element for each phrase that the user has chosen. (Setting a Banned Phrase hides all items that contain a matching phrase from the user's view. API calls such as `feed` apply the banned phrases masking automatically, but you can fetch the phrases themselves with this call so that clients can allow users to edit them.)
 
 * Request type: GET
 * Authentication required: yes
