@@ -87,7 +87,7 @@ get '/v3/feed.?:format?' do
       items.sort { |i1, i2| i2.getTime <=> i1.getTime }
 
       # Truncate after required number of items and return
-      returnHash[:items] = items[0,count]
+      returnHash[:items] = items[0,count].map{|i| i.asHash}
 
     else
       returnHash[:success] = false
