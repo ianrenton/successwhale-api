@@ -13,6 +13,12 @@ The API is a Ruby application that uses the Sinatra gem for handling HTTP reques
 
 For test purposes, I will host this application at https://api.successwhale.com, running on the SuccessWhale beta test (http://test.successwhale.com) database. This may not always be available, and I will almost certainly break it regularly.
 
+Important Info
+--------------
+
+[API documentation](APIDOCS.md) - explains how to use all the API calls
+[Licence](LICENCE.md) - BSD 2-clause licence
+
 Requirements
 ------------
 
