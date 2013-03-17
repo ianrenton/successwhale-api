@@ -15,8 +15,12 @@ require 'builder'
 require 'active_support/core_ext'
 require 'php_serialize'
 require 'twitter'
+require 'rack/throttle'
 require_relative 'utils'
 require_relative 'classes/item'
+
+# Throttle clients to max. 1000 API calls per hour
+use Rack::Throttle::Hourly,   :max => 1000
 
 # Get the configuration
 if File.file?('config_local.rb')
