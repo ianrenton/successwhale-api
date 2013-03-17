@@ -1,6 +1,8 @@
 Successwhale API
 ================
 
+Homepage: https://github.com/ianrenton/successwhale-api
+
 This package provides API functions for the "SuccessWhale" social network client (currently supporting Twitter, Facebook and LinkedIn).
 
 This code is under heavy development. It will form the core of the SuccessWhale version 3 web interface, and hopefully a number of other apps as well.
@@ -16,8 +18,8 @@ For test purposes, I will host this application at https://api.successwhale.com,
 Important Info
 --------------
 
-[API documentation](APIDOCS.md) - explains how to use all the API calls
-[Licence](LICENCE.md) - BSD 2-clause licence
+* [API documentation](APIDOCS.md) - explains how to use all the API calls
+* [Licence](LICENCE.md) - BSD 2-clause licence
 
 Requirements
 ------------
