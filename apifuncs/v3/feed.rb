@@ -30,7 +30,8 @@ get '/v3/feed.?:format?' do
       # Grab the sources requested, assuming the input is either JSON
       # or XML depending on the output type requested
       if params[:format] == 'xml'
-        sources = XmlSimple.xml_in(URI.unescape(params[:sources]))
+        sources = XmlSimple.xml_in(URI.unescape(params[:sources]), { 'ForceArray' => false })
+        sources = sources[sources.first.first]
       else
         sources = JSON.parse(URI.unescape(params[:sources]))
       end
