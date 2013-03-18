@@ -18,7 +18,7 @@ For test purposes, I will host this application at https://api.successwhale.com,
 Important Info
 --------------
 
-* [API documentation](APIDOCS.md) - explains how to use all the API calls
+* [API documentation](docs/index.md) - explains how to use all the API calls
 * [Licence](LICENCE.md) - BSD 2-clause licence
 
 Requirements
