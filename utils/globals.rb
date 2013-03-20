@@ -5,10 +5,6 @@
 # strings for all the values that are supposed to be set in
 # config.rb.
 
-PASSWORD_SALT = ''
-DB_HOST = ''
-DB_USER = ''
-DB_PASS = ''
-DB_NAME = ''
-TWITTER_CONSUMER_KEY = ''
-TWITTER_CONSUMER_SECRET = ''
+VERSION = "3.0.0-dev"
+
+NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and either use cookies to preserve the session, or provide sw_uid and secret as paramters to each API call.'

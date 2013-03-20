@@ -33,9 +33,6 @@ end
 # Enable sessions so that we can store the user's authentication in a cookie
 enable :sessions
 
-# Globals
-NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and either use cookies to preserve the session, or provide sw_uid and secret as paramters to each API call.'
-
 # Connect to the DB, we will need this for all our API functions
 CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
 
