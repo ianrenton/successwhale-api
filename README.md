@@ -21,24 +21,13 @@ Important Info
 * [API documentation](docs/index.md) - explains how to use all the API calls
 * [Licence](LICENCE.md) - BSD 2-clause licence
 
-Requirements
+Installation
 ------------
 
-This application requires the following gems, which can all be installed using `gem install`. They are listed with the current version numbers I am building against, although they probably work with others too.
+If you want to run the SuccessWhale API on your own server, this section is for you. (Before you start, bear in mind that you can't talk to the main successwhale.com database if you run your own copy of the API code -- you'll need to bring your own database.)
 
-* activesupport (3.2.12)
-* builder (3.2.0)
-* json (1.5.5)
-* multi_json (1.6.1)
-* mysql (2.9.1)
-* php-serialize (1.1.0)
-* rack (1.5.2)
-* rack-throttle (0.3.0)
-* simple_oauth (0.2.0)
-* sinatra (1.3.5)
-* twitter (4.6.0)
-* xml-simple (1.1.2)
+First of all, install the dependencies. If you don't have ruby and ruby-gems installed on your computer, you'll have to get them first. I recommend "RVM" for managing your ruby environment.
 
-If you want to run within Apache, you probably also want the `passenger` gem as well.
+With those installed, `git clone` this repository into a directory on your computer. `cd` into the directory. Run `gem install bundler` if necessary, then `bundle install` to install all of SuccessWhale's dependencies.
 
-If you are running your own copy, you will also need a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`. (This structure will probably change in the run up to the release of SuccessWhale 3, so be prepared to migrate by hand if you store important data in the DB as it currently stands.)
+You will then need to set up a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`. (This structure will probably change in the run up to the release of SuccessWhale 3, so be prepared to migrate by hand if you store important data in the DB as it currently stands.)
