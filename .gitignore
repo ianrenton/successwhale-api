@@ -18,7 +18,7 @@ _yardoc
 doc/
 
 # Config
-config_local.rb
+config.rb
 
 # Mac
 .DS_Store

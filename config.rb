@@ -1,15 +1,12 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-# This is a dummy configuration file.  If you are setting up the SuccessWhale
-# API for the first time, you should edit the contents of
-# config_local_sample.rb and rename it to config_local.rb.  Do not edit this
-# file. 
+PASSWORD_SALT = 'oahpicupenura9w8eu-q28934vu'
 
-PASSWORD_SALT = ''
-DB_HOST = ''
-DB_USER = ''
-DB_PASS = ''
-DB_NAME = ''
-TWITTER_CONSUMER_KEY = ''
-TWITTER_CONSUMER_SECRET = ''
+DB_HOST = 'localhost'
+DB_USER = 'successwhaledb'
+DB_PASS = 'successwhaledatabase'
+DB_NAME = 'successwhale_test'
+
+TWITTER_CONSUMER_KEY = 'gaurdyVhWxIDSIZGLJHeAA'
+TWITTER_CONSUMER_SECRET = 'UokeUSd76JdfiGzONSyocSW2JI8Zh2fUfKLEsHQKT8'

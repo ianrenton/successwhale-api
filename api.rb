@@ -16,15 +16,16 @@ require 'active_support/core_ext'
 require 'php_serialize'
 require 'twitter'
 require 'rack/throttle'
-require_relative 'utils'
+require_relative 'utils/globals'
+require_relative 'utils/utils'
 require_relative 'classes/item'
 
 # Throttle clients to max. 1000 API calls per hour
 use Rack::Throttle::Hourly,   :max => 1000
 
 # Get the configuration
-if File.file?('config_local.rb')
-  require_relative 'config_local'
+if File.file?('config.rb')
+  require_relative 'config'
 else
   abort('API server is not configured. Edit the values in config_local_sample.rb and rename the file to config_local.rb.')
 end
@@ -58,5 +59,5 @@ require_relative 'apifuncs/v3/feed'
 
 # 404
 not_found do
-  '<h1>SuccessWhale API - Invalid Request</h3><p>You have made an invalid API call. For a list of valid calls, please see the <a href="https://github.com/ianrenton/successwhale-api/blob/master/APIDOCS.md">API docs</a>.</p>'
+  '<h1>SuccessWhale API - Invalid Request</h3><p>You have made an invalid API call. For a list of valid calls, please see the <a href="https://github.com/ianrenton/successwhale-api/blob/master/docs/index.md">API docs</a>.</p>'
 end
