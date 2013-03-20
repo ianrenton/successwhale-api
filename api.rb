@@ -6,6 +6,8 @@
 # BSD licenced (See the LICENCE.md file)
 # Homepage: https://github.com/ianrenton/successwhale-api
 
+require 'rubygems'
+require 'bundler/setup'
 require 'sinatra'
 require 'mysql'
 require 'digest/md5'
