@@ -17,6 +17,7 @@ require 'builder'
 require 'active_support/core_ext'
 require 'php_serialize'
 require 'twitter'
+require 'koala'
 require 'rack/throttle'
 require_relative 'utils/globals'
 require_relative 'utils/utils'
@@ -43,6 +44,9 @@ Twitter.configure do |config|
   config.consumer_key = TWITTER_CONSUMER_KEY
   config.consumer_secret = TWITTER_CONSUMER_SECRET
 end
+
+# Configure a Facebook object
+FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET, LOCATION+'/v3/authenticatewithfacebook')
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.

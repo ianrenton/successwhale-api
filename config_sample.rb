@@ -9,6 +9,9 @@
 # attacks.  This can be any (preferably long) ASCII string
 PASSWORD_SALT = ''
 
+# The location the API is running from
+LOCATION = 'https://api.successwhale.com/'
+
 # mySQL connection parameters
 DB_HOST = '' # e.g. 'localhost'
 DB_USER = '' # e.g. 'myuser'
@@ -18,3 +21,7 @@ DB_NAME = '' # e.g. 'successwhaledb'
 # Twitter REST API keys
 TWITTER_CONSUMER_KEY = ''    # Set up your app on http://dev.twitter.com
 TWITTER_CONSUMER_SECRET = '' # to get these values for your app
+
+# Facebook Graph API keys
+FACEBOOK_APP_ID = ''         # Set up your app on http://developers.facebook.com
+FACEBOOK_SECRET = ''         # to get these values for your app
