@@ -28,6 +28,7 @@ class Item
     @content.merge!(:numfavourited => tweet.favoriters_count)
     @content.merge!(:inreplytostatusid => tweet.in_reply_to_status_id)
     @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
+    @content.merge!(:urls => tweet.urls)
 
     if tweet.retweet?
       @content.merge!(:retweet => {})
@@ -45,6 +46,7 @@ class Item
       @content[:retweet].merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
       @content[:retweet].merge!(:inreplytostatusid => tweet.retweeted_status.in_reply_to_status_id)
       @content[:retweet].merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
+      @content[:retweet].merge!(:urls => tweet.retweeted_status.urls)
     end
 
     # TODO: fill in actions
