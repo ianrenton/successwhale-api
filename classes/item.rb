@@ -47,9 +47,8 @@ class Item
       @content[:retweet].merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
     end
 
-    processText
-
     # TODO: fill in actions
+    # TODO: Pick out URLs like Twitter
   end
 
   # Returns the item as a hash.
@@ -73,8 +72,15 @@ class Item
     end
   end
 
-  # Process the text in the item, linking up URLs, @users and #hashtags.
-  def processText
-    # TODO
+  # Check if the text in the item contains any of the phrases in the list
+  # provided. Used in the feed API for removing items that match phrases in
+  # a user's banned phrases list.
+  def matchesPhrase(phrases)
+    for phrase in phrases
+      if @content[:text].include? phrase
+        return false
+      end
+    end
+    return false
   end
 end

@@ -81,7 +81,11 @@ get '/v3/feed.?:format?' do
 
       end
 
-      # TODO Remove items that match the blocklist
+      # Remove items that match the blocklist
+      swusers = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      swuser = swusers.fetch_hash
+      bannedPhrases = swuser['blocklist'].split(/\r?\n/)
+      items.reject! {|i| i.matchesPhrase(bannedPhrases)}
 
       # Sort all items in the feed by date
       items.sort { |i1, i2| i2.getTime <=> i1.getTime }

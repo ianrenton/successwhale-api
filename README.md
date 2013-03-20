@@ -34,4 +34,4 @@ You will then need to set up a mySQL server. (That's all we support at the momen
 
 Next, rename `config_sample.rb` to `config.rb` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter) that you want to use, and make a note of the access tokens so that you can enter them in `config.rb`.
 
-Your SuccessWhale API is now ready to run. You can run a development instance with `ruby api.rb`, or run it properly through Apache or nginx using the `passenger` gem.
+Your SuccessWhale API is now ready to run. You can run a development instance with something like shotgun (`shotgun --host 0.0.0.0 api.rb`) or run it properly through Apache or nginx using the `passenger` gem.
