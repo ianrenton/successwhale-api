@@ -22,6 +22,7 @@ class Item
 
       # Add extra tags to show who retweeted it and when
       @content.merge!(:retweetedbyuser => tweet.from_user)
+      @content.merge!(:retweetedbyusername => tweet.user.name)
       @content.merge!(:retweetedat => tweet.created_at)
       @content.merge!(:isretweet => tweet.retweet?)
 
