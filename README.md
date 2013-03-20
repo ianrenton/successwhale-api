@@ -31,3 +31,7 @@ First of all, install the dependencies. If you don't have ruby and ruby-gems ins
 With those installed, `git clone` this repository into a directory on your computer. `cd` into the directory. Run `gem install bundler` if necessary, then `bundle install` to install all of SuccessWhale's dependencies.
 
 You will then need to set up a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`. (This structure will probably change in the run up to the release of SuccessWhale 3, so be prepared to migrate by hand if you store important data in the DB as it currently stands.)
+
+Next, rename `config_sample.rb` to `config.rb` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter) that you want to use, and make a note of the access tokens so that you can enter them in `config.rb`.
+
+Your SuccessWhale API is now ready to run. You can run a development instance with `ruby api.rb`, or run it properly through Apache or nginx using the `passenger` gem.
