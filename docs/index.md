@@ -13,9 +13,9 @@ Help:
 
 API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
-* WIP: [Authenticate with Twitter](authenticatewithtwitter.md) `GET: /v3/authenticatewithtwitter`, `POST: /v3/authenticatewithtwitter`
-* WIP: [Authenticate with Facebook](authenticatewithfacebook.md) `GET: /v3/authenticatewithfacebook`, `POST: /v3/authenticatewithfacebook`
-* WIP: [Authenticate with Linkedin](authenticatewithlinkedin.md) `GET: /v3/authenticatewithlinkedin`, `POST: /v3/authenticatewithlinkedin`
+* WIP: [Authenticate with Twitter](authenticatewithtwitter.md) `POST: /v3/authenticatewithtwitter`
+* WIP: [Authenticate with Facebook](authenticatewithfacebook.md) `POST: /v3/authenticatewithfacebook`
+* WIP: [Authenticate with Linkedin](authenticatewithlinkedin.md) `POST: /v3/authenticatewithlinkedin`
 * WIP: [Remove Third-party Account](removeaccount-post.md) `POST: /v3/removeaccount`
 * WIP: [Create SuccessWhale Username and Password](swuserpass-post.md) `POST: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Username and Password](swuserpass-delete.md) `DELETE: /v3/swuserpass`
