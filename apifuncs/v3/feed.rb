@@ -42,7 +42,7 @@ get '/v3/feed.?:format?' do
 
         if source['service'] == 'twitter'
           # Grab the twitter auth tokens for the account
-          twitter_users = CON.query("SELECT * FROM twitter_users WHERE username='#{Mysql.escape_string(source['username'])}'")
+          twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source['uid'])}'")
 
           # Check we have an entry for the Twitter account being used
           if twitter_users.num_rows == 1
@@ -68,11 +68,11 @@ get '/v3/feed.?:format?' do
 
             else
               returnHash[:success] = false
-              returnHash[:error] = "A feed was requested for Twitter account @#{source['username']}, but the authenticated user does not have the right to use this account."
+              returnHash[:error] = "A feed was requested for Twitter account @#{user['username']}, but the authenticated user does not have the right to use this account."
             end
           else
             returnHash[:success] = false
-            returnHash[:error] = "A feed was requested for Twitter account @#{source['username']}, but that account is not known to SuccessWhale."
+            returnHash[:error] = "A feed was requested for Twitter user ID @#{source['uid']}, but that account is not known to SuccessWhale."
           end
 
         elsif source['service'] == 'facebook'
@@ -90,8 +90,8 @@ get '/v3/feed.?:format?' do
               facebookClient = Koala::Facebook::API.new(user['access_token'])
 
               # Fetch the feed
-              urlParts = source['url'].split('/')
-              sourceFeed = facebookClient.get_connections(urlParts[1], urlParts[2], {'include_read'=>true, 'limit'=>count})
+              urlParts = source['url'].split('/', 2)
+              sourceFeed = facebookClient.get_connections(urlParts[0], urlParts[1], {'include_read'=>true, 'limit'=>count})
               sourceFeed.each do |post|
                 item = Item.new
                 item.populateFromFacebookPost(post)

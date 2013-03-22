@@ -30,7 +30,7 @@ def checkAuth(session, params)
 end
 
 
-# Utility function: Make JSON or XML and return it
+# Make JSON or XML from a hash and return it
 def makeOutput(hash, format, xmlRoot)
   if format == 'json'
     output = hash.to_json
@@ -41,4 +41,11 @@ def makeOutput(hash, format, xmlRoot)
     output = hash.to_json
   end
   return output
+end
+
+# Check if a string really contains an integer
+class String
+  def is_i?
+    !!(self =~ /^[-+]?[0-9]+$/)
+  end
 end
