@@ -91,7 +91,7 @@ get '/v3/feed.?:format?' do
 
               # Fetch the feed
               urlParts = source['url'].split('/')
-              sourceFeed = facebookClient.get_connections(urlParts[1], urlParts[2], {'include_read'=>true})
+              sourceFeed = facebookClient.get_connections(urlParts[1], urlParts[2], {'include_read'=>true, 'limit'=>count})
               sourceFeed.each do |post|
                 item = Item.new
                 item.populateFromFacebookPost(post)
