@@ -7,13 +7,15 @@
 class Item
 
   def initialize ()
-    @service = :twitter
+    @service = ''
     @content = {}
     @actions = {}
   end
 
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
+
+    @service = :twitter
 
     if tweet.retweet?
       # Keep the retweet's ID for replies and the time for sorting
@@ -62,7 +64,55 @@ class Item
     # TODO: fill in actions
   end
 
-  # TODO: Populate from Facebook
+
+  # Fills in the contents of the item based on a Facebook post.
+  # We need to have the actual Facebook client here so that we can
+  # look up profile pictures.
+  def populateFromFacebookPost (post, facebookClient)
+
+    @service = :facebook
+
+    @content.merge!(:id => post['id'])
+    @content.merge!(:type => post['type'])
+    @content.merge!(:time => post['created_time'])
+    @content.merge!(:fromuserid => post['from']['id'])
+    @content.merge!(:fromusername => post['from']['name'])
+    @content.merge!(:fromuseravatar => 'http://graph.facebook.com/' + post['from']['id'] + '/picture')
+    if post.has_key?('comments')
+      @content.merge!(:numcomments => post['comments']['count'])
+      @content.merge!(:comments => post['comments']['data'])
+    else
+      @content.merge!(:numcomments => 0)
+    end
+    if post.has_key?('likes')
+      @content.merge!(:numlikes => post['likes']['count'])
+      @content.merge!(:likes => post['likes']['data'])
+    else
+      @content.merge!(:numlikes => 0)
+    end
+
+    # Get some text for the item by any means necessary
+    @content.merge!(:text => '')
+    if post.has_key?('message')
+      @content.merge!(:text => post['message'])
+    elsif post.has_key?('story')
+      @content.merge!(:text => post['story'])
+    elsif post.has_key?('title')
+      @content.merge!(:text => post['title'])
+    end
+
+    if post.has_key?('link')
+      @content.merge!(:haslink => true)
+      @content.merge!(:linkurl => post['link'])
+      @content.merge!(:linktitle => post['name'])
+    else
+      @content.merge!(:haslink => false)
+    end
+
+    # TODO: fill in actions
+  end
+
+
   # TODO: Populate from LinkedIn
 
   # Returns the item as a hash.

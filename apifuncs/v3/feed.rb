@@ -35,6 +35,7 @@ get '/v3/feed.?:format?' do
       else
         sources = JSON.parse(URI.unescape(params[:sources]))
       end
+      returnHash[:request] = sources
 
       # For each individual source feed that makes up this SW feed...
       sources.each do |source|
@@ -74,9 +75,41 @@ get '/v3/feed.?:format?' do
             returnHash[:error] = "A feed was requested for Twitter account @#{source['username']}, but that account is not known to SuccessWhale."
           end
 
+        elsif source['service'] == 'facebook'
+          # Grab the facebook auth token for the account
+          facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source['uid'])}'")
+
+          # Check we have an entry for the Facebook account being used
+          if facebook_users.num_rows == 1
+            user = facebook_users.fetch_hash
+
+            # Check that the currently authenticated user owns that Facebook account
+            if user['sw_uid'].to_i == sw_uid
+
+              # Set up a Facebook client to fetch the source feed
+              facebookClient = Koala::Facebook::API.new(user['access_token'])
+
+              # Fetch the feed
+              urlParts = source['url'].split('/')
+              sourceFeed = facebookClient.get_connections(urlParts[1], urlParts[2], {'include_read'=>true})
+              sourceFeed.each do |post|
+                item = Item.new
+                item.populateFromFacebookPost(post, facebookClient)
+                items << item
+              end
+
+            else
+              returnHash[:success] = false
+              returnHash[:error] = "A feed was requested for a Facebook account, but the authenticated user does not have the right to use this account."
+            end
+          else
+            returnHash[:success] = false
+            returnHash[:error] = "A feed was requested for a Facebook account, but that account is not known to SuccessWhale."
+          end
+
         end
 
-        # TODO Facebook
+
         # TODO Linkedin
 
       end
