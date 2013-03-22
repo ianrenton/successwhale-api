@@ -100,11 +100,11 @@ get '/v3/feed.?:format?' do
 
             else
               returnHash[:success] = false
-              returnHash[:error] = "A feed was requested for a Facebook account, but the authenticated user does not have the right to use this account."
+              returnHash[:error] = "A feed was requested for a Facebook account with uid #{source['uid']}, but the authenticated user does not have the right to use this account."
             end
           else
             returnHash[:success] = false
-            returnHash[:error] = "A feed was requested for a Facebook account, but that account is not known to SuccessWhale."
+            returnHash[:error] = "A feed was requested for a Facebook account with uid #{source['uid']}, but that account is not known to SuccessWhale."
           end
 
         end
