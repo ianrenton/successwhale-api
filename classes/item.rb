@@ -66,9 +66,7 @@ class Item
 
 
   # Fills in the contents of the item based on a Facebook post.
-  # We need to have the actual Facebook client here so that we can
-  # look up profile pictures.
-  def populateFromFacebookPost (post, facebookClient)
+  def populateFromFacebookPost (post)
 
     @service = :facebook
 
@@ -107,6 +105,12 @@ class Item
       @content.merge!(:linktitle => post['name'])
     else
       @content.merge!(:haslink => false)
+    end
+
+    # Detect notifications
+    if post.has_key?('unread')
+      @content.merge!(:unread => post['unread'])
+      @content.merge!(:type => 'notification')
     end
 
     # TODO: fill in actions
