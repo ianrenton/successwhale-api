@@ -121,7 +121,7 @@ get '/v3/feed.?:format?' do
       items.reject! {|i| i.matchesPhrase(bannedPhrases)}
 
       # Sort all items in the feed by date
-      items.sort { |i1, i2| i2.getTime <=> i1.getTime }
+      items.sort! { |i1, i2| i2.getTime <=> i1.getTime }
 
       # Truncate after required number of items and return
       returnHash[:items] = items[0,count].map{|i| i.asHash}
