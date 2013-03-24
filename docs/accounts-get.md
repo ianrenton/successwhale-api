@@ -1,7 +1,7 @@
 Get Accounts
 ------------
 
-Returns an array of all social network accounts (`accounts`) associated with the current user.  Each one contains three or four parameters: the service (`service`) e.g. twitter, the username on that service (`username`), a unique user ID on that service (`userid`) and some kind of service-specific block authentication data (`tokens`) so that the SuccessWhale client can then authenticate itself transparently with the social network.  Note that currently we do not store a `username` for Facebook as it is not guaranteed to be unique. This may change in future.
+Returns an array of all social network accounts (`accounts`) associated with the current user.  Each one contains three or four parameters: the service (`service`) e.g. twitter, the username on that service (`username`), a unique user ID on that service (`uid`) and some kind of service-specific block authentication data (`tokens`) so that the SuccessWhale client can then authenticate itself transparently with the social network.  Note that currently we do not store a `username` for Facebook as it is not guaranteed to be unique. This may change in future.
 
 * Request type: GET
 * Authentication required: yes
@@ -22,7 +22,7 @@ Example Response (JSON):
         {
           "service":"twitter",
           "username":"tsuki_chama",
-          "userid":"13279532",
+          "uid":"13279532",
           "servicetokens":
           {
             "oauth_token":"1234567890-ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEF",
@@ -33,7 +33,7 @@ Example Response (JSON):
         },
         {
           "service":"facebook",
-          "userid":"692175200",
+          "uid":"692175200",
           "servicetokens":"ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ"
         }
       ]

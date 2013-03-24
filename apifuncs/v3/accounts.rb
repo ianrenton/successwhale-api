@@ -26,7 +26,7 @@ get '/v3/accounts.?:format?' do
       unserializedServiceTokens = PHP.unserialize(user['access_token'])
       userHash = {:service => 'twitter',
                   :username => user['username'],
-                  :userid => user['uid'],
+                  :uid => user['uid'],
                   :servicetokens => unserializedServiceTokens}
       accounts << userHash
     end
@@ -34,7 +34,7 @@ get '/v3/accounts.?:format?' do
     facebook_users = CON.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
     facebook_users.each_hash do |user|
       userHash = {:service => 'facebook',
-                  :userid => user['uid'],
+                  :uid => user['uid'],
                   :servicetokens => user['access_token']}
       accounts << userHash
     end
@@ -43,7 +43,7 @@ get '/v3/accounts.?:format?' do
     linkedin_users.each_hash do |user|
       userHash = {:service => 'linkedin',
                   :username => user['username'],
-                  :userid => user['uid'],
+                  :uid => user['uid'],
                   :servicetokens => user['access_token']}
       accounts << userHash
     end
