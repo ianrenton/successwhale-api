@@ -25,7 +25,7 @@ class Item
       # Add extra tags to show who retweeted it and when
       @content.merge!(:retweetedbyuser => tweet.from_user)
       @content.merge!(:retweetedbyusername => tweet.user.name)
-      @content.merge!(:retweetedat => tweet.created_at)
+      @content.merge!(:originalposttime => tweet.retweeted_status.created_at)
       @content.merge!(:isretweet => tweet.retweet?)
 
       # Copy the retweeted status's data into the main body
