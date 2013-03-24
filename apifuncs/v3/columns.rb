@@ -23,6 +23,7 @@ get '/v3/columns.?:format?' do
     columns.each do |col|
       feeds = col.split('|')
       feedsWithHashes = []
+      feedPath = ''
       feeds.each do |feed|
         parts = feed.split(':')
         feedHash = {:service => parts[0],
@@ -35,9 +36,14 @@ get '/v3/columns.?:format?' do
         # Return usernames as well as uids for rendering purposes
         feedHash = includeUsernames(feedHash)
 
+        # Combined "feed path"
+        feedPath << "#{feedHash[:service]}/#{feedHash[:uid]}/#{feedHash[:url]};"
+
         feedsWithHashes << feedHash
       end
-      returnHash[:columns] << feedsWithHashes
+
+      column = {:feeds => feedsWithHashes, :feedpath => feedPath}
+      returnHash[:columns] << column
     end
 
   else

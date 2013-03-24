@@ -27,22 +27,32 @@ get '/v3/feed.?:format?' do
         count = 20
       end
 
-      # Grab the sources requested, assuming the input is either JSON
-      # or XML depending on the output type requested
-      if params[:format] == 'xml'
-        sources = XmlSimple.xml_in(URI.unescape(params[:sources]), { 'ForceArray' => false })
-        sources = sources[sources.first.first]
-      else
-        sources = JSON.parse(URI.unescape(params[:sources]))
+      # Grab the sources requested, using the semicolon- and slash-delimited
+      # format described in the docs: source/uid/url:source/uid/url...
+      sources = []
+      tempFeeds = params[:sources].split(':')
+      tempFeeds.each do |feed|
+        tempSource = {}
+        parts = feed.split('/')
+        tempSource[:service] = parts[0]
+        tempSource[:uid] = parts[1]
+        tempURL = ''
+        parts[2..(parts.length-1)].each do |part|
+          tempURL << part << '/'
+        end
+        tempSource[:url] = tempURL[0..-2]
+        sources << tempSource
       end
+
+      # Return the sources as part of the result for sanity checking
       returnHash[:request] = sources
 
       # For each individual source feed that makes up this SW feed...
       sources.each do |source|
 
-        if source['service'] == 'twitter'
+        if source[:service] == 'twitter'
           # Grab the twitter auth tokens for the account
-          twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source['uid'])}'")
+          twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
 
           # Check we have an entry for the Twitter account being used
           if twitter_users.num_rows == 1
@@ -59,7 +69,7 @@ get '/v3/feed.?:format?' do
               )
 
               # Fetch the feed
-              sourceFeed = getTwitterSourceFeedFromURL(source['url'], twitterClient, count)
+              sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, count)
               sourceFeed.each do |tweet|
                 item = Item.new
                 item.populateFromTweet(tweet)
@@ -72,12 +82,12 @@ get '/v3/feed.?:format?' do
             end
           else
             returnHash[:success] = false
-            returnHash[:error] = "A feed was requested for Twitter user ID @#{source['uid']}, but that account is not known to SuccessWhale."
+            returnHash[:error] = "A feed was requested for Twitter user ID @#{source[:uid]}, but that account is not known to SuccessWhale."
           end
 
-        elsif source['service'] == 'facebook'
+        elsif source[:service] == 'facebook'
           # Grab the facebook auth token for the account
-          facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source['uid'])}'")
+          facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
 
           # Check we have an entry for the Facebook account being used
           if facebook_users.num_rows == 1
@@ -90,7 +100,7 @@ get '/v3/feed.?:format?' do
               facebookClient = Koala::Facebook::API.new(user['access_token'])
 
               # Fetch the feed
-              urlParts = source['url'].split('/', 2)
+              urlParts = source[:url].split('/', 2)
               sourceFeed = facebookClient.get_connections(urlParts[0], urlParts[1], {'include_read'=>true, 'limit'=>count})
               sourceFeed.each do |post|
                 item = Item.new
@@ -100,11 +110,11 @@ get '/v3/feed.?:format?' do
 
             else
               returnHash[:success] = false
-              returnHash[:error] = "A feed was requested for a Facebook account with uid #{source['uid']}, but the authenticated user does not have the right to use this account."
+              returnHash[:error] = "A feed was requested for a Facebook account with uid #{source[:uid]}, but the authenticated user does not have the right to use this account."
             end
           else
             returnHash[:success] = false
-            returnHash[:error] = "A feed was requested for a Facebook account with uid #{source['uid']}, but that account is not known to SuccessWhale."
+            returnHash[:error] = "A feed was requested for a Facebook account with uid #{source[:uid]}, but that account is not known to SuccessWhale."
           end
 
         end
