@@ -7,7 +7,7 @@ The `count` parameter sets the number of items that should be returned in the fe
 
 The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters) and `actions` (a hash of calls the user can make to act on the item).
 
-The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case `content` will contain a `retweet` component with all the details of the _original_ tweet inside it.
+The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
 
 * Request type: GET
 * Authentication required: yes
@@ -17,7 +17,7 @@ The components of the `content` hash vary depending on the `service`. All share 
 
 URL Format:
 
-    /v3/feed[.json|.xml]?sources=%5B%7B"service"%3A"twitter"%2C"username"%3A"tsuki_chama"%2C"url"%3A"statuses%2Fhome_timeline"%7D%5D&count=1
+    /v3/feed[.json|.xml]?sources=%5B%7B"service"%3A"twitter"%2C"uid"%3A"1234567890"%2C"url"%3A"statuses%2Fhome_timeline"%7D%5D&count=1
 
 Example Response (JSON):
 

@@ -32,6 +32,9 @@ get '/v3/columns.?:format?' do
         # Fixes for running against a SuccessWhale v2 database.
         feedHash = fixFeedHash(feedHash, sw_uid)
 
+        # Return usernames as well as uids for rendering purposes
+        feedHash = includeUsernames(feedHash)
+
         feedsWithHashes << feedHash
       end
       returnHash[:columns] << feedsWithHashes
@@ -57,6 +60,7 @@ def fixFeedHash(feedHash, sw_uid)
     feedHash.merge!(:url => 'me/notifications')
   end
   if (feedHash[:service] == 'twitter') && !(feedHash[:uid].is_i?)
+    feedHash[:username] = feedHash[:uid]
     twitter_users = CON.query("SELECT * FROM twitter_users WHERE username='#{Mysql.escape_string(feedHash[:uid])}'")
     twitter_user = twitter_users.fetch_hash
     feedHash.merge!(:uid => twitter_user['uid'])
@@ -68,8 +72,29 @@ def fixFeedHash(feedHash, sw_uid)
       name = facebookClient.get_object("me")['name']
       if name == feedHash[:uid]
         feedHash.merge!(:uid => facebook_user['uid'])
+        feedHash[:username] = name
         break
       end
+    end
+  end
+  return feedHash
+end
+
+
+# Includes the usernames of the feeds as well as just the uids
+def includeUsernames(feedHash)
+  # Check if we already have a username, if we're supporting a SWv2 database
+  # we probably do already
+  if !feedHash.has_key?(:username)
+    if feedHash[:service] == 'twitter'
+      twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      twitter_user = twitter_users.fetch_hash
+      feedHash.merge!(:username => twitter_user['username'])
+    end
+    if feedHash[:service] == 'facebook'
+      facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      facebook_user = facebook_users.fetch_hash
+      feedHash.merge!(:username => facebook_user['username'])
     end
   end
   return feedHash
