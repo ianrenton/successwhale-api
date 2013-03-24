@@ -37,7 +37,7 @@ get '/v3/columns.?:format?' do
         feedHash = includeUsernames(feedHash)
 
         # Combined "feed path"
-        feedPath << "#{feedHash[:service]}/#{feedHash[:uid]}/#{feedHash[:url]};"
+        feedPath << "#{feedHash[:service]}/#{feedHash[:uid]}/#{feedHash[:url]}:"
 
         feedsWithHashes << feedHash
       end
