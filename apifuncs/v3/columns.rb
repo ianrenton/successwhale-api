@@ -42,7 +42,7 @@ get '/v3/columns.?:format?' do
         feedsWithHashes << feedHash
       end
 
-      column = {:feeds => feedsWithHashes, :feedpath => feedPath}
+      column = {:feeds => feedsWithHashes, :feedpath => feedPath[0..-2]}
       returnHash[:columns] << column
     end
 
