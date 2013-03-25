@@ -9,7 +9,6 @@ class Item
   def initialize ()
     @service = ''
     @content = {}
-    @actions = {}
   end
 
   # Fills in the contents of the item based on a tweet.
@@ -121,7 +120,7 @@ class Item
 
   # Returns the item as a hash.
   def asHash
-    return {:service => @service, :content => @content, :actions => @actions}
+    return {:service => @service, :content => @content}
   end
 
   # Gets the time that the item was originally posted.  Used to sort

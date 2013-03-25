@@ -7,7 +7,7 @@ You request these source feeds by supplying the `sources` parameter. This parame
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
-The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters) and `actions` (a hash of calls the user can make to act on the item).
+The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, and `content` (a hash of all the item's parameters.
 
 The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
 
@@ -67,10 +67,6 @@ Example Response (JSON):
               "inreplytostatusid":null,
               "inreplytouserid":302666251
             }
-          },
-          "actions":
-          {
-
           }
         }
       ]
