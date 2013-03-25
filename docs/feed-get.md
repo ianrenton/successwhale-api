@@ -3,7 +3,23 @@ Get Feed
 
 Returns a set of items (`items`) that make up the requested SuccessWhale feed. The feed can be made up of items from many individual 'source feeds' -- this is one of SuccessWhale's main selling points. For example, the feed could be a merged feed of your "mentions" from two Twitter accounts and your Facebook notifications.
 
-You request these source feeds by supplying the `sources` parameter. This parameter consists of colon-separated feeds, each of which is a slash-separated combination of the feed source, the user id on that source that the feed belongs to, and the URL of the feed relative to the endpoint for that service. The URL component can contain extra slashes without the need for escaping. (See the example below.)
+You request these source feeds by supplying the `sources` parameter. This parameter consists of colon-separated feeds, each of which is a slash-separated combination of the feed source, the user id on that source that the feed belongs to, and the URL of the feed relative to the endpoint for that service. The URL component can contain extra slashes without the need for escaping. Valid sources include:
+
+    twitter/1234567890/statuses/home_timeline
+    twitter/1234567890/statuses/user_timeline
+    twitter/1234567890/statuses/mentions
+    twitter/1234567890/direct_messages
+    twitter/1234567890/direct_messages/sent
+    twitter/1234567890/lists/mylist/statuses
+    twitter/1234567890/someuser/lists/theirlist/statuses
+    facebook/1234567890/me/home
+    facebook/1234567890/me/feed
+    facebook/1234567890/me/notifications
+
+And for backwards-compatability with SuccessWhale v2:
+
+    twitter/1234567890/@user
+    twitter/1234567890/@user/theirlist
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
