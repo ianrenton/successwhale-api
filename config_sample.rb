@@ -25,3 +25,7 @@ TWITTER_CONSUMER_SECRET = '' # to get these values for your app
 # Facebook Graph API keys
 FACEBOOK_APP_ID = ''         # Set up your app on http://developers.facebook.com
 FACEBOOK_SECRET = ''         # to get these values for your app
+
+# LinkedIn API keys
+LINKEDIN_APP_KEY = ''        # Set up your app on https://www.linkedin.com/secure/developer
+LINKEDIN_SECRET_KEY = ''     # to get these values for your app

@@ -18,6 +18,7 @@ require 'active_support/core_ext'
 require 'php_serialize'
 require 'twitter'
 require 'koala'
+require 'linkedin'
 require 'rack/throttle'
 require_relative 'utils/globals'
 require_relative 'utils/utils'
@@ -46,7 +47,10 @@ Twitter.configure do |config|
 end
 
 # Configure a Facebook object
-FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET, LOCATION+'/v3/authenticatewithfacebook')
+FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET)
+
+# Configure a LinkedIn object
+LINKEDIN_CLIENT = client = LinkedIn::Client.new(LINKEDIN_APP_KEY, LINKEDIN_SECRET_KEY)
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.

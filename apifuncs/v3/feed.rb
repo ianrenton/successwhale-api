@@ -170,15 +170,15 @@ def getTwitterSourceFeedFromURL(url, twitterClient, count)
   elsif url == 'direct_messages/sent'
     sourceFeed = twitterClient.direct_messages_sent :count => count
   else
-    # Match USERNAME/lists/LISTNAME/statuses
-    m = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
-    if m
-      sourceFeed = twitterClient.list_timeline(m[1], m[2], {:count => count})
-    end
     # Match lists/LISTNAME/statuses (assumed requesting for the user's own list)
     m = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
     if m
       sourceFeed = twitterClient.list_timeline(m[1], {:count => count})
+    end
+    # Match USERNAME/lists/LISTNAME/statuses
+    m = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
+    if m
+      sourceFeed = twitterClient.list_timeline(m[1], m[2], {:count => count})
     end
     # SuccessWhale v2 DB support: match @USERNAME (return user's tweets)
     m = /@([A-Za-z0-9\-_]*)/.match(url)
