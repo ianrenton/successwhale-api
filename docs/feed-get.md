@@ -25,7 +25,7 @@ The call also supports a `count` parameter that sets the number of items that sh
 
 The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, and `content` (a hash of all the item's parameters.
 
-The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `fromuser`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
+The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `urls`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
 
 * Request type: GET
 * Authentication required: yes
@@ -51,38 +51,59 @@ Example Response (JSON):
       "items":
       [
         {
-          "service":"twitter",
-          "content":
+          service: "twitter",
+          content: {
+            id: 12345678901234567890,
+            time: "2013-03-26T21:05:45+00:00",
+            retweetedbyuser: "username",
+            retweetedbyusername: "User Name",
+            originalposttime: "2013-03-26T20:34:35+00:00",
+            isretweet: true,
+            text: "Here's a link to an image posted on Twitter using the Twitter app: http://t.co/1234567890",
+            fromuser: "username2",
+            fromusername: "User Name 2",
+            fromuseravatar: "http://blah.com/myavatarpng",
+            isreply: false,
+            numfavourited: null,
+            numretweeted: 1,
+            numreplied: null,
+            inreplytostatusid: null,
+            inreplytouserid: null,
+            urls:
+            [
+              {
+                url: "http://t.co/1234567890",
+                expanded_url: "http://twitter.com/username2/status/12345678901234567890/photo/1",
+                display_url: "pic.twitter.com/1234567890",
+                media_url: "http://blah.twitter.com/realpictureurl.jpg",
+                indices: [94, 116]
+              }
+            ]
+          }
+        },
+        {
+          service: "facebook",
+          content:
           {
-            "text":"RT @Tri_2_Be: @Raspberry_Pi Top billing today - cover page of the E&T members magazine. Does it get any better :)) http://t.co/tqXeIXnafK",
-            "id":311959518093377536,
-            "time":"2013-03-13T21:58:39+00:00",
-            "fromuser":"Raspberry_Pi",
-            "fromusername":"Raspberry Pi"
-            "fromuseravatar":"http://si0.twimg.com/profile_images/1590336143/Raspi-PGB001_normal.png",
-            "isreply":false,
-            "isretweet":true,
-            "numfavourited":null,
-            "numretweeted":5,
-            "numreplied":null,
-            "inreplytostatusid":null,
-            "inreplytouserid":null,
-            "retweet":
-            {
-              "text":"@Raspberry_Pi Top billing today - cover page of the E&T members magazine. Does it get any better :)) http://t.co/tqXeIXnafK",
-              "id":311958235995324418,
-              "time":"2013-03-13T21:53:34+00:00",
-              "fromuser":"Tri_2_Be",
-              "fromusername":"David Owen",
-              "fromuseravatar":"http://si0.twimg.com/profile_images/2362190376/uuoh3mqtuhimtpfe3m9f_normal.jpeg",
-              "isreply":false,
-              "isretweet":false,
-              "numfavourited":null,
-              "numretweeted":5,
-              "numreplied":null,
-              "inreplytostatusid":null,
-              "inreplytouserid":302666251
-            }
+            id: "12345678901234567890_12345678901234567890",
+            type: "photo",
+            time: "2013-03-26T19:34:23+00:00",
+            fromuserid: "12345678901234567890",
+            fromusername: "User Name",
+            fromuseravatar: "http://graph.facebook.com/12345678901234567890/picture",
+            numcomments: 0,
+            comments: null,
+            numlikes: 0,
+            text: "User Name shared Bob Smith's photo.",
+            urls:
+            [
+              {
+                url: "http://blah.com",
+                expanded_url: "http://blah.com",
+                display_url: "The Best Link in the World",
+                media_url: "http://blah.com/thumbnail.png"
+              }
+            ]
           }
         }
       ]

@@ -39,7 +39,7 @@ class Item
       @content.merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
       @content.merge!(:inreplytostatusid => tweet.retweeted_status.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
-      populateURLsFromTwitter(tweet.retweeted_status.urls)
+      populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
 
     else
       # Not a retweet, so populate the content of the item normally.
@@ -57,7 +57,7 @@ class Item
       @content.merge!(:numfavourited => tweet.favoriters_count)
       @content.merge!(:inreplytostatusid => tweet.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
-      populateURLsFromTwitter(tweet.urls)
+      populateURLsFromTwitter(tweet.urls, tweet.media)
     end
   end
 
@@ -102,7 +102,7 @@ class Item
       @content.merge!(:type => 'notification')
     end
 
-    # Populate URLs
+    # Populate URLs and embedded media
     populateURLsFromFacebook(post)
 
   end
@@ -113,11 +113,20 @@ class Item
 
   # Populates the "urls" array from Twitter data. This contains a set of
   # indices for the URL to help with linking, since on Twitter a URL is
-  # part of the tweet text itself.
-  def populateURLsFromTwitter(urls)
+  # part of the tweet text itself. Twitter's "media previews" are also
+  # included.
+  def populateURLsFromTwitter(urls, media)
     finishedArray = []
     urls.each do |url|
-      finishedArray << {:url => url.url, :expanded_url => url.expanded_url, :display_url => url.display_url, :indices => url.indices}
+      finishedArray << {:url => url.url, :expanded_url => url.expanded_url,
+       :display_url => url.display_url, :indices => url.indices}
+    end
+    media.each do |url|
+      finishedArray << {
+        :url => url.url, :expanded_url => url.expanded_url,
+        :display_url => url.display_url, :media_url => url.media_url,
+        :indices => url.indices
+      }
     end
     @content.merge!(:urls => finishedArray)
   end
@@ -126,13 +135,19 @@ class Item
   # any indices to help with linking, because URLs attached to a Facebook
   # item are usually not replicated in the text, they're just extra.
   # I think there is only ever one URL attached to a Facebook post, but
-  # we return an array to keep consistency with Twitter.
+  # we return an array to keep consistency with Twitter. Facebook's preview
+  # thumbnails are included.
   def populateURLsFromFacebook(post)
     finishedArray = []
+    urlitem = {}
     if post.has_key?('link')
       # TODO: URL expansion (the hard way)
-      finishedArray << {:url => post['link'], :expanded_url => post['link'], :display_url => post['name']}
+      urlitem.merge!({:url => post['link'], :expanded_url => post['link'], :display_url => post['name']})
     end
+    if post.has_key?('picture')
+      urlitem.merge!({:media_url => post['picture']})
+    end
+    finishedArray << urlitem
     @content.merge!(:urls => finishedArray)
   end
 
