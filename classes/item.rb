@@ -39,7 +39,7 @@ class Item
       @content.merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
       @content.merge!(:inreplytostatusid => tweet.retweeted_status.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
-      @content.merge!(:urls => tweet.retweeted_status.urls)
+      populateURLsFromTwitter(tweet.retweeted_status.urls)
 
     else
       # Not a retweet, so populate the content of the item normally.
@@ -57,10 +57,8 @@ class Item
       @content.merge!(:numfavourited => tweet.favoriters_count)
       @content.merge!(:inreplytostatusid => tweet.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
-      @content.merge!(:urls => tweet.urls)
+      populateURLsFromTwitter(tweet.urls)
     end
-
-    # TODO: fill in actions
   end
 
 
@@ -98,25 +96,45 @@ class Item
       @content.merge!(:text => post['title'])
     end
 
-    if post.has_key?('link')
-      @content.merge!(:haslink => true)
-      @content.merge!(:linkurl => post['link'])
-      @content.merge!(:linktitle => post['name'])
-    else
-      @content.merge!(:haslink => false)
-    end
-
     # Detect notifications
     if post.has_key?('unread')
       @content.merge!(:unread => post['unread'])
       @content.merge!(:type => 'notification')
     end
 
-    # TODO: fill in actions
+    # Populate URLs
+    populateURLsFromFacebook(post)
+
   end
 
 
   # TODO: Populate from LinkedIn
+
+
+  # Populates the "urls" array from Twitter data. This contains a set of
+  # indices for the URL to help with linking, since on Twitter a URL is
+  # part of the tweet text itself.
+  def populateURLsFromTwitter(urls)
+    finishedArray = []
+    urls.each do |url|
+      finishedArray << {:url => url.url, :expanded_url => url.expanded_url, :display_url => url.display_url, :indices => url.indices}
+    end
+    @content.merge!(:urls => finishedArray)
+  end
+
+  # Populates the "urls" array from Facebook data. This does not contain
+  # any indices to help with linking, because URLs attached to a Facebook
+  # item are usually not replicated in the text, they're just extra.
+  # I think there is only ever one URL attached to a Facebook post, but
+  # we return an array to keep consistency with Twitter.
+  def populateURLsFromFacebook(post)
+    finishedArray = []
+    if post.has_key?('link')
+      # TODO: URL expansion (the hard way)
+      finishedArray << {:url => post['link'], :expanded_url => post['link'], :display_url => post['name']}
+    end
+    @content.merge!(:urls => finishedArray)
+  end
 
   # Returns the item as a hash.
   def asHash
