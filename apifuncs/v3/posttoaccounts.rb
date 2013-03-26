@@ -3,6 +3,9 @@
 
 # SuccessWhale API function to retrieve the accounts that the user is
 # currently set to post to when they type in the main post box
+# To reduce the number of API calls a client needs to make, this
+# returns a list of all the user's accounts, with 'enabled'=>true for
+# the ones that the user has set to post to.
 
 
 get '/v3/posttoaccounts.?:format?' do
@@ -18,15 +21,30 @@ get '/v3/posttoaccounts.?:format?' do
     user = users.fetch_hash
     returnHash[:success] = true
 
-    # Get the account data and put it into hashes and arrays as appropriate
-    accounts = user['posttoservices'].split(';')
-    returnHash[:posttoaccounts] = []
+    # Get all the user's accounts, mark as disabled to start with.
+    # Also remove the tokens as we don't need to return those as part of
+    # this call.
+    accounts = getAllAccountsForUser(sw_uid)
     accounts.each do |account|
-      parts = account.split(':')
+      account[:enabled] = false
+      account.remove! :servicetokens
+    end
+
+    # Get the 'post to' field and set the "enabled" value for an account if
+    # it matches something in the "post to" list
+    postToAccounts = user['posttoservices'].split(';')
+    postToAccounts.each do |postToAccount|
+      parts = postToAccount.split(':')
       accountHash = {:service => parts[0],
                   :user => parts[1]}
-      returnHash[:posttoaccounts] << accountHash
+      accounts.each do |account|
+        if (account[:service] == parts[0]) && (account[:username] == parts[1])
+          account[:enabled] = true
+        end
+      end
     end
+
+    returnHash[:posttoaccounts] = accounts
 
   else
     returnHash[:success] = false

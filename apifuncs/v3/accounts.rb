@@ -19,36 +19,7 @@ get '/v3/accounts.?:format?' do
     # A user matched the supplied sw_uid and secret, so authentication is OK
 
     returnHash[:success] = true
-    accounts = []
-
-    twitter_users = CON.query("SELECT * FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    twitter_users.each_hash do |user|
-      unserializedServiceTokens = PHP.unserialize(user['access_token'])
-      userHash = {:service => 'twitter',
-                  :username => user['username'],
-                  :uid => user['uid'],
-                  :servicetokens => unserializedServiceTokens}
-      accounts << userHash
-    end
-
-    facebook_users = CON.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    facebook_users.each_hash do |user|
-      userHash = {:service => 'facebook',
-                  :uid => user['uid'],
-                  :servicetokens => user['access_token']}
-      accounts << userHash
-    end
-
-    linkedin_users = CON.query("SELECT * FROM linkedin_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    linkedin_users.each_hash do |user|
-      userHash = {:service => 'linkedin',
-                  :username => user['username'],
-                  :uid => user['uid'],
-                  :servicetokens => user['access_token']}
-      accounts << userHash
-    end
-
-    returnHash[:accounts] = accounts
+    returnHash[:accounts] = getAllAccountsForUser(sw_uid)
 
   else
     returnHash[:success] = false

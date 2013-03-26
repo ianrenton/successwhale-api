@@ -30,6 +30,41 @@ def checkAuth(session, params)
 end
 
 
+# Gets all social network accounts for a given user
+def getAllAccountsForUser(sw_uid)
+  accounts = []
+
+  twitter_users = CON.query("SELECT * FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  twitter_users.each_hash do |user|
+    unserializedServiceTokens = PHP.unserialize(user['access_token'])
+    userHash = {:service => 'twitter',
+                :username => user['username'],
+                :uid => user['uid'],
+                :servicetokens => unserializedServiceTokens}
+    accounts << userHash
+  end
+
+  facebook_users = CON.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  facebook_users.each_hash do |user|
+    userHash = {:service => 'facebook',
+                :uid => user['uid'],
+                :servicetokens => user['access_token']}
+    accounts << userHash
+  end
+
+  linkedin_users = CON.query("SELECT * FROM linkedin_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  linkedin_users.each_hash do |user|
+    userHash = {:service => 'linkedin',
+                :username => user['username'],
+                :uid => user['uid'],
+                :servicetokens => user['access_token']}
+    accounts << userHash
+  end
+
+  return accounts
+end
+
+
 # Make JSON or XML from a hash and return it
 def makeOutput(hash, format, xmlRoot)
   if format == 'json'
@@ -41,11 +76,4 @@ def makeOutput(hash, format, xmlRoot)
     output = hash.to_json
   end
   return output
-end
-
-# Check if a string really contains an integer
-class String
-  def is_i?
-    !!(self =~ /^[-+]?[0-9]+$/)
-  end
 end

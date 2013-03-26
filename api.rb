@@ -21,6 +21,7 @@ require 'koala'
 require 'linkedin'
 require 'rack/throttle'
 require_relative 'utils/globals'
+require_relative 'utils/extensions'
 require_relative 'utils/utils'
 require_relative 'classes/item'
 
