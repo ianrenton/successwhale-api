@@ -40,6 +40,7 @@ class Item
       @content.merge!(:inreplytostatusid => tweet.retweeted_status.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
+      populateUsernamesAndHashtagsFromTwitter(tweet.retweeted_status.user_mentions, tweet.retweeted_status.hashtags)
 
     else
       # Not a retweet, so populate the content of the item normally.
@@ -58,6 +59,7 @@ class Item
       @content.merge!(:inreplytostatusid => tweet.in_reply_to_status_id)
       @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
       populateURLsFromTwitter(tweet.urls, tweet.media)
+      populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
   end
 
@@ -119,16 +121,34 @@ class Item
     finishedArray = []
     urls.each do |url|
       finishedArray << {:url => url.url, :expanded_url => url.expanded_url,
-       :display_url => url.display_url, :indices => url.indices}
+       :title => url.display_url, :indices => url.indices}
     end
     media.each do |url|
       finishedArray << {
         :url => url.url, :expanded_url => url.expanded_url,
-        :display_url => url.display_url, :media_url => url.media_url,
+        :title => url.display_url, :media => url.media_url,
         :indices => url.indices
       }
     end
-    @content.merge!(:urls => finishedArray)
+    @content.merge!(:links => finishedArray)
+  end
+
+  # Populates the "usernames" and "hashtags" arrays from Twitter data.
+  # This allows clients to more easily find usernames and hashtags and
+  # deal with them however they like.
+  def populateUsernamesAndHashtagsFromTwitter(usernames, hashtags)
+    usernameArray = []
+    usernames.each do |username|
+      usernameArray << {:id => username.id, :user => username.screen_name,
+       :indices => username.indices}
+    end
+    @content.merge!(:usernames => usernameArray)
+
+    hashtagArray = []
+    hashtags.each do |hashtag|
+      hashtagArray << {:text => hashtag.text, :indices => hashtag.indices}
+    end
+    @content.merge!(:hashtags => hashtagArray)
   end
 
   # Populates the "urls" array from Facebook data. This does not contain
@@ -139,16 +159,16 @@ class Item
   # thumbnails are included.
   def populateURLsFromFacebook(post)
     finishedArray = []
-    urlitem = {}
     if post.has_key?('link')
+      urlitem = {}
       # TODO: URL expansion (the hard way)
-      urlitem.merge!({:url => post['link'], :expanded_url => post['link'], :display_url => post['name']})
+      urlitem.merge!({:url => post['link'], :title => post['name']})
+      if post.has_key?('picture')
+        urlitem.merge!({:preview => post['picture']})
+      end
+      finishedArray << urlitem
     end
-    if post.has_key?('picture')
-      urlitem.merge!({:media_url => post['picture']})
-    end
-    finishedArray << urlitem
-    @content.merge!(:urls => finishedArray)
+    @content.merge!(:links => finishedArray)
   end
 
   # Returns the item as a hash.

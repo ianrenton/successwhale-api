@@ -59,7 +59,7 @@ Example Response (JSON):
             retweetedbyusername: "User Name",
             originalposttime: "2013-03-26T20:34:35+00:00",
             isretweet: true,
-            text: "Here's a link to an image posted on Twitter using the Twitter app: http://t.co/1234567890",
+            text: "@you Here's a link to an image posted on Twitter using the Twitter app: http://t.co/1234567890 #yolo",
             fromuser: "username2",
             fromusername: "User Name 2",
             fromuseravatar: "http://blah.com/myavatarpng",
@@ -69,14 +69,29 @@ Example Response (JSON):
             numreplied: null,
             inreplytostatusid: null,
             inreplytouserid: null,
-            urls:
+            links:
             [
               {
                 url: "http://t.co/1234567890",
                 expanded_url: "http://twitter.com/username2/status/12345678901234567890/photo/1",
-                display_url: "pic.twitter.com/1234567890",
-                media_url: "http://blah.twitter.com/realpictureurl.jpg",
+                title: "pic.twitter.com/1234567890",
+                media: "http://blah.twitter.com/realpictureurl.jpg",
                 indices: [94, 116]
+              }
+            ],
+            usernames:
+            [
+              {
+                id: 1234567890,
+                user: "you",
+                indices: [0, 3]
+              }
+            ],
+            hashtags:
+            [
+              {
+                text: "yolo",
+                indices: [120, 124]
               }
             ]
           }
@@ -95,13 +110,12 @@ Example Response (JSON):
             comments: null,
             numlikes: 0,
             text: "User Name shared Bob Smith's photo.",
-            urls:
+            links:
             [
               {
                 url: "http://blah.com",
-                expanded_url: "http://blah.com",
-                display_url: "The Best Link in the World",
-                media_url: "http://blah.com/thumbnail.png"
+                title: "The Best Link in the World",
+                preview: "http://blah.com/thumbnail.png"
               }
             ]
           }
