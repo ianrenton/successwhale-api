@@ -143,9 +143,11 @@ class Item
   # provided. Used in the feed API for removing items that match phrases in
   # a user's banned phrases list.
   def matchesPhrase(phrases)
+    text = @content[:text].force_encoding('UTF-8')
     for phrase in phrases
-      if @content[:text].include? phrase
-        return false
+      if text.include? phrase
+        return true
+        break
       end
     end
     return false

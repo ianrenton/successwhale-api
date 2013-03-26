@@ -50,7 +50,7 @@ end
 FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET)
 
 # Configure a LinkedIn object
-LINKEDIN_CLIENT = client = LinkedIn::Client.new(LINKEDIN_APP_KEY, LINKEDIN_SECRET_KEY)
+LINKEDIN_CLIENT = LinkedIn::Client.new(LINKEDIN_APP_KEY, LINKEDIN_SECRET_KEY)
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.
