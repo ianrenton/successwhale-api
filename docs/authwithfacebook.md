@@ -3,7 +3,7 @@ Authenticate with Facebook
 
 This call comes in two GET forms - one, when no parameters are provided, which returns the URL that the client should point the user at in order to authorise the app on Facebook. The second form, when a `code` parameter is supplied, is used when data is being returned from Facebook via callback.
 
-# Initial Call
+### Initial Call
 
 * Request type: GET
 * Authentication required: optional (yes for existing users adding a new Facebook account, no for first-time users starting with a Facebook account.)
@@ -22,7 +22,7 @@ Example Response (JSON):
       "url":"https://api.facebook.com/blahblahblah"
     }
 
-# Callback
+### Callback
 
 * Request type: GET
 * Authentication required: cookie or GET authentication will be used automatically if provided in the initial call
