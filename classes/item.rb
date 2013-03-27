@@ -126,7 +126,7 @@ class Item
     media.each do |url|
       finishedArray << {
         :url => url.url, :expanded_url => url.expanded_url,
-        :title => url.display_url, :media => url.media_url,
+        :title => url.display_url, :preview => url.media_url,
         :indices => url.indices
       }
     end
