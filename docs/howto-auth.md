@@ -37,9 +37,9 @@ Here is a summary of how the API calls work:
 
 The client provides a SuccessWhale username and password. If they match a SuccessWhale user, the sw_uid and secret are returned.
 
-**[Authenticate with Twitter](authenticatewithtwitter.md)**, 
-**[Authenticate with Facebook](authenticatewithfacebook.md)**, 
-**[Authenticate with Linkedin](authenticatewithlinkedin.md)**
+**[Authenticate with Twitter](authwithtwitter.md)**,
+**[Authenticate with Facebook](authwithfacebook.md)**,
+**[Authenticate with Linkedin](authwithlinkedin.md)**
 
 These are more complex, and best summed up with a diagram:
 
