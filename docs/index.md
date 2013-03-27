@@ -43,7 +43,7 @@ Social Network Interaction
 --------------------------
 
 API calls:
-* WIP: [Get Feed](feed-get.md) `GET: /v3/feed`
+* [Get Feed](feed-get.md) `GET: /v3/feed`
 * WIP: [Get Thread](thread-get.md) `GET: /v3/thread`
 * WIP: [Get User Info](userinfo-get.md) `GET: /v3/userinfo`
 * WIP: [Post Item](item-post.md) `POST: /v3/item`
