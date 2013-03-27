@@ -4,7 +4,8 @@
 # SuccessWhale API function to authenticate a user using with Facebook.
 # Comes in two GET forms - one, when no parameters are provided, which
 # returns the URL to visit to authorise the app. The second form, when
-# a code  when data is being returned from Facebook via callback.
+# a code parameter is supplied, is used when data is being returned from
+# Facebook via callback.
 
 
 get '/v3/authwithfacebook.?:format?' do
