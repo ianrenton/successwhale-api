@@ -57,6 +57,7 @@ LINKEDIN_CLIENT = LinkedIn::Client.new(LINKEDIN_APP_KEY, LINKEDIN_SECRET_KEY)
 # code.
 require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
+require_relative 'apifuncs/v3/authenticatewithfacebook'
 require_relative 'apifuncs/v3/accounts'
 require_relative 'apifuncs/v3/columns'
 require_relative 'apifuncs/v3/bannedphrases'

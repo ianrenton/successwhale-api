@@ -32,6 +32,8 @@ With those installed, `git clone` this repository into a directory on your compu
 
 You will then need to set up a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`. (This structure will probably change in the run up to the release of SuccessWhale 3, so be prepared to migrate by hand if you store important data in the DB as it currently stands.)
 
-Next, rename `config_sample.rb` to `config.rb` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter) that you want to use, and make a note of the access tokens so that you can enter them in `config.rb`.
+Next, rename `config_sample.rb` to `config.rb` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter and Facebook) that you want to use, and make a note of the access tokens so that you can enter them in `config.rb`.
+
+Twitter needs read/write permissions, and access to your direct messages if you want to see them within SuccessWhale. Facebook needs the following permissions for full functionality: status_update, read_stream, publish_stream, manage_notifications, offline_access.
 
 Your SuccessWhale API is now ready to run. You can run a development instance with something like shotgun (`shotgun --host 0.0.0.0 api.rb`) or run it properly through Apache or nginx using the `passenger` gem.
