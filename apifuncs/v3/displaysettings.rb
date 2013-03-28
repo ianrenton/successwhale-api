@@ -11,23 +11,30 @@ get '/v3/displaysettings.?:format?' do
 
   returnHash = {}
 
-  sw_uid = checkAuth(session, params)
+  begin
 
-  if sw_uid > 0
-    # A user matched the supplied sw_uid and secret, so authentication is OK
+    sw_uid = checkAuth(session, params)
 
-    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    user = users.fetch_hash
-    returnHash[:success] = true
+    if sw_uid > 0
+      # A user matched the supplied sw_uid and secret, so authentication is OK
 
-    # Get the display settings and add them to the return hash
-    returnHash[:theme] = user['theme']
-    returnHash[:colsperscreen] = user['colsperscreen']
-    returnHash[:highlighttime] = user['highlighttime']
+      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      user = users.fetch_hash
+      returnHash[:success] = true
 
-  else
+      # Get the display settings and add them to the return hash
+      returnHash[:theme] = user['theme']
+      returnHash[:colsperscreen] = user['colsperscreen']
+      returnHash[:highlighttime] = user['highlighttime']
+
+    else
+      returnHash[:success] = false
+      returnHash[:error] = NOT_AUTH_ERROR
+    end
+
+  rescue => e
     returnHash[:success] = false
-    returnHash[:error] = NOT_AUTH_ERROR
+    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')

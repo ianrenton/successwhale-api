@@ -12,43 +12,50 @@ get '/v3/posttoaccounts.?:format?' do
 
   returnHash = {}
 
-  sw_uid = checkAuth(session, params)
+  begin
 
-  if sw_uid > 0
-    # A user matched the supplied sw_uid and secret, so authentication is OK
+    sw_uid = checkAuth(session, params)
 
-    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    user = users.fetch_hash
-    returnHash[:success] = true
+    if sw_uid > 0
+      # A user matched the supplied sw_uid and secret, so authentication is OK
 
-    # Get all the user's accounts, mark as disabled to start with.
-    # Also remove the tokens as we don't need to return those as part of
-    # this call.
-    accounts = getAllAccountsForUser(sw_uid)
-    accounts.each do |account|
-      account[:enabled] = false
-      account.remove! :servicetokens
-    end
+      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      user = users.fetch_hash
+      returnHash[:success] = true
 
-    # Get the 'post to' field and set the "enabled" value for an account if
-    # it matches something in the "post to" list
-    postToAccounts = user['posttoservices'].split(';')
-    postToAccounts.each do |postToAccount|
-      parts = postToAccount.split(':')
-      accountHash = {:service => parts[0],
-                  :user => parts[1]}
+      # Get all the user's accounts, mark as disabled to start with.
+      # Also remove the tokens as we don't need to return those as part of
+      # this call.
+      accounts = getAllAccountsForUser(sw_uid)
       accounts.each do |account|
-        if (account[:service] == parts[0]) && (account[:username] == parts[1])
-          account[:enabled] = true
+        account[:enabled] = false
+        account.remove! :servicetokens
+      end
+
+      # Get the 'post to' field and set the "enabled" value for an account if
+      # it matches something in the "post to" list
+      postToAccounts = user['posttoservices'].split(';')
+      postToAccounts.each do |postToAccount|
+        parts = postToAccount.split(':')
+        accountHash = {:service => parts[0],
+                    :user => parts[1]}
+        accounts.each do |account|
+          if (account[:service] == parts[0]) && (account[:username] == parts[1])
+            account[:enabled] = true
+          end
         end
       end
+
+      returnHash[:posttoaccounts] = accounts
+
+    else
+      returnHash[:success] = false
+      returnHash[:error] = NOT_AUTH_ERROR
     end
 
-    returnHash[:posttoaccounts] = accounts
-
-  else
+  rescue => e
     returnHash[:success] = false
-    returnHash[:error] = NOT_AUTH_ERROR
+    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')

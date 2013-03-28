@@ -8,47 +8,54 @@ get '/v3/columns.?:format?' do
 
   returnHash = {}
 
-  sw_uid = checkAuth(session, params)
+  begin
 
-  if sw_uid > 0
-    # A user matched the supplied sw_uid and secret, so authentication is OK
+    sw_uid = checkAuth(session, params)
 
-    users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    user = users.fetch_hash
-    returnHash[:success] = true
+    if sw_uid > 0
+      # A user matched the supplied sw_uid and secret, so authentication is OK
 
-    # Get the column data and put it into hashes and arrays as appropriate
-    columns = user['columns'].split(';')
-    returnHash[:columns] = []
-    columns.each do |col|
-      feeds = col.split('|')
-      feedsWithHashes = []
-      feedPath = ''
-      feeds.each do |feed|
-        parts = feed.split(':')
-        feedHash = {:service => parts[0],
-                    :uid => parts[1],
-                    :url => parts[2]}
+      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      user = users.fetch_hash
+      returnHash[:success] = true
 
-        # Fixes for running against a SuccessWhale v2 database.
-        feedHash = fixFeedHash(feedHash, sw_uid)
+      # Get the column data and put it into hashes and arrays as appropriate
+      columns = user['columns'].split(';')
+      returnHash[:columns] = []
+      columns.each do |col|
+        feeds = col.split('|')
+        feedsWithHashes = []
+        feedPath = ''
+        feeds.each do |feed|
+          parts = feed.split(':')
+          feedHash = {:service => parts[0],
+                      :uid => parts[1],
+                      :url => parts[2]}
 
-        # Return usernames as well as uids for rendering purposes
-        feedHash = includeUsernames(feedHash)
+          # Fixes for running against a SuccessWhale v2 database.
+          feedHash = fixFeedHash(feedHash, sw_uid)
 
-        # Combined "feed path"
-        feedPath << "#{feedHash[:service]}/#{feedHash[:uid]}/#{feedHash[:url]}:"
+          # Return usernames as well as uids for rendering purposes
+          feedHash = includeUsernames(feedHash)
 
-        feedsWithHashes << feedHash
+          # Combined "feed path"
+          feedPath << "#{feedHash[:service]}/#{feedHash[:uid]}/#{feedHash[:url]}:"
+
+          feedsWithHashes << feedHash
+        end
+
+        column = {:feeds => feedsWithHashes, :feedpath => feedPath[0..-2]}
+        returnHash[:columns] << column
       end
 
-      column = {:feeds => feedsWithHashes, :feedpath => feedPath[0..-2]}
-      returnHash[:columns] << column
+    else
+      returnHash[:success] = false
+      returnHash[:error] = NOT_AUTH_ERROR
     end
 
-  else
+  rescue => e
     returnHash[:success] = false
-    returnHash[:error] = NOT_AUTH_ERROR
+    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')

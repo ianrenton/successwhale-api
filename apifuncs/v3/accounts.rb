@@ -13,17 +13,24 @@ get '/v3/accounts.?:format?' do
 
   returnHash = {}
 
-  sw_uid = checkAuth(session, params)
+  begin
 
-  if sw_uid > 0
-    # A user matched the supplied sw_uid and secret, so authentication is OK
+    sw_uid = checkAuth(session, params)
 
-    returnHash[:success] = true
-    returnHash[:accounts] = getAllAccountsForUser(sw_uid)
+    if sw_uid > 0
+      # A user matched the supplied sw_uid and secret, so authentication is OK
 
-  else
+      returnHash[:success] = true
+      returnHash[:accounts] = getAllAccountsForUser(sw_uid)
+
+    else
+      returnHash[:success] = false
+      returnHash[:error] = NOT_AUTH_ERROR
+    end
+
+  rescue => e
     returnHash[:success] = false
-    returnHash[:error] = NOT_AUTH_ERROR
+    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')
