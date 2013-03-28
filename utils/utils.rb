@@ -3,30 +3,51 @@
 
 # Util functions for the SuccessWhale API.
 
-# Check authentication was provided by session or params, if so return sw_uid
-# otherwise return 0.
+# Check authentication was provided by session or params, and return data
+# (if authentication was successful) or an error message otherwise.
+# Note that a failure here need not be terminal - other parts of the API
+# may use this to specifically detect users that are *not* logged in if
+# they like.
 def checkAuth(session, params)
 
-  if session.has_key?('sw_uid') && session.has_key?('secret')
-    sw_uid = session[:sw_uid]
-    secret = session[:secret]
-  elsif params.has_key?('sw_uid') && params.has_key?('secret')
-    sw_uid = params[:sw_uid]
-    secret = params[:secret]
-  else
-    sw_uid = 0
-    secret = ""
+  returnHash = {}
+
+  begin
+
+    if session.has_key?('sw_uid') && session.has_key?('secret')
+      sw_uid = session[:sw_uid].to_i
+      secret = session[:secret]
+    elsif params.has_key?('sw_uid') && params.has_key?('secret')
+      sw_uid = params[:sw_uid].to_i
+      secret = params[:secret]
+    else
+      sw_uid = 0
+      secret = ""
+    end
+    if sw_uid > 0
+      # Fetch a DB row for the given uid and secret
+      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
+
+      # If we didn't find a match, set UID to zero
+      if users.num_rows == 1
+        returnHash[:authenticated] = true
+        returnHash[:sw_uid] = sw_uid
+      else
+        returnHash[:authenticated] = false
+        returnHash[:error] = 'A sw_uid and secret were provided, but they did not match an entry in the database.'
+      end
+
+    else
+      returnHash[:authenticated] = false
+      returnHash[:error] = 'No sw_uid and secret were provided in the parameters, nor in the session cookie. The user is not logged in.'
+    end
+
+  rescue => e
+    returnHash[:authenticated] = false
+    returnHash[:error] = e
   end
 
-  # Fetch a DB row for the given uid and secret
-  users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
-
-  # If we didn't find a match, set UID to zero
-  if users.num_rows != 1
-    sw_uid = 0
-  end
-
-  return sw_uid.to_i
+  return returnHash
 end
 
 

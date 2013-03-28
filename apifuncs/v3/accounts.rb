@@ -15,10 +15,11 @@ get '/v3/accounts.?:format?' do
 
   begin
 
-    sw_uid = checkAuth(session, params)
+    authResult = checkAuth(session, params)
 
-    if sw_uid > 0
+    if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK
+      sw_uid = authResult[:sw_uid]
 
       returnHash[:success] = true
       returnHash[:accounts] = getAllAccountsForUser(sw_uid)

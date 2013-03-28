@@ -10,10 +10,11 @@ get '/v3/bannedphrases.?:format?' do
 
   begin
 
-    sw_uid = checkAuth(session, params)
+    authResult = checkAuth(session, params)
 
-    if sw_uid > 0
+    if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK
+      sw_uid = authResult[:sw_uid]
 
       users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
