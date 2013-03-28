@@ -17,7 +17,7 @@ class Item
 
     if tweet.retweet?
       # Keep the retweet's ID for replies and the time for sorting
-      @content.merge!(:id => tweet.id)
+      @content.merge!(:id => tweet.attrs[:id_str])
       @content.merge!(:time => tweet.created_at)
 
       # Add extra tags to show who retweeted it and when
@@ -36,7 +36,7 @@ class Item
       @content.merge!(:numretweeted => tweet.retweeted_status.retweeters_count)
       @content.merge!(:numreplied => tweet.retweeted_status.repliers_count)
       @content.merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
-      @content.merge!(:inreplytostatusid => tweet.retweeted_status.in_reply_to_status_id)
+      @content.merge!(:inreplytostatusid => tweet.retweeted_status.attrs[:in_reply_to_status_id_str])
       @content.merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.retweeted_status.user_mentions, tweet.retweeted_status.hashtags)
@@ -44,7 +44,7 @@ class Item
     else
       # Not a retweet, so populate the content of the item normally.
       @content.merge!(:text => tweet.full_text)
-      @content.merge!(:id => tweet.id)
+      @content.merge!(:id => tweet.attrs[:id_str])
       @content.merge!(:time => tweet.created_at)
       @content.merge!(:fromuser => tweet.from_user)
       @content.merge!(:fromusername => tweet.user.name)
@@ -55,7 +55,7 @@ class Item
       @content.merge!(:numretweeted => tweet.retweeters_count)
       @content.merge!(:numreplied => tweet.repliers_count)
       @content.merge!(:numfavourited => tweet.favoriters_count)
-      @content.merge!(:inreplytostatusid => tweet.in_reply_to_status_id)
+      @content.merge!(:inreplytostatusid => tweet.attrs[:in_reply_to_status_id_str])
       @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
@@ -103,6 +103,21 @@ class Item
 
     # Populate URLs and embedded media
     populateURLsFromFacebook(post)
+
+  end
+
+
+  # Fills in the extended contents of the item (comments and likes) based
+  # on a Facebook post. Used when retrieving a thread, not a feed (feeds
+  # do not carry this detailed information)
+  def populateFacebookCommentsLikes (post)
+
+    if post.has_key?('comments')
+      @content.merge!(:comments => post['comments']['data'])
+    end
+    if post.has_key?('likes')
+      @content.merge!(:likes => post['likes']['data'])
+    end
 
   end
 

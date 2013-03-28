@@ -64,6 +64,7 @@ require_relative 'apifuncs/v3/bannedphrases'
 require_relative 'apifuncs/v3/posttoaccounts'
 require_relative 'apifuncs/v3/displaysettings'
 require_relative 'apifuncs/v3/feed'
+require_relative 'apifuncs/v3/thread'
 
 
 # 404

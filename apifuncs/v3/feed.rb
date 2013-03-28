@@ -120,6 +120,9 @@ get '/v3/feed.?:format?' do
               returnHash[:error] = "A feed was requested for a Facebook account with uid #{source[:uid]}, but that account is not known to SuccessWhale."
             end
 
+          else
+            returnHash[:success] = false
+            returnHash[:error] = "A feed was requested for a service named '#{params[:service]}', but that SuccessWhale does not support that service."
           end
 
 
