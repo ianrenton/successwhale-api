@@ -23,7 +23,8 @@ get '/v3/authwithfacebook.?:format?' do
       if !authResult[:explicitfailure]
         returnHash[:url] = FACEBOOK_OAUTH.url_for_oauth_code(:callback => request.url, :permissions => FACEBOOK_PERMISSIONS)
       else
-        returnHash = authResult
+        returnHash[:success] = false
+        returnHash[:error] = authResult[:error]
       end
     else
       # A code was returned, so let's validate it and process the login
