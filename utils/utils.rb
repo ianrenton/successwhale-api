@@ -31,19 +31,23 @@ def checkAuth(session, params)
       # If we didn't find a match, set UID to zero
       if users.num_rows == 1
         returnHash[:authenticated] = true
+        returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
         returnHash[:sw_uid] = sw_uid
       else
         returnHash[:authenticated] = false
+        returnHash[:explicitfailure] = true # Explicit failure: parameters were provided but they were wrong.
         returnHash[:error] = 'A sw_uid and secret were provided, but they did not match an entry in the database.'
       end
 
     else
       returnHash[:authenticated] = false
-      returnHash[:error] = 'No sw_uid and secret were provided in the parameters, nor in the session cookie. The user is not logged in.'
+      returnHash[:explicitfailure] = false # Not an explicit failure, could just be a new / not logged-in user
+      returnHash[:error] = 'No sw_uid and secret were provided in the parameters, nor in the session cookie. The user is new or not logged in.'
     end
 
   rescue => e
     returnHash[:authenticated] = false
+    returnHash[:explicitfailure] = true # Explicit failure because a proper error occurred.
     returnHash[:error] = e
   end
 

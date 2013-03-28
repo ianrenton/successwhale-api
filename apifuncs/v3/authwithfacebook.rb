@@ -16,8 +16,15 @@ get '/v3/authwithfacebook.?:format?' do
 
     if !params.has_key?('code')
       # No code provided, so this isn't a callback - return a URL that
-      # the user can be sent to to kick off authentication.
-      returnHash[:url] = FACEBOOK_OAUTH.url_for_oauth_code(:callback => request.url, :permissions => FACEBOOK_PERMISSIONS)
+      # the user can be sent to to kick off authentication, unless there
+      # was an explicit auth failure. (New users and properly authenticated
+      # users will see the URL, auth failures and errors will see the error)
+      authResult = checkAuth(session, params)
+      if !authResult[:explicitfailure]
+        returnHash[:url] = FACEBOOK_OAUTH.url_for_oauth_code(:callback => request.url, :permissions => FACEBOOK_PERMISSIONS)
+      else
+        returnHash = authResult
+      end
     else
       # A code was returned, so let's validate it and process the login
         token = FACEBOOK_OAUTH.get_access_token(params[:code], {:redirect_uri => request.url})
