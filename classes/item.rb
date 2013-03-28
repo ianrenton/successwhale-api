@@ -6,15 +6,14 @@
 
 class Item
 
-  def initialize ()
-    @service = ''
+  def initialize (service, fetchedforuserid)
+    @service = service
+    @fetchedforuserid = fetchedforuserid
     @content = {}
   end
 
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
-
-    @service = :twitter
 
     if tweet.retweet?
       # Keep the retweet's ID for replies and the time for sorting
@@ -66,8 +65,6 @@ class Item
 
   # Fills in the contents of the item based on a Facebook post.
   def populateFromFacebookPost (post)
-
-    @service = :facebook
 
     @content.merge!(:id => post['id'])
     @content.merge!(:type => post['type'])
@@ -173,7 +170,7 @@ class Item
 
   # Returns the item as a hash.
   def asHash
-    return {:service => @service, :content => @content}
+    return {:service => @service, :fetchedforuserid => @fetchedforuserid, :content => @content}
   end
 
   # Gets the time that the item was originally posted.  Used to sort

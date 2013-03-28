@@ -23,9 +23,9 @@ And for backwards-compatability with SuccessWhale v2:
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
-The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, and `content` (a hash of all the item's parameters.
+The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters like the text, and who posted it), and `fetchedforuserid`. The combination of `service` and `fetchedforuserid` allows a client to identify the specific account for which the item was fetched, and later (if necessary) use SuccessWhale's Reply API to reply to it as the right user.
 
-The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `urls`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
+The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `links`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
 
 * Request type: GET
 * Authentication required: yes
@@ -52,6 +52,7 @@ Example Response (JSON):
       [
         {
           service: "twitter",
+          fetchedforuserid: "1234567890",
           content: {
             id: 12345678901234567890,
             time: "2013-03-26T21:05:45+00:00",
@@ -98,6 +99,7 @@ Example Response (JSON):
         },
         {
           service: "facebook",
+          fetchedforuserid: "1234567891",
           content:
           {
             id: "12345678901234567890_12345678901234567890",
