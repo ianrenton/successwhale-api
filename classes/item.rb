@@ -77,13 +77,13 @@ class Item
     @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
     if post.has_key?('comments')
       @content.merge!(:numcomments => post['comments']['count'])
-      @content.merge!(:comments => post['comments']['data'])
+      #@content.merge!(:comments => post['comments']['data'])
     else
       @content.merge!(:numcomments => 0)
     end
     if post.has_key?('likes')
       @content.merge!(:numlikes => post['likes']['count'])
-      @content.merge!(:likes => post['likes']['data'])
+      #@content.merge!(:likes => post['likes']['data'])
     else
       @content.merge!(:numlikes => 0)
     end
