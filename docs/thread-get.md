@@ -15,7 +15,7 @@ The `items` array that is returned varies wildly depending on the `service` used
 
 URL Format:
 
-    /v3/feed[.json|.xml]?service=facebook&uid=1234567890&postid=1234567890_12345678901234567
+    /v3/thread[.json|.xml]?service=facebook&uid=1234567890&postid=1234567890_12345678901234567
 
 Example Response for Facebook (JSON):
 
