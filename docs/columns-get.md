@@ -26,7 +26,7 @@ Example Response (JSON):
             "username":"tsuki_chama",
             "url":"tsuki_chama/lists/soton-kiddies/statuses"}
           ],
-          feedpath: "twitter/1234567890/tsuki_chama//soton-kiddies/statuses;"
+          feedpath: "twitter/1234567890/tsuki_chama//soton-kiddies/statuses"
         },
         {
           feeds: [
@@ -35,7 +35,7 @@ Example Response (JSON):
             "username":"tsuki_chama",
             "url":"statuses/home_timeline"}
           ],
-          feedpath: "twitter/13279532/statuses/home_timeline;"
+          feedpath: "twitter/13279532/statuses/home_timeline"
         },
         {
           feeds: [
@@ -54,7 +54,7 @@ Example Response (JSON):
             "username":"Ian Renton",
             "url":"me/notifications"}
           ],
-          feedpath: "facebook/1234567891/me/home;twitter/1234567890/statuses/mentions;facebook/1234567891/me/notifications;"
+          feedpath: "facebook/1234567891/me/home:twitter/1234567890/statuses/mentions;facebook/1234567891/me/notifications"
         }
       ]
     }

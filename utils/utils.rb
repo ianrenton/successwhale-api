@@ -74,6 +74,12 @@ def getAllAccountsForUser(sw_uid)
     userHash = {:service => 'facebook',
                 :uid => user['uid'],
                 :servicetokens => user['access_token']}
+
+    # Add the Facebook username. This is a bit of a hack because the SWv2
+    # database doesn't store usernames for Facebook accounts. TODO fix
+    # when migrating database.
+    userHash = includeUsernames(userHash)
+
     accounts << userHash
   end
 
@@ -101,4 +107,32 @@ def makeOutput(hash, format, xmlRoot)
     output = hash.to_json
   end
   return output
+end
+
+
+# Includes the usernames of the feeds as well as just the uids
+def includeUsernames(feedHash)
+  # Check if we already have a username, if we're supporting a SWv2 database
+  # we probably do already
+  if !feedHash.has_key?(:username)
+    if feedHash[:service] == 'twitter'
+      twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      twitter_user = twitter_users.fetch_hash
+      feedHash.merge!(:username => twitter_user['username'])
+    end
+    if feedHash[:service] == 'facebook'
+      facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      facebook_user = facebook_users.fetch_hash
+      if facebook_user['username'] != nil
+        feedHash.merge!(:username => facebook_user['username'])
+      else
+        # If we're supporting an SWv2 database, we can't get the Facebook
+        # username from the table, so make a call to Facebook to get it.
+        facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
+        name = facebookClient.get_object("me")['name']
+        feedHash.merge!(:username => name)
+      end
+    end
+  end
+  return feedHash
 end

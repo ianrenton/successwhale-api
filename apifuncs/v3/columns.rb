@@ -93,23 +93,3 @@ def fixFeedHash(feedHash, sw_uid)
   end
   return feedHash
 end
-
-
-# Includes the usernames of the feeds as well as just the uids
-def includeUsernames(feedHash)
-  # Check if we already have a username, if we're supporting a SWv2 database
-  # we probably do already
-  if !feedHash.has_key?(:username)
-    if feedHash[:service] == 'twitter'
-      twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
-      twitter_user = twitter_users.fetch_hash
-      feedHash.merge!(:username => twitter_user['username'])
-    end
-    if feedHash[:service] == 'facebook'
-      facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
-      facebook_user = facebook_users.fetch_hash
-      feedHash.merge!(:username => facebook_user['username'])
-    end
-  end
-  return feedHash
-end

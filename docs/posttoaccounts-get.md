@@ -30,6 +30,7 @@ Example Response (JSON):
         {
           service: "facebook",
           uid: "1234567890",
+          username: "Ian Renton",
           enabled: false
           }
       ]
