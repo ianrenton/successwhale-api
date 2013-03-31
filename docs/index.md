@@ -48,6 +48,6 @@ API calls:
 * [Get Feed](feed-get.md) `GET: /v3/feed`
 * [Get Thread](thread-get.md) `GET: /v3/thread`
 * WIP: [Get User Info](userinfo-get.md) `GET: /v3/userinfo`
-* WIP: [Post Item](item-post.md) `POST: /v3/item`
+* [Post Item](item-post.md) `POST: /v3/item`
 * WIP: [Delete Item](item-delete.md) `DELETE: /v3/item`
 * WIP: [Retweet](retweet-post.md) `POST: /v3/retweet`
