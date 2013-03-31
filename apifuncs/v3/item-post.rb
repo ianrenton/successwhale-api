@@ -21,6 +21,7 @@ post '/v3/item.?:format?' do
 
       if params.has_key?('text')
         # User gave us a text parameter, so that's OK
+        status 200
         returnHash[:success] = true
 
         if params.has_key?('accounts')
@@ -64,10 +65,12 @@ post '/v3/item.?:format?' do
                 twitterClient.update(URI.unescape(params['text']), options)
 
               else
+                status 403
                 returnHash[:success] = false
                 returnHash[:error] = "A post was requested via Twitter account @#{user['username']}, but the authenticated user does not have the right to use this account."
               end
             else
+              status 403
               returnHash[:success] = false
               returnHash[:error] = "A post was requested via Twitter user ID @#{uid}, but that account is not known to SuccessWhale."
             end
@@ -97,15 +100,18 @@ post '/v3/item.?:format?' do
                 end
 
               else
+                status 403
                 returnHash[:success] = false
                 returnHash[:error] = "A post was requested via a Facebook account with uid #{uid}, but the authenticated user does not have the right to use this account."
               end
             else
+              status 403
               returnHash[:success] = false
               returnHash[:error] = "A post was requested via a Facebook account with uid #{uid}, but that account is not known to SuccessWhale."
             end
 
           else
+            status 400
             returnHash[:success] = false
             returnHash[:error] = "A post was requested via a service named '#{service}', but that SuccessWhale does not support that service."
           end
@@ -113,15 +119,21 @@ post '/v3/item.?:format?' do
         end
 
       else
+        status 400
         returnHash[:success] = false
         returnHash[:error] = "The required parameter 'text' was not provided."
       end
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
+  rescue => e
+    status 500
+    returnHash[:success] = false
+    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')

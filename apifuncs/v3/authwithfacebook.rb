@@ -21,19 +21,24 @@ get '/v3/authwithfacebook.?:format?' do
       # users will see the URL, auth failures and errors will see the error)
       authResult = checkAuth(session, params)
       if !authResult[:explicitfailure]
+        status 200
+        returnHash[:success] = true
         returnHash[:url] = FACEBOOK_OAUTH.url_for_oauth_code(:callback => request.url, :permissions => FACEBOOK_PERMISSIONS)
       else
+        status 401
         returnHash[:success] = false
         returnHash[:error] = authResult[:error]
       end
     else
       # A code was returned, so let's validate it and process the login
         token = FACEBOOK_OAUTH.get_access_token(params[:code], {:redirect_uri => request.url})
+        status 200
         returnHash[:success] = true
         returnHash[:token] = token
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

@@ -21,6 +21,7 @@ get '/v3/thread.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
+      status 200
       returnHash[:success] = true
       items = []
 
@@ -57,10 +58,12 @@ get '/v3/thread.?:format?' do
               end until (nextID == nil || nextID == 0)
 
             else
+              status 403
               returnHash[:success] = false
               returnHash[:error] = "A thread was requested for Twitter account @#{user['username']}, but the authenticated user does not have the right to use this account."
             end
           else
+            status 403
             returnHash[:success] = false
             returnHash[:error] = "A thread was requested for Twitter user ID @#{params[:uid]}, but that account is not known to SuccessWhale."
           end
@@ -87,15 +90,18 @@ get '/v3/thread.?:format?' do
               items << item
 
             else
+              status 403
               returnHash[:success] = false
               returnHash[:error] = "A thread was requested for a Facebook account with uid #{params[:uid]}, but the authenticated user does not have the right to use this account."
             end
           else
+            status 403
             returnHash[:success] = false
             returnHash[:error] = "A thread was requested for a Facebook account with uid #{params[:uid]}, but that account is not known to SuccessWhale."
           end
 
         else
+          status 400
           returnHash[:success] = false
           returnHash[:error] = "A thread was requested for a service named '#{params[:service]}', but that SuccessWhale does not support that service."
         end
@@ -105,16 +111,19 @@ get '/v3/thread.?:format?' do
         returnHash[:items] = items
 
       else
+        status 400
         returnHash[:success] = false
         returnHash[:error] = "The required parameters 'service', 'uid' and 'postid' were not provided."
       end
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

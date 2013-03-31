@@ -70,5 +70,6 @@ require_relative 'apifuncs/v3/item-post'
 
 # 404
 not_found do
+  status 404
   '<h1>SuccessWhale API - Invalid Request</h3><p>You have made an invalid API call. For a list of valid calls, please see the <a href="https://github.com/ianrenton/successwhale-api/blob/master/docs/index.md">API docs</a>.</p>'
 end

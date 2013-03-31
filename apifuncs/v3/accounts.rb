@@ -21,15 +21,18 @@ get '/v3/accounts.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
+      status 200
       returnHash[:success] = true
       returnHash[:accounts] = getAllAccountsForUser(sw_uid)
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

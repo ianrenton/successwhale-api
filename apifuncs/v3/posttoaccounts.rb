@@ -22,6 +22,8 @@ get '/v3/posttoaccounts.?:format?' do
 
       users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
+
+      status 200
       returnHash[:success] = true
 
       # Get all the user's accounts, mark as disabled to start with.
@@ -50,11 +52,13 @@ get '/v3/posttoaccounts.?:format?' do
       returnHash[:posttoaccounts] = accounts
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

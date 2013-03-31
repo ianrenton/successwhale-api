@@ -18,17 +18,21 @@ get '/v3/bannedphrases.?:format?' do
 
       users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
+
+      status 200
       returnHash[:success] = true
 
       # Get the blocklist data as an array
       returnHash[:bannedphrases] = user['blocklist'].split(/\r?\n/)
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

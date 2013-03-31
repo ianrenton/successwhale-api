@@ -29,6 +29,7 @@ get '/v3/authenticate.?:format?' do
         user = users.fetch_hash
         if user['password'] == md5
           # Password matches
+          status 200
           returnHash[:success] = true
           returnHash[:userid] = user['sw_uid']
           returnHash[:username] = user['username']
@@ -38,21 +39,25 @@ get '/v3/authenticate.?:format?' do
           session[:secret] = user['secret']
 
         else
+          status 401
           returnHash[:success] = false
           returnHash[:error] = 'Password did not match'
         end
 
       else
+        status 401
         returnHash[:success] = false
         returnHash[:error] = "Unknown username: #{username}"
       end
 
     else
+      status 400
       returnHash[:success] = false
       returnHash[:error] = "A required parameter was missing. Required parameters: username, password"
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end

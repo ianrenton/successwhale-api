@@ -99,11 +99,14 @@ end
 # Make JSON or XML from a hash and return it
 def makeOutput(hash, format, xmlRoot)
   if format == 'json'
+    content_type 'application/json'
     output = hash.to_json
   elsif format == 'xml'
+    content_type 'text/xml'
     output = hash.to_xml(:root => "#{xmlRoot}")
   else
     # default to json for now
+    content_type 'application/json'
     output = hash.to_json
   end
   return output

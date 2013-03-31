@@ -21,6 +21,8 @@ get '/v3/displaysettings.?:format?' do
 
       users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
+
+      status 200
       returnHash[:success] = true
 
       # Get the display settings and add them to the return hash
@@ -29,11 +31,13 @@ get '/v3/displaysettings.?:format?' do
       returnHash[:highlighttime] = user['highlighttime']
 
     else
+      status 401
       returnHash[:success] = false
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
   rescue => e
+    status 500
     returnHash[:success] = false
     returnHash[:error] = e
   end
