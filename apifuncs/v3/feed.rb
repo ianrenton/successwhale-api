@@ -181,6 +181,11 @@ def getTwitterSourceFeedFromURL(url, twitterClient, count)
   elsif url == 'direct_messages/sent'
     sourceFeed = twitterClient.direct_messages_sent :count => count
   else
+    # Match user/USERNAME/statuses
+    m = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
+    if m
+      sourceFeed = twitterClient.user_timeline(m[1], {:count => count})
+    end
     # Match lists/LISTNAME/statuses (assumed requesting for the user's own list)
     m = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
     if m

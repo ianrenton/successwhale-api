@@ -4,6 +4,8 @@
 # SuccessWhale API function to post an item.
 # Takes the text of the item, and a set of accounts to post to. If no
 # accounts are supplied, uses the user's defaults (TODO).
+# Supports an in_reply_to_id parameter for replying to Tweets, FB/LinkedIn
+# statuses etc.
 
 post '/v3/item.?:format?' do
 
@@ -52,8 +54,14 @@ post '/v3/item.?:format?' do
                   :oauth_token_secret => unserializedServiceTokens['oauth_token_secret']
                 )
 
+                # Set in-reply-to if required
+                options = {}
+                if params.has_key?('in_reply_to_id')
+                  options.merge!(:in_reply_to_status_id => params['in_reply_to_id'])
+                end
+
                 # Post
-                twitterClient.update(URI.unescape(params['text']))
+                twitterClient.update(URI.unescape(params['text']), options)
 
               else
                 returnHash[:success] = false
@@ -79,8 +87,14 @@ post '/v3/item.?:format?' do
                 # Set up a Facebook client to post with
                 facebookClient = Koala::Facebook::API.new(user['access_token'])
 
-                # Post
-                facebookClient.put_wall_post(URI.unescape(params['text']))
+                # Comment if that's what was requested, otherwise post to wall
+                if params.has_key?('in_reply_to_id')
+                  # Comment
+                  facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
+                else
+                  # Post
+                  facebookClient.put_wall_post(URI.unescape(params['text']))
+                end
 
               else
                 returnHash[:success] = false
