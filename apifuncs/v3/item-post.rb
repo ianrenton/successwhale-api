@@ -29,8 +29,8 @@ post '/v3/item.?:format?' do
 
         # Split the token string
         accounts = postToAccounts.split(':')
-        accounts.each do |accounts|
-          parts = feed.split('/')
+        accounts.each do |account|
+          parts = account.split('/')
           service = parts[0]
           uid = parts[1]
 
@@ -67,7 +67,7 @@ post '/v3/item.?:format?' do
 
           elsif service == 'facebook'
             # Grab the facebook auth token for the account
-            facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
+            facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(uid)}'")
 
             # Check we have an entry for the Facebook account being used
             if facebook_users.num_rows == 1
@@ -108,9 +108,6 @@ post '/v3/item.?:format?' do
       returnHash[:error] = NOT_AUTH_ERROR
     end
 
-  rescue => e
-    returnHash[:success] = false
-    returnHash[:error] = e
   end
 
   makeOutput(returnHash, params[:format], 'user')

@@ -10,16 +10,17 @@ You request these source feeds by supplying the `sources` parameter. This parame
     twitter/1234567890/statuses/mentions
     twitter/1234567890/direct_messages
     twitter/1234567890/direct_messages/sent
-    twitter/1234567890/lists/mylist/statuses
-    twitter/1234567890/someuser/lists/theirlist/statuses
+    twitter/1234567890/user/SOMEUSER/statuses
+    twitter/1234567890/lists/MYLIST/statuses
+    twitter/1234567890/SOMEUSER/lists/THEIRLIST/statuses
     facebook/1234567890/me/home
     facebook/1234567890/me/feed
     facebook/1234567890/me/notifications
 
 And for backwards-compatability with SuccessWhale v2:
 
-    twitter/1234567890/@user
-    twitter/1234567890/@user/theirlist
+    twitter/1234567890/@SOMEUSER
+    twitter/1234567890/@SOMEUSER/THEIRLIST
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
