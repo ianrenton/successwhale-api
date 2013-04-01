@@ -108,7 +108,7 @@ get '/v3/thread.?:format?' do
 
         # TODO Linkedin
 
-        returnHash[:items] = items
+        returnHash[:items] = items.map{|i| i.asHash}
 
       else
         status 400
