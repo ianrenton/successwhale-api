@@ -49,5 +49,5 @@ API calls:
 * [Get Thread](thread-get.md) `GET: /v3/thread`
 * WIP: [Get User Info](userinfo-get.md) `GET: /v3/userinfo`
 * [Post Item](item-post.md) `POST: /v3/item`
+* [Delete Item](item-delete.md) `DELETE: /v3/item`
 * [Perform Action](action.md) (Retweet, favorite, like...) `POST: /v3/action`
-* WIP: [Delete Item](item-delete.md) `DELETE: /v3/item`

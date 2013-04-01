@@ -66,6 +66,7 @@ require_relative 'apifuncs/v3/displaysettings'
 require_relative 'apifuncs/v3/feed'
 require_relative 'apifuncs/v3/thread'
 require_relative 'apifuncs/v3/item-post'
+require_relative 'apifuncs/v3/item-delete'
 require_relative 'apifuncs/v3/action'
 
 

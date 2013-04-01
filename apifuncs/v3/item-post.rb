@@ -21,7 +21,7 @@ post '/v3/item.?:format?' do
 
       if params.has_key?('text')
         # User gave us a text parameter, so that's OK
-        status 200
+        status 201
         returnHash[:success] = true
 
         if params.has_key?('accounts')
