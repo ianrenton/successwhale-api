@@ -32,7 +32,7 @@ use Rack::Throttle::Hourly,   :max => 1000
 if File.file?('config.rb')
   require_relative 'config'
 else
-  abort('API server is not configured. Edit the values in config_local_sample.rb and rename the file to config_local.rb.')
+  abort('API server is not configured. Edit the values in config_sample.rb and rename the file to config.rb.')
 end
 
 # Enable sessions so that we can store the user's authentication in a cookie
