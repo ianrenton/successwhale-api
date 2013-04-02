@@ -9,9 +9,6 @@
 # attacks.  This can be any (preferably long) ASCII string
 PASSWORD_SALT = ''
 
-# The location the API is running from
-LOCATION = 'https://api.successwhale.com/'
-
 # mySQL connection parameters
 DB_HOST = '' # e.g. 'localhost'
 DB_USER = '' # e.g. 'myuser'
