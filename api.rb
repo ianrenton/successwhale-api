@@ -28,30 +28,28 @@ require_relative 'classes/item'
 # Throttle clients to max. 1000 API calls per hour
 use Rack::Throttle::Hourly,   :max => 1000
 
-# Get the configuration
-if File.file?('config.rb')
-  require_relative 'config'
-else
-  abort('API server is not configured. Edit the values in config_sample.rb and rename the file to config.rb.')
+# Abort if environment variables not set
+if !ENV.has_key?('DB_HOST')
+  abort('API server is not configured. Edit the values in sample.env and rename the file to .env. If running on Heroku, push the config.')
 end
 
 # Enable sessions so that we can store the user's authentication in a cookie
 enable :sessions
 
 # Connect to the DB, we will need this for all our API functions
-CON = Mysql.new DB_HOST, DB_USER, DB_PASS, DB_NAME
+CON = Mysql.new ENV['DB_HOST'], ENV['DB_USER'], ENV['DB_PASS'], ENV['DB_NAME']
 
 # Configure a Twitter object
 Twitter.configure do |config|
-  config.consumer_key = TWITTER_CONSUMER_KEY
-  config.consumer_secret = TWITTER_CONSUMER_SECRET
+  config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+  config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
 end
 
 # Configure a Facebook object
-FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(FACEBOOK_APP_ID, FACEBOOK_SECRET)
+FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
 
 # Configure a LinkedIn object
-LINKEDIN_CLIENT = LinkedIn::Client.new(LINKEDIN_APP_KEY, LINKEDIN_SECRET_KEY)
+LINKEDIN_CLIENT = LinkedIn::Client.new(ENV['LINKEDIN_APP_KEY'], ENV['LINKEDIN_SECRET_KEY'])
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.

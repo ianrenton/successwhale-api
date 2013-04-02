@@ -23,7 +23,7 @@ post '/v3/authenticate.?:format?' do
       if users.num_rows == 1
         # A user matched the supplied username, so let's see if the password matches
 
-        saltedPassword = Mysql.escape_string("#{password}#{PASSWORD_SALT}")
+        saltedPassword = Mysql.escape_string("#{password}#{ENV['PASSWORD_SALT']}")
         md5 = Digest::MD5.hexdigest(saltedPassword)
 
         user = users.fetch_hash
