@@ -1,5 +1,6 @@
 source 'https://rubygems.org'
 
+gem 'unicorn'
 gem 'activesupport'
 gem 'builder'
 gem 'json'

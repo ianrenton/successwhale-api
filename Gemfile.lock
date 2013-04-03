@@ -11,6 +11,7 @@ GEM
     hashie (1.2.0)
     i18n (0.6.1)
     json (1.7.7)
+    kgio (2.8.0)
     koala (1.6.0)
       addressable (~> 2.2)
       faraday (~> 0.8)
@@ -29,6 +30,7 @@ GEM
       rack
     rack-throttle (0.3.0)
       rack (>= 1.0.0)
+    raindrops (0.10.0)
     simple_oauth (0.2.0)
     sinatra (1.4.1)
       rack (~> 1.5, >= 1.5.2)
@@ -39,6 +41,10 @@ GEM
       faraday (~> 0.8, < 0.10)
       multi_json (~> 1.0)
       simple_oauth (~> 0.2)
+    unicorn (4.6.2)
+      kgio (~> 2.6)
+      rack
+      raindrops (~> 0.7)
     xml-simple (1.1.2)
 
 PLATFORMS
@@ -58,4 +64,5 @@ DEPENDENCIES
   simple_oauth
   sinatra
   twitter
+  unicorn
   xml-simple

@@ -8,6 +8,7 @@
 
 require 'rubygems'
 require 'bundler/setup'
+require 'unicorn'
 require 'sinatra'
 require 'mysql'
 require 'digest/md5'
