@@ -12,6 +12,8 @@ post '/v3/action.?:format?' do
 
   begin
 
+    connect()
+
     authResult = checkAuth(session, params)
 
     if authResult[:authenticated]
@@ -26,7 +28,7 @@ post '/v3/action.?:format?' do
 
         # Do the action
         if params['service'] == 'twitter'
-          twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
 
           # Check we have an entry for the Twitter account being used
           if twitter_users.num_rows == 1
@@ -69,7 +71,7 @@ post '/v3/action.?:format?' do
 
         elsif params['service'] == 'facebook'
           # Grab the facebook auth token for the account
-          facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
+          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
 
           # Check we have an entry for the Facebook account being used
           if facebook_users.num_rows == 1
@@ -125,7 +127,8 @@ post '/v3/action.?:format?' do
   rescue => e
     status 500
     returnHash[:success] = false
-    returnHash[:error] = e
+    returnHash[:error] = e.message
+    returnHash[:errorclass] = e.class
   end
 
   makeOutput(returnHash, params[:format], 'user')

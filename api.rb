@@ -37,35 +37,6 @@ end
 # Enable sessions so that we can store the user's authentication in a cookie
 enable :sessions
 
-begin
-
-  # Connect to the DB, we will need this for all our API functions
-  CON = Mysql.new ENV['DB_HOST'], ENV['DB_USER'], ENV['DB_PASS'], ENV['DB_NAME']
-
-  # Configure a Twitter object
-  Twitter.configure do |config|
-    config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
-    config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
-  end
-
-  # Configure a Facebook object
-  FACEBOOK_OAUTH = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
-
-  # Configure a LinkedIn object
-  LINKEDIN_CLIENT = LinkedIn::Client.new(ENV['LINKEDIN_APP_KEY'], ENV['LINKEDIN_SECRET_KEY'])
-
-# Trap DB connection / Service API errors.
-# Return JSON by default, as we didn't get as far as servicing a request
-# so we don't know whether JSON or XML was asked for - but the client should
-# figure out that HTTP 500 == bad anyway.
-rescue => e
-  returnHash = {}
-  returnHash[:success] = false
-  returnHash[:error] = e
-  halt 500, {'Content-Type' => 'application/json'}, returnHash.to_json
-end
-
-
 # Import API function files.  These contain all the main Sinatra processing
 # code.
 require_relative 'apifuncs/v3/authenticate-get'

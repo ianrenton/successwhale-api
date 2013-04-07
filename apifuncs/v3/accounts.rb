@@ -15,6 +15,8 @@ get '/v3/accounts.?:format?' do
 
   begin
 
+    connect()
+
     authResult = checkAuth(session, params)
 
     if authResult[:authenticated]
@@ -34,7 +36,8 @@ get '/v3/accounts.?:format?' do
   rescue => e
     status 500
     returnHash[:success] = false
-    returnHash[:error] = e
+    returnHash[:error] = e.message
+    returnHash[:errorclass] = e.class
   end
 
   makeOutput(returnHash, params[:format], 'user')

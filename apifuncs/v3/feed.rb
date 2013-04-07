@@ -11,6 +11,8 @@ get '/v3/feed.?:format?' do
 
   begin
 
+    connect()
+
     authResult = checkAuth(session, params)
 
     if authResult[:authenticated]
@@ -56,7 +58,7 @@ get '/v3/feed.?:format?' do
 
           if source[:service] == 'twitter'
             # Grab the twitter auth tokens for the account
-            twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
+            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
 
             # Check we have an entry for the Twitter account being used
             if twitter_users.num_rows == 1
@@ -93,7 +95,7 @@ get '/v3/feed.?:format?' do
 
           elsif source[:service] == 'facebook'
             # Grab the facebook auth token for the account
-            facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
+            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
 
             # Check we have an entry for the Facebook account being used
             if facebook_users.num_rows == 1
@@ -137,7 +139,7 @@ get '/v3/feed.?:format?' do
         end
 
         # Remove items that match the blocklist
-        swusers = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+        swusers = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
         swuser = swusers.fetch_hash
         bannedPhrases = swuser['blocklist'].force_encoding('UTF-8').split(/\r?\n/)
         items.reject! {|i| i.matchesPhrase(bannedPhrases)}
@@ -163,7 +165,8 @@ get '/v3/feed.?:format?' do
   rescue => e
     status 500
     returnHash[:success] = false
-    returnHash[:error] = e
+    returnHash[:error] = e.message
+    returnHash[:errorclass] = e.class
   end
 
   makeOutput(returnHash, params[:format], 'feed')

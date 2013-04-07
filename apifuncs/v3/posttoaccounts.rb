@@ -14,13 +14,15 @@ get '/v3/posttoaccounts.?:format?' do
 
   begin
 
+    connect()
+
     authResult = checkAuth(session, params)
 
     if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
 
       status 200
@@ -60,7 +62,8 @@ get '/v3/posttoaccounts.?:format?' do
   rescue => e
     status 500
     returnHash[:success] = false
-    returnHash[:error] = e
+    returnHash[:error] = e.message
+    returnHash[:errorclass] = e.class
   end
 
   makeOutput(returnHash, params[:format], 'user')

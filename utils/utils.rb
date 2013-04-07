@@ -3,6 +3,25 @@
 
 # Util functions for the SuccessWhale API.
 
+# Connect to database and all services. Required for every API call.
+def connect()
+
+  # Connect to the DB, we will need this for all our API functions
+  @db = Mysql.new ENV['DB_HOST'], ENV['DB_USER'], ENV['DB_PASS'], ENV['DB_NAME']
+
+  # Configure a Twitter object
+  Twitter.configure do |config|
+    config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+    config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+  end
+
+  # Configure a Facebook object
+  @facebookOAuth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
+
+  # Configure a LinkedIn object
+  @facebookClient = LinkedIn::Client.new(ENV['LINKEDIN_APP_KEY'], ENV['LINKEDIN_SECRET_KEY'])
+end
+
 # Check authentication was provided by session or params, and return data
 # (if authentication was successful) or an error message otherwise.
 # Note that a failure here need not be terminal - other parts of the API
@@ -26,7 +45,7 @@ def checkAuth(session, params)
     end
     if sw_uid > 0
       # Fetch a DB row for the given uid and secret
-      users = CON.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
+      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
 
       # If we didn't find a match, set UID to zero
       if users.num_rows == 1
@@ -59,7 +78,7 @@ end
 def getAllAccountsForUser(sw_uid)
   accounts = []
 
-  twitter_users = CON.query("SELECT * FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  twitter_users = @db.query("SELECT * FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
   twitter_users.each_hash do |user|
     unserializedServiceTokens = PHP.unserialize(user['access_token'])
     userHash = {:service => 'twitter',
@@ -69,7 +88,7 @@ def getAllAccountsForUser(sw_uid)
     accounts << userHash
   end
 
-  facebook_users = CON.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
   facebook_users.each_hash do |user|
     userHash = {:service => 'facebook',
                 :uid => user['uid'],
@@ -83,7 +102,7 @@ def getAllAccountsForUser(sw_uid)
     accounts << userHash
   end
 
-  linkedin_users = CON.query("SELECT * FROM linkedin_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  linkedin_users = @db.query("SELECT * FROM linkedin_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
   linkedin_users.each_hash do |user|
     userHash = {:service => 'linkedin',
                 :username => user['username'],
@@ -119,12 +138,12 @@ def includeUsernames(feedHash)
   # we probably do already
   if !feedHash.has_key?(:username)
     if feedHash[:service] == 'twitter'
-      twitter_users = CON.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
       twitter_user = twitter_users.fetch_hash
       feedHash.merge!(:username => twitter_user['username'])
     end
     if feedHash[:service] == 'facebook'
-      facebook_users = CON.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+      facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
       facebook_user = facebook_users.fetch_hash
       if facebook_user['username'] != nil
         feedHash.merge!(:username => facebook_user['username'])

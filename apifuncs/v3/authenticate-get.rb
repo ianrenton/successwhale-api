@@ -10,6 +10,8 @@ get '/v3/authenticate.?:format?' do
 
   begin
 
+    connect()
+
     # Check all required parameters present
     if params.has_key?('username') && params.has_key?('password')
 
@@ -18,7 +20,7 @@ get '/v3/authenticate.?:format?' do
       password = params[:password]
 
       # Fetch a DB row for the given username
-      users = CON.query("SELECT * FROM sw_users WHERE username='#{Mysql.escape_string(username)}'")
+      users = @db.query("SELECT * FROM sw_users WHERE username='#{Mysql.escape_string(username)}'")
 
       if users.num_rows == 1
         # A user matched the supplied username, so let's see if the password matches
@@ -59,7 +61,8 @@ get '/v3/authenticate.?:format?' do
   rescue => e
     status 500
     returnHash[:success] = false
-    returnHash[:error] = e
+    returnHash[:error] = e.message
+    returnHash[:errorclass] = e.class
   end
 
   makeOutput(returnHash, params[:format], 'user')
