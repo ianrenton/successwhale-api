@@ -3,6 +3,6 @@ require './api'
 
 use Rack::ShowExceptions
 
-disable :protection
+set :protection, :except => [:http_origin]
 
 run Sinatra::Application
