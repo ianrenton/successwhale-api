@@ -9,4 +9,4 @@ VERSION = "3.0.0-dev"
 
 FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifications,offline_access'
 
-NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and either use cookies to preserve the session, or provide sw_uid and secret as paramters to each API call.'
+NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and use the returned \'token\' string as a parameter to each API call.'

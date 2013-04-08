@@ -49,7 +49,7 @@ def checkAuth(params)
         user = users.fetch_hash
         returnHash[:authenticated] = true
         returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
-        returnHash[:sw_uid] = user['sw_uid']
+        returnHash[:sw_uid] = user['sw_uid'].to_i
       else
         returnHash[:authenticated] = false
         returnHash[:explicitfailure] = true # Explicit failure: token was provided but it was wrong.

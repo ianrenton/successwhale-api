@@ -18,9 +18,9 @@ get '/v3/feed.?:format?' do
     if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
-
       status 200
       returnHash[:success] = true
+
       items = []
 
       # Check we have been given the 'sources' parameter
