@@ -114,6 +114,10 @@ class Item
 
     if post.has_key?('comments')
       @content.merge!(:comments => post['comments']['data'])
+      # Merge in avatar URLs
+      @content[:comments].each do |comment|
+        comment['from'].merge!(:fromuseravatar => "http://graph.facebook.com/#{comment['from']['id']}/picture")
+      end
     end
     if post.has_key?('likes')
       @content.merge!(:likes => post['likes']['data'])
