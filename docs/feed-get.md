@@ -30,8 +30,8 @@ The components of the `content` hash vary depending on the `service`. All share 
 
 * Request type: GET
 * Authentication required: yes
-* Required parameters: `sources`
-* Optional parameters: `sw_uid`, `secret`, `count`
+* Required parameters: `token`, `sources`
+* Optional parameters: `count`
 * Return formats supported: JSON, XML
 
 URL Format:

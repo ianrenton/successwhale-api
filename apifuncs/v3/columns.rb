@@ -12,7 +12,7 @@ get '/v3/columns.?:format?' do
 
     connect()
 
-    authResult = checkAuth(session, params)
+    authResult = checkAuth(params)
 
     if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK

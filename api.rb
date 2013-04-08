@@ -34,12 +34,8 @@ if !ENV.has_key?('DB_HOST')
   abort('API server is not configured. Edit the values in sample.env and rename the file to .env. If running on Heroku, push the config.')
 end
 
-# Enable sessions so that we can store the user's authentication in a cookie
-enable :sessions
-
 # Import API function files.  These contain all the main Sinatra processing
 # code.
-require_relative 'apifuncs/v3/authenticate-get'
 require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/authwithfacebook'
 require_relative 'apifuncs/v3/accounts'

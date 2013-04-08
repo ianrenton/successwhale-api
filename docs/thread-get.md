@@ -9,8 +9,8 @@ The `items` array that is returned varies wildly depending on the `service` used
 
 * Request type: GET
 * Authentication required: yes
-* Required parameters: `service`, `uid`, `postid`
-* Optional parameters: `sw_uid`, `secret`
+* Required parameters: `token`, `service`, `uid`, `postid`
+* Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:

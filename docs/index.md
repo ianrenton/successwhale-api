@@ -22,7 +22,6 @@ API calls:
 * WIP: [Create SuccessWhale Username and Password](swuserpass-post.md) `POST: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Username and Password](swuserpass-delete.md) `DELETE: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Account](swaccount-delete.md) `DELETE: /v3/swaccount`
-* WIP: [Log Out](logout-get.md) `GET: /v3/logout`
 
 
 Handling User Settings

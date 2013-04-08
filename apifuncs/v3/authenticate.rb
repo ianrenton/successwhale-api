@@ -35,10 +35,7 @@ post '/v3/authenticate.?:format?' do
           returnHash[:success] = true
           returnHash[:userid] = user['sw_uid']
           returnHash[:username] = user['username']
-          returnHash[:secret] = user['secret']
-          # Save uid and secret to session var
-          session[:sw_uid] = user['sw_uid']
-          session[:secret] = user['secret']
+          returnHash[:token] = user['secret']
 
         else
           status 401

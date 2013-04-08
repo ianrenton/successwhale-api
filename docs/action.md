@@ -7,8 +7,8 @@ Currently supported actions are, for tweets: 'retweet', 'favorite', 'unfavorite'
 
 * Request type: POST
 * Authentication required: yes
-* Required parameters: `service`, `uid`, `postid`, `action`
-* Optional parameters: `sw_uid`, `secret`
+* Required parameters: `token`, `service`, `uid`, `postid`, `action`
+* Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:

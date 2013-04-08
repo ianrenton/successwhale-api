@@ -22,46 +22,37 @@ def connect()
   @facebookClient = LinkedIn::Client.new(ENV['LINKEDIN_APP_KEY'], ENV['LINKEDIN_SECRET_KEY'])
 end
 
-# Check authentication was provided by session or params, and return data
+# Check authentication was provided by a token parameter, and return data
 # (if authentication was successful) or an error message otherwise.
 # Note that a failure here need not be terminal - other parts of the API
 # may use this to specifically detect users that are *not* logged in if
 # they like.
-def checkAuth(session, params)
+def checkAuth(params)
 
   returnHash = {}
 
   begin
 
-    if session.has_key?('sw_uid') && session.has_key?('secret')
-      sw_uid = session[:sw_uid].to_i
-      secret = session[:secret]
-    elsif params.has_key?('sw_uid') && params.has_key?('secret')
-      sw_uid = params[:sw_uid].to_i
-      secret = params[:secret]
-    else
-      sw_uid = 0
-      secret = ""
-    end
-    if sw_uid > 0
+    if params.has_key?('token')
       # Fetch a DB row for the given uid and secret
-      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}' AND secret='#{Mysql.escape_string(secret)}'")
+      users = @db.query("SELECT * FROM sw_users WHERE secret='#{Mysql.escape_string(params[:token])}'")
 
       # If we didn't find a match, set UID to zero
       if users.num_rows == 1
+        user = users.fetch_hash
         returnHash[:authenticated] = true
         returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
-        returnHash[:sw_uid] = sw_uid
+        returnHash[:sw_uid] = user['sw_uid']
       else
         returnHash[:authenticated] = false
-        returnHash[:explicitfailure] = true # Explicit failure: parameters were provided but they were wrong.
-        returnHash[:error] = 'A sw_uid and secret were provided, but they did not match an entry in the database.'
+        returnHash[:explicitfailure] = true # Explicit failure: token was provided but it was wrong.
+        returnHash[:error] = 'A token was provided, but it did not match an entry in the database.'
       end
 
     else
       returnHash[:authenticated] = false
       returnHash[:explicitfailure] = false # Not an explicit failure, could just be a new / not logged-in user
-      returnHash[:error] = 'No sw_uid and secret were provided in the parameters, nor in the session cookie. The user is new or not logged in.'
+      returnHash[:error] = 'No token was provided in the parameters. The user is new or not logged in.'
     end
 
   rescue => e

@@ -8,7 +8,7 @@ This call comes in two GET forms - one, when no parameters are provided, which r
 * Request type: GET
 * Authentication required: optional (yes for existing users adding a new Facebook account, no for first-time users starting with a Facebook account.)
 * Required parameters: none
-* Optional parameters: `sw_uid`, `secret`
+* Optional parameters: `token`
 * Return formats supported: JSON, XML
 
 URL Format:

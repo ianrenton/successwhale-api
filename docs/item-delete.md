@@ -5,8 +5,8 @@ Deletes an item (that you have permission to delete). Takes the ID of an item (`
 
 * Request type: DELETE
 * Authentication required: yes
-* Required parameters: `service`, `uid`, `postid`
-* Optional parameters: `sw_uid`, `secret`
+* Required parameters: `token`, `service`, `uid`, `postid`
+* Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:

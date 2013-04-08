@@ -7,7 +7,7 @@ An optional `in_reply_to_id` parameter converts the post from a normal post into
 
 * Request type: POST
 * Authentication required: yes
-* Required parameters: `text`
+* Required parameters: `token`, `text`
 * Optional parameters: `sw_uid`, `secret`, `accounts`, `in_reply_to_id`
 * Return formats supported: JSON, XML
 

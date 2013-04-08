@@ -5,8 +5,8 @@ Returns an array of all social network accounts (`accounts`) associated with the
 
 * Request type: GET
 * Authentication required: yes
-* Required parameters: none
-* Optional parameters: `sw_uid`, `secret`
+* Required parameters: `token`
+* Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:

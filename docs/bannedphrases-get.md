@@ -5,8 +5,8 @@ Returns the list of banned phrases (`bannedphrases`) that the current user has s
 
 * Request type: GET
 * Authentication required: yes
-* Required parameters: none
-* Optional parameters: `sw_uid`, `secret`
+* Required parameters: `token`
+* Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:
