@@ -26,7 +26,7 @@ The call also supports a `count` parameter that sets the number of items that sh
 
 The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters like the text, and who posted it), and `fetchedforuserid`. The combination of `service` and `fetchedforuserid` allows a client to identify the specific account for which the item was fetched, and later (if necessary) use SuccessWhale's Reply API to reply to it as the right user.
 
-The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `id`, `time` and `links`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by.
+The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `type`, `id`, `time` and `links`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by. Clients can use the `type` component to determine what other components they should expect to see.
 
 * Request type: GET
 * Authentication required: yes
@@ -56,6 +56,7 @@ Example Response (JSON):
           fetchedforuserid: "1234567890",
           content: {
             id: 12345678901234567890,
+            type: "tweet",
             time: "2013-03-26T21:05:45+00:00",
             retweetedbyuser: "username",
             retweetedbyusername: "User Name",
@@ -104,7 +105,7 @@ Example Response (JSON):
           content:
           {
             id: "12345678901234567890_12345678901234567890",
-            type: "photo",
+            type: "facebook_photo",
             time: "2013-03-26T19:34:23+00:00",
             fromuserid: "12345678901234567890",
             fromusername: "User Name",

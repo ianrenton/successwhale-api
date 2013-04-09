@@ -28,7 +28,7 @@ Example Response for Facebook (JSON):
           fetchedforuserid: "1234567890",
           content: {
             id: "1234567890_12345678901234567",
-            type: "status",
+            type: "facebook_status",
             time: "2013-03-28T21:01:51+00:00",
             fromuserid: "1234567891",
             fromusername: "John Doe",
@@ -74,6 +74,7 @@ Example Response for Twitter (JSON):
           content:
           {
             text: "@bobsmith Reply!",
+            type: "tweet",
             id: "12345678901234567891",
             time: "2013-03-28T22:45:30+00:00",
             fromuser: "joebloggs",

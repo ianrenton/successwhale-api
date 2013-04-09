@@ -15,6 +15,8 @@ class Item
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
 
+    @content.merge!(:type => 'tweet')
+
     if tweet.retweet?
       # Keep the retweet's ID for replies and the time for sorting
       @content.merge!(:id => tweet.attrs[:id_str])
@@ -67,7 +69,7 @@ class Item
   def populateFromFacebookPost (post)
 
     @content.merge!(:id => post['id'])
-    @content.merge!(:type => post['type'])
+    @content.merge!(:type => "facebook_#{post['type']}")
     @content.merge!(:time => Time.parse(post['created_time']))
     @content.merge!(:fromuserid => post['from']['id'])
     @content.merge!(:fromusername => post['from']['name'])
