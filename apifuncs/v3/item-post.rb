@@ -63,8 +63,15 @@ post '/v3/item.?:format?' do
                   options.merge!(:in_reply_to_status_id => params['in_reply_to_id'])
                 end
 
+                # Post via Twixt if >140 chars
+                if params['text'].length > 140
+                  tweet = twixtify(URI::unescape(params['text']))
+                else
+                  tweet = URI::unescape(params['text'])
+                end
+
                 # Post
-                twitterClient.update(URI.unescape(params['text']), options)
+                twitterClient.update(tweet, options)
 
               else
                 status 403
@@ -140,4 +147,25 @@ post '/v3/item.?:format?' do
   end
 
   makeOutput(returnHash, params[:format], 'user')
+end
+
+# Pushes text (>140 characters) through the Twixt shortener.
+def twixtify(text)
+  uri = URI.parse(TWIXT_URL)
+  uri.query = URI.encode_www_form( :tweet => text )
+  res = Net::HTTP.get_response(uri)
+
+  if res.code.to_i == 302
+    newURI = URI.parse(res.header['location'])
+    res = Net::HTTP.get_response(newURI)
+    if res.code.to_i == 200
+      text = "#{text.slice!(0..110)}... #{res.body}"
+    else
+      raise "Tried to post to Twitter with more than 140 characters of text, but the shortening service failed. Status #{res.code}, content: #{res.body}"
+    end
+  else
+    raise "Tried to post to Twitter with more than 140 characters of text, but the shortening service failed. Status #{res.code}, content: #{res.body}"
+  end
+
+  return text
 end

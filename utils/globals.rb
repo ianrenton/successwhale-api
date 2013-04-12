@@ -9,4 +9,6 @@ VERSION = "3.0.0-dev"
 
 FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifications,offline_access'
 
+TWIXT_URL = 'http://twixt.successwhale.com/index.php'
+
 NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and use the returned \'token\' string as a parameter to each API call.'
