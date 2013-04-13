@@ -62,6 +62,8 @@ class Item
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
+
+    unshorten()
   end
 
 
@@ -223,4 +225,23 @@ class Item
     end
     return false
   end
+
+  # Unshortens a tweet, if it can be detected that it has been previously
+  # shortened by a service such as Twixt or TwitLonger.
+  def unshorten()
+    @content[:links].each do |link|
+      unless link[:expanded_url].nil?
+        if link[:expanded_url].include?(TWIXT_URL_MATCHER)
+          # This tweet has been shortened, so grab the real text
+          source = Net::HTTP.get(URI(link[:expanded_url]))
+          doc = Nokogiri::HTML(source)
+          # Only one p element in a Twixt output, just find and use it.
+          doc.xpath('//p').each do |p|
+            @content[:text] = p.content
+          end
+        end
+      end
+    end
+  end
+
 end

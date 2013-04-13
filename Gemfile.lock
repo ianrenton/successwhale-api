@@ -23,6 +23,7 @@ GEM
     multi_json (1.7.1)
     multipart-post (1.2.0)
     mysql (2.9.1)
+    nokogiri (1.5.9)
     oauth (0.4.7)
     php-serialize (1.1.0)
     rack (1.5.2)
@@ -58,6 +59,7 @@ DEPENDENCIES
   linkedin
   multi_json
   mysql
+  nokogiri
   php-serialize
   rack
   rack-throttle

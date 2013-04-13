@@ -57,15 +57,20 @@ post '/v3/item.?:format?' do
                   :oauth_token_secret => unserializedServiceTokens['oauth_token_secret']
                 )
 
-                # Set in-reply-to if required
+                # Set up options
                 options = {}
+                # Force t.co wrapping, so we can send tweets just over 140
+                # chars that will be <=140 chars after wrapping
+                options.merge!(:wrap_links => true)
+
+                # Set in-reply-to if required
                 if params.has_key?('in_reply_to_id')
                   options.merge!(:in_reply_to_status_id => params['in_reply_to_id'])
                 end
 
                 # Post via Twixt if >140 chars
                 if params['text'].length > 140
-                  tweet = twixtify(URI::unescape(params['text']))
+                  tweet = shortenForTwitter(URI::unescape(params['text']))
                 else
                   tweet = URI::unescape(params['text'])
                 end
@@ -149,20 +154,22 @@ post '/v3/item.?:format?' do
   makeOutput(returnHash, params[:format], 'user')
 end
 
-# Pushes text (>140 characters) through the Twixt shortener.
-def twixtify(text)
+# Pushes text (>140 characters) through the tweet shortening service,
+# returning a tweet of the form "mylongtext... http://shortener/shortcode".
+# This may be a little over 140 characters itself, but will be exactly 140
+# characters once Twitter has passed the URL through t.co.
+def shortenForTwitter(text)
   uri = URI.parse(TWIXT_URL)
-  uri.query = URI.encode_www_form( :tweet => text )
+  # Send raw=true to get the real Twixt URL not the is.gd version
+  sendParams = {:tweet => text, :raw => true}
+  uri.query = URI.encode_www_form( sendParams )
   res = Net::HTTP.get_response(uri)
 
-  if res.code.to_i == 302
-    newURI = URI.parse(res.header['location'])
-    res = Net::HTTP.get_response(newURI)
-    if res.code.to_i == 200
-      text = "#{text.slice!(0..110)}... #{res.body}"
-    else
-      raise "Tried to post to Twitter with more than 140 characters of text, but the shortening service failed. Status #{res.code}, content: #{res.body}"
-    end
+  if res.code.to_i == 200
+    # Figure out how much of the real text we're allowed to keep
+    # to ensure the whole thing remains <140 chars
+    preserveTextLength = 140 - 4 - T_CO_LENGTH
+    text = "#{text.slice!(0..preserveTextLength)}... #{res.body}"
   else
     raise "Tried to post to Twitter with more than 140 characters of text, but the shortening service failed. Status #{res.code}, content: #{res.body}"
   end
