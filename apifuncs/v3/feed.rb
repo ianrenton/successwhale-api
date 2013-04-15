@@ -74,8 +74,14 @@ get '/v3/feed.?:format?' do
                   :oauth_token_secret => unserializedServiceTokens['oauth_token_secret']
                 )
 
+                # Set options
+                options = {:count => count}
+                if params.has_key?('since_id')
+                  options.merge!(:since_id => params['since_id'])
+                end 
+
                 # Fetch the feed
-                sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, count)
+                sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, options)
                 sourceFeed.each do |tweet|
                   item = Item.new(source[:service], source[:uid])
                   item.populateFromTweet(tweet)
@@ -180,43 +186,43 @@ end
 # higher-level functions. Maybe this is a better way of doing it anyway?
 # It means if Twitter changes its API, all we have to do is update the
 # Twitter gem, not SuccessWhale's code.
-def getTwitterSourceFeedFromURL(url, twitterClient, count)
+def getTwitterSourceFeedFromURL(url, twitterClient, options)
   sourcefeed = {}
   if url == 'statuses/home_timeline'
-    sourceFeed = twitterClient.home_timeline :count => count
+    sourceFeed = twitterClient.home_timeline(options)
   elsif url == 'statuses/user_timeline'
-    sourceFeed = twitterClient.user_timeline :count => count
+    sourceFeed = twitterClient.user_timeline(options)
   elsif url == 'statuses/mentions'
-    sourceFeed = twitterClient.mentions_timeline :count => count
+    sourceFeed = twitterClient.mentions_timeline(options)
   elsif url == 'direct_messages'
-    sourceFeed = twitterClient.direct_messages_received :count => count
+    sourceFeed = twitterClient.direct_messages_received(options)
   elsif url == 'direct_messages/sent'
-    sourceFeed = twitterClient.direct_messages_sent :count => count
+    sourceFeed = twitterClient.direct_messages_sent(options)
   else
     # Match user/USERNAME/statuses
     m = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
     if m
-      sourceFeed = twitterClient.user_timeline(m[1], {:count => count})
+      sourceFeed = twitterClient.user_timeline(m[1], options)
     end
     # Match lists/LISTNAME/statuses (assumed requesting for the user's own list)
     m = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
     if m
-      sourceFeed = twitterClient.list_timeline(m[1], {:count => count})
+      sourceFeed = twitterClient.list_timeline(m[1], options)
     end
     # Match USERNAME/lists/LISTNAME/statuses
     m = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(url)
     if m
-      sourceFeed = twitterClient.list_timeline(m[1], m[2], {:count => count})
+      sourceFeed = twitterClient.list_timeline(m[1], m[2], options)
     end
     # SuccessWhale v2 DB support: match @USERNAME (return user's tweets)
     m = /@([A-Za-z0-9\-_]*)/.match(url)
     if m
-      sourceFeed = twitterClient.user_timeline(m[1], {:count => count})
+      sourceFeed = twitterClient.user_timeline(m[1], options)
     end
     # SuccessWhale v2 DB support: match @USERNAME/LISTNAME
     m = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(url)
     if m
-      sourceFeed = twitterClient.list_timeline(m[1], m[2], {:count => count})
+      sourceFeed = twitterClient.list_timeline(m[1], m[2], options)
     end
   end
 

@@ -24,6 +24,8 @@ And for backwards-compatability with SuccessWhale v2:
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
+Twitter feeds also accept a `since_id` parameter that clients can supply. If this is set to the ID value of a previously-seen tweet, SuccessWhale will not return any tweets older than that the one whose ID was provided. Only Twitter supports this, so any content from other services in a feed will be unaffected by this parameter. Likewise, only a Twitter ID can be provided, not the ID of an item from another service.
+
 The `items` array that is returned contains hashes that have three components: `service` (e.g. 'twitter') so you know what to expect in the rest of the hash, `content` (a hash of all the item's parameters like the text, and who posted it), and `fetchedforuserid`. The combination of `service` and `fetchedforuserid` allows a client to identify the specific account for which the item was fetched, and later (if necessary) use SuccessWhale's Reply API to reply to it as the right user.
 
 The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `type`, `id`, `time` and `links`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by. Clients can use the `type` component to determine what other components they should expect to see.
@@ -31,7 +33,7 @@ The components of the `content` hash vary depending on the `service`. All share 
 * Request type: GET
 * Authentication required: yes
 * Required parameters: `token`, `sources`
-* Optional parameters: `count`
+* Optional parameters: `count`, `since_id`
 * Return formats supported: JSON, XML
 
 URL Format:
