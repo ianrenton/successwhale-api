@@ -102,7 +102,7 @@ class Item
     # Detect notifications
     if post.has_key?('unread')
       @content.merge!(:unread => post['unread'])
-      @content.merge!(:type => 'notification')
+      @content.merge!(:type => 'facebook_notification')
     end
 
     # Populate URLs and embedded media
@@ -205,11 +205,7 @@ class Item
   # Gets the text of the post.  Used to determine whether the text includes
   # a phrase in the user's blocklist.
   def getText
-    if @content.has_key?('isretweet') && @content['isretweet'] == true
-      return @content['retweet']['text']
-    else
-      return @content['text']
-    end
+    return @content['text']
   end
 
   # Check if the text in the item contains any of the phrases in the list
