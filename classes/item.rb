@@ -84,7 +84,7 @@ class Item
     end
     if post.has_key?('likes')
       @content.merge!(:numlikes => post['likes']['count'])
-      #@content.merge!(:likes => post['likes']['data'])
+      @content.merge!(:likes => post['likes']['data'])
     else
       @content.merge!(:numlikes => 0)
     end
@@ -111,22 +111,15 @@ class Item
   end
 
 
-  # Fills in the extended contents of the item (comments and likes) based
-  # on a Facebook post. Used when retrieving a thread, not a feed (feeds
-  # do not carry this detailed information)
-  def populateFacebookCommentsLikes (post)
-
-    if post.has_key?('comments')
-      @content.merge!(:comments => post['comments']['data'])
-      # Merge in avatar URLs
-      @content[:comments].each do |comment|
-        comment['from'].merge!(:fromuseravatar => "http://graph.facebook.com/#{comment['from']['id']}/picture")
-      end
-    end
-    if post.has_key?('likes')
-      @content.merge!(:likes => post['likes']['data'])
-    end
-
+  # Fills in the contents of the item based on a Facebook comment.
+  def populateFromFacebookComment (comment)
+    @content.merge!(:type => 'facebook_comment')
+    @content.merge!(:id => comment['id'])
+    @content.merge!(:time => Time.parse(comment['created_time']))
+    @content.merge!(:fromuserid => comment['from']['id'])
+    @content.merge!(:fromusername => comment['from']['name'])
+    @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{comment['from']['id']}/picture")
+    @content.merge!(:text => comment['message'])
   end
 
 

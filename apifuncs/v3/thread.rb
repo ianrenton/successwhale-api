@@ -51,11 +51,15 @@ get '/v3/thread.?:format?' do
               # Fetch the items in the replyTo chain
               nextID = params[:postid]
               begin
-                returnHash[:nextID] = nextID
                 tweet = twitterClient.status(nextID)
                 item = Item.new(params[:service], params[:uid])
                 item.populateFromTweet(tweet)
-                items << item
+                # Skip first if requested, otherwise (i.e. no skipfirst or
+                # this isn't the first tweet) add the tweet to the array to
+                # return.
+                if !(params.has_key?('skipfirst') && params[:skipfirst] == 'true' && nextID == params[:postid])
+                  items << item
+                end
                 nextID = tweet.attrs[:in_reply_to_status_id_str]
               end until (nextID == nil || nextID == 0)
 
@@ -86,10 +90,24 @@ get '/v3/thread.?:format?' do
 
               # Fetch the item
               fbpost = facebookClient.get_object(params[:postid])
-              item = Item.new(params[:service], params[:uid])
-              item.populateFromFacebookPost(fbpost)
-              item.populateFacebookCommentsLikes(fbpost)
-              items << item
+
+              # First item, the parent
+              # Skip this if requested, otherwise add the tweet to the array
+              # that will also contain the comments.
+              if !(params.has_key?('skipfirst') && params[:skipfirst] == 'true')
+                item = Item.new(params[:service], params[:uid])
+                item.populateFromFacebookPost(fbpost)
+                items << item
+              end
+
+              # Comments
+              if fbpost.has_key?('comments')
+                fbpost['comments']['data'].each do |comment|
+                  item = Item.new(params[:service], params[:uid])
+                  item.populateFromFacebookComment(comment)
+                  items << item
+                end
+              end              
 
             else
               status 403
