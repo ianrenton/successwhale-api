@@ -101,7 +101,7 @@ get '/v3/thread.?:format?' do
               end
 
               # Comments
-              if fbpost.has_key?('comments')
+              if fbpost.has_key?('comments') && !fbpost['comments']['data'].nil?
                 fbpost['comments']['data'].each do |comment|
                   item = Item.new(params[:service], params[:uid])
                   item.populateFromFacebookComment(comment)
