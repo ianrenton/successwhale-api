@@ -186,7 +186,7 @@ end
 
 # Adds the default columns for a service to a user's list
 def addDefaultColumns(sw_uid, service, service_id)
-  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
   user = users.fetch_hash
   currentCols = user['columns']
 
@@ -204,5 +204,5 @@ def addDefaultColumns(sw_uid, service, service_id)
     currentCols << "#{service}:#{service_id}:notifications"
   end
 
-  @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
 end
