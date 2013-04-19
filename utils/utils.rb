@@ -110,7 +110,7 @@ def getUserBlock(sw_uid)
   returnHash = {}
 
   users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-  if facebook_users.num_rows == 1
+  if users.num_rows == 1
     user = users.fetch_hash
     returnHash[:success] = true
     returnHash[:userid] = user['sw_uid']
