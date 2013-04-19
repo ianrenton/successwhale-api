@@ -77,7 +77,7 @@ get '/v3/authwithfacebook.?:format?' do
           else
             # This is an existing user activating a new FB account
             userBlock = getUserBlock(authResult[:sw_uid])
-            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock['sw_uid'])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
             addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = false
