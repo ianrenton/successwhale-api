@@ -51,8 +51,8 @@ get '/v3/authwithfacebook.?:format?' do
           # We have an authenticated SW user
           # Check to see if the token is already in the database
           facebook_users = @db.query("SELECT * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
-returnHash[:query] = "SELECT * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'"
-          if facebook_users.num_rows == 1
+
+          if !facebook_users.nil? && facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
             if fb_account_sw_uid == authResult[:sw_uid]
