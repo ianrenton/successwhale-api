@@ -52,7 +52,7 @@ returnHash[:ar] = authResult
           # We have an authenticated SW user
           # Check to see if the token is already in the database
           facebook_users = @db.query("SELECT * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
-          returnHash[:fbusers] = facebook_users
+          returnHash[:fbusersrows] = facebook_users.num_rows
           if facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
