@@ -34,6 +34,7 @@ get '/v3/authwithfacebook.?:format?' do
     else
       # A code was returned, so let's validate it
       token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => "#{request.base_url}#{request.path_info}"})
+      returnHash[:servicetoken] = token
       # Get FB userid to add to DB
       facebookClient = Koala::Facebook::API.new(token)
       fb_uid = facebookClient.get_object("me")['id']
@@ -55,7 +56,7 @@ get '/v3/authwithfacebook.?:format?' do
           if !facebook_users.nil? && facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid'].to_i
-            
+
             if fb_account_sw_uid == authResult[:sw_uid]
               # The Facebook account is already assigned to the current user,
               # update the token and return the user info
