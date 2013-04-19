@@ -45,14 +45,14 @@ get '/v3/authwithfacebook.?:format?' do
       # Check if the user is authenticated with SW by checking the 'state'
       # parameter that FB returned as if it were the token
       if params.has_key?('state')
-        newParams = {'token' => params[:state]}
-        authResult = checkAuth(newParams)
-returnHash[:ar] = authResult
+        token = params[:state]
+        authResult = checkAuth({'token' => token})
+
         if authResult[:authenticated]
           # We have an authenticated SW user
           # Check to see if the token is already in the database
           facebook_users = @db.query("SELECT * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
-          returnHash[:fbusersrows] = facebook_users.num_rows
+
           if facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
