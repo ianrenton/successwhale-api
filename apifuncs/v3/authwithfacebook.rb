@@ -25,7 +25,7 @@ get '/v3/authwithfacebook.?:format?' do
       if !authResult[:explicitfailure]
         status 200
         returnHash[:success] = true
-        returnHash[:url] = @facebookOAuth.url_for_oauth_code(:callback => request.url, :permissions => FACEBOOK_PERMISSIONS, :state => params[:token])
+        returnHash[:url] = @facebookOAuth.url_for_oauth_code(:callback => "#{request.base_url}#{request.path_info}", :permissions => FACEBOOK_PERMISSIONS, :state => params[:token])
       else
         status 401
         returnHash[:success] = false
