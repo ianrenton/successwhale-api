@@ -54,9 +54,8 @@ get '/v3/authwithfacebook.?:format?' do
 
           if !facebook_users.nil? && facebook_users.num_rows == 1
             # That Facebook account is already known to SW
-            fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
-returnHash[:a] = fb_account_sw_uid
-returnHash[:b] = authResult[:sw_uid]
+            fb_account_sw_uid = facebook_users.fetch_hash['sw_uid'].to_i
+            
             if fb_account_sw_uid == authResult[:sw_uid]
               # The Facebook account is already assigned to the current user,
               # update the token and return the user info
