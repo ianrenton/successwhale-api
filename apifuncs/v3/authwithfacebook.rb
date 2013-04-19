@@ -34,7 +34,6 @@ get '/v3/authwithfacebook.?:format?' do
     else
       # A code was returned, so let's validate it
       token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => "#{request.base_url}#{request.path_info}"})
-      returnHash[:servicetoken] = token
       # Get FB userid to add to DB
       facebookClient = Koala::Facebook::API.new(token)
       fb_uid = facebookClient.get_object("me")['id']
