@@ -105,6 +105,24 @@ def getAllAccountsForUser(sw_uid)
   return accounts
 end
 
+# Returns a user data block for the given sw_uid
+def getUserBlock(sw_uid)
+  returnHash = {}
+
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(authResult[:sw_uid])}'")
+  if facebook_users.num_rows == 1
+    user = users.fetch_hash
+    returnHash[:success] = true
+    returnHash[:userid] = user['sw_uid']
+    returnHash[:username] = user['username']
+    returnHash[:token] = user['secret']
+  else
+    returnHash[:success] = false
+    returnHash[:error] = 'Tried to look up a SuccessWhale user with an invalid UID.'
+  end
+
+end
+
 
 # Make JSON or XML from a hash and return it
 def makeOutput(hash, format, xmlRoot)
