@@ -121,6 +121,7 @@ def getUserBlock(sw_uid)
     returnHash[:error] = 'Tried to look up a SuccessWhale user with an invalid UID.'
   end
 
+  return returnHash
 end
 
 
