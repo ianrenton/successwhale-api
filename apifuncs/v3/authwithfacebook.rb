@@ -42,12 +42,16 @@ get '/v3/authwithfacebook.?:format?' do
       # Everything from here on is a success
       status 200
       returnHash[:success] = true
+      returnHash[:me] = me
+      returnHash[:fb_uid] = fb_uid
 
       # Check if the user is authenticated with SW by checking the 'state'
       # parameter that FB returned as if it were the token
       if params.has_key?('state')
         newParams = {:token => params[:state]}
+        returnHash[:newparams] = newParams
         authResult = checkAuth(newParams)
+        returnHash[:authresult] = authResult
 
         if authResult[:authenticated]
           # We have an authenticated SW user
