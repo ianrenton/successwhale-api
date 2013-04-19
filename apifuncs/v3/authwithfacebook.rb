@@ -36,12 +36,12 @@ get '/v3/authwithfacebook.?:format?' do
       token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => "#{request.base_url}#{request.path_info}"})
       # Get FB userid to add to DB
       facebookClient = Koala::Facebook::API.new(token)
-      fb_uid = facebookClient.get_object("me")[:id]
+      me = facebookClient.get_object("me")
+      fb_uid = me[:id]
 
       # Everything from here on is a success
       status 200
       returnHash[:success] = true
-      returnHash[:uid] = fb_uid
 
       # Check if the user is authenticated with SW by checking the 'state'
       # parameter that FB returned as if it were the token
@@ -64,13 +64,13 @@ get '/v3/authwithfacebook.?:format?' do
               # to this one.
               userBlock = getUserBlock(authResult[:sw_uid])
               @db.query("DELETE * FROM facebook_users WHERE token='#{Mysql.escape_string(token)}'")
-              @db.query("INSERT INTO facebook_users (sw_uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(token)}')")
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
               returnHash.merge!(userBlock)
             end
           else
             # This is an existing user activating a new FB account
             userBlock = getUserBlock(authResult[:sw_uid])
-            @db.query("INSERT INTO facebook_users (sw_uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(token)}')")
+            @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
             ######## TODO DEFAULT COLUMNS
             returnHash.merge!(userBlock)
           end
@@ -78,7 +78,7 @@ get '/v3/authwithfacebook.?:format?' do
         else
           # This is a new user starting off by activating a FB account
           sw_uid = makeSWAccount() ### TODO
-          @db.query("INSERT INTO facebook_users (sw_uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(token)}')")
+          @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
           ######## TODO DEFAULT COLUMNS
           userBlock = getUserBlock(sw_uid)
           returnHash.merge!(userBlock)
@@ -87,7 +87,7 @@ get '/v3/authwithfacebook.?:format?' do
       else
         # This is a new user starting off by activating a FB account
         sw_uid = makeSWAccount() ### TODO
-        @db.query("INSERT INTO facebook_users (sw_uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(token)}')")
+        @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
         ######## TODO DEFAULT COLUMNS
         userBlock = getUserBlock(sw_uid)
         returnHash.merge!(userBlock)
