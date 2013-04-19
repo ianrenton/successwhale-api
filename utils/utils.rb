@@ -35,7 +35,7 @@ def checkAuth(params)
 
     if params.has_key?('token')
       # Fetch a DB row for the given uid and secret
-      users = @db.query("SELECT * FROM sw_users WHERE secret='#{Mysql.escape_string(params[:token])}'")
+      users = @db.query("SELECT * FROM sw_users WHERE secret='#{Mysql.escape_string(params['token'])}'")
 
       # If we didn't find a match, set UID to zero
       if users.num_rows == 1

@@ -36,13 +36,11 @@ get '/v3/authwithfacebook.?:format?' do
       token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => "#{request.base_url}#{request.path_info}"})
       # Get FB userid to add to DB
       facebookClient = Koala::Facebook::API.new(token)
-      me = facebookClient.get_object("me")
-      fb_uid = me['id']
+      fb_uid = facebookClient.get_object("me")['id']
 
       # Everything from here on is a success
       status 200
       returnHash[:success] = true
-      returnHash[:me] = me
       returnHash[:fb_uid] = fb_uid
 
       # Check if the user is authenticated with SW by checking the 'state'
