@@ -66,7 +66,7 @@ get '/v3/authwithfacebook.?:format?' do
               # The Facebook account belongs to a different user, so move it
               # to this one.
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("DELETE * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
+              @db.query("DELETE * FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid.to_s)}'")
               @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid].to_s)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
               addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
@@ -111,6 +111,7 @@ get '/v3/authwithfacebook.?:format?' do
     returnHash[:success] = false
     returnHash[:error] = e.message
     returnHash[:errorclass] = e.class
+    returnHash[:trace] = e.backtrace
   end
 
   makeOutput(returnHash, params[:format], 'authinfo')
