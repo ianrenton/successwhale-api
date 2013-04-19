@@ -41,15 +41,12 @@ get '/v3/authwithfacebook.?:format?' do
       # Everything from here on is a success
       status 200
       returnHash[:success] = true
-      returnHash[:fb_uid] = fb_uid
 
       # Check if the user is authenticated with SW by checking the 'state'
       # parameter that FB returned as if it were the token
       if params.has_key?('state')
         newParams = {'token' => params[:state]}
-        returnHash[:newparams] = newParams
         authResult = checkAuth(newParams)
-        returnHash[:authresult] = authResult
 
         if authResult[:authenticated]
           # We have an authenticated SW user
@@ -59,38 +56,40 @@ get '/v3/authwithfacebook.?:format?' do
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
             if fb_account_sw_uid == authResult[:sw_uid]
-              # The Facebook account is already assigned to the current user
+              # The Facebook account is already assigned to the current user,
+              # nothing to do besides returning the user info
               returnHash.merge!(getUserBlock(authResult[:sw_uid]))
             else
               # The Facebook account belongs to a different user, so move it
               # to this one.
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("DELETE * FROM facebook_users WHERE token='#{Mysql.escape_string(token)}'")
-              @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+              @db.query("DELETE * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+              addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
             end
           else
             # This is an existing user activating a new FB account
             userBlock = getUserBlock(authResult[:sw_uid])
-            @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-            ######## TODO DEFAULT COLUMNS
+            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+            addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
             returnHash.merge!(userBlock)
           end
 
         else
           # This is a new user starting off by activating a FB account
-          sw_uid = makeSWAccount() ### TODO
-          @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-          ######## TODO DEFAULT COLUMNS
+          sw_uid = makeSWAccount()
+          @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+          addDefaultColumns(sw_uid, 'facebook', fb_uid)
           userBlock = getUserBlock(sw_uid)
           returnHash.merge!(userBlock)
         end
 
       else
         # This is a new user starting off by activating a FB account
-        sw_uid = makeSWAccount() ### TODO
-        @db.query("INSERT INTO facebook_users (sw_uid, uid, token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-        ######## TODO DEFAULT COLUMNS
+        sw_uid = makeSWAccount()
+        @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+        addDefaultColumns(sw_uid, 'facebook', fb_uid)
         userBlock = getUserBlock(sw_uid)
         returnHash.merge!(userBlock)
       end

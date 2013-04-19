@@ -167,3 +167,41 @@ def includeUsernames(feedHash)
   end
   return feedHash
 end
+
+# Add a new SW user to the database with default settings, and returns
+# the sw_uid.
+def makeSWAccount()
+  token = createToken()
+  result = @db.query("INSERT INTO sw_users (secret) VALUES ('#{Mysql.escape_string(token)}')")
+  return result.last_id
+end
+
+# Creates a random hex token string
+def createToken()
+  o =  [('0'..'9'),('a'..'f')].map{|i| i.to_a}.flatten
+  string  =  (0...50).map{ o[rand(o.length)] }.join
+  return string
+end
+
+# Adds the default columns for a service to a user's list
+def addDefaultColumns(sw_uid, service, service_id)
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+  user = users.fetch_hash
+  currentCols = user['columns']
+
+  if !currentCols.blank?
+    currentCols << ';'
+  end
+
+  if service == 'twitter'
+    currentCols << "#{service}:#{service_id}:statuses/home_timeline;"
+    currentCols << "#{service}:#{service_id}:statuses/mentions;"
+    currentCols << "#{service}:#{service_id}:direct_messages"
+  elsif service == 'facebook'
+    currentCols << "#{service}:#{service_id}:/me/home;"
+    currentCols << "#{service}:#{service_id}:/me/feed;"
+    currentCols << "#{service}:#{service_id}:notifications"
+  end
+
+  @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+end
