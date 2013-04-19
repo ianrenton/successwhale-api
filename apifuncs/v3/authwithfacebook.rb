@@ -51,7 +51,7 @@ get '/v3/authwithfacebook.?:format?' do
         if authResult[:authenticated]
           # We have an authenticated SW user
           # Check to see if the token is already in the database
-          facebook_users = @db.query("SELECT * FROM facebook_users WHERE token='#{Mysql.escape_string(token)}'")
+          facebook_users = @db.query("SELECT * FROM facebook_users WHERE access_token='#{Mysql.escape_string(token)}'")
           if facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
@@ -59,6 +59,8 @@ get '/v3/authwithfacebook.?:format?' do
               # The Facebook account is already assigned to the current user,
               # nothing to do besides returning the user info
               returnHash.merge!(getUserBlock(authResult[:sw_uid]))
+              returnHash[:sw_account_was_new] = false
+              returnHash[:service_account_was_new] = false
             else
               # The Facebook account belongs to a different user, so move it
               # to this one.
@@ -67,6 +69,8 @@ get '/v3/authwithfacebook.?:format?' do
               @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
               addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
+              returnHash[:sw_account_was_new] = false
+              returnHash[:service_account_was_new] = true
             end
           else
             # This is an existing user activating a new FB account
@@ -74,6 +78,8 @@ get '/v3/authwithfacebook.?:format?' do
             @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:sw_uid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
             addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
             returnHash.merge!(userBlock)
+            returnHash[:sw_account_was_new] = false
+            returnHash[:service_account_was_new] = true
           end
 
         else
@@ -83,6 +89,8 @@ get '/v3/authwithfacebook.?:format?' do
           addDefaultColumns(sw_uid, 'facebook', fb_uid)
           userBlock = getUserBlock(sw_uid)
           returnHash.merge!(userBlock)
+          returnHash[:sw_account_was_new] = true
+          returnHash[:service_account_was_new] = true
         end
 
       else
@@ -92,6 +100,8 @@ get '/v3/authwithfacebook.?:format?' do
         addDefaultColumns(sw_uid, 'facebook', fb_uid)
         userBlock = getUserBlock(sw_uid)
         returnHash.merge!(userBlock)
+        returnHash[:sw_account_was_new] = true
+        returnHash[:service_account_was_new] = true
       end
     end
 
