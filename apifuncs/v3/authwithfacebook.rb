@@ -55,7 +55,8 @@ get '/v3/authwithfacebook.?:format?' do
           if !facebook_users.nil? && facebook_users.num_rows == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.fetch_hash['sw_uid']
-
+returnHash[:a] = fb_account_sw_uid
+returnHash[:b] = authResult[:sw_uid]
             if fb_account_sw_uid == authResult[:sw_uid]
               # The Facebook account is already assigned to the current user,
               # update the token and return the user info
@@ -69,7 +70,7 @@ get '/v3/authwithfacebook.?:format?' do
               userBlock = getUserBlock(authResult[:sw_uid])
               @db.query("DELETE FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid.to_s)}'")
               @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-              addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
+              addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
               returnHash[:service_account_was_new] = true
@@ -77,11 +78,8 @@ get '/v3/authwithfacebook.?:format?' do
           else
             # This is an existing user activating a new FB account
             userBlock = getUserBlock(authResult[:sw_uid])
-            a = "('#{Mysql.escape_string(userBlock[:userid])}')"
-            a = "('#{Mysql.escape_string(fb_uid)}')"
-            a = "('#{Mysql.escape_string(token)}')"
             @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-            addDefaultColumns(userBlock[:sw_uid], 'facebook', fb_uid)
+            addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = false
             returnHash[:service_account_was_new] = true
