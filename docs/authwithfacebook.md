@@ -1,7 +1,7 @@
 Authenticate with Facebook
 --------------------------
 
-This call comes in two GET forms - one, when no parameters are provided, which returns the URL that the client should point the user at in order to authorise the app on Facebook. The second form, when a `code` parameter is supplied, is used when data is being returned from Facebook via callback.
+This call comes in two GET forms - one, when no parameters are provided, which returns the URL that the client should point the user at in order to authorise the app on Facebook. The second form, when a `code` and a `state` parameter is supplied, is used when data is being returned from Facebook via callback. When a client visits the URL returned by the initial call, Facebook itself will correctly provide the redirect to the callback.
 
 ### Initial Call
 
@@ -26,13 +26,13 @@ Example Response (JSON):
 
 * Request type: GET
 * Authentication required: cookie or GET authentication will be used automatically if provided in the initial call
-* Required parameters: `code`
+* Required parameters: `code`, `state`
 * Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:
 
-    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890
+    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890?state=123456789012345678901234567890
 
 Example Response (JSON):
 

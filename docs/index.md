@@ -16,7 +16,7 @@ Help:
 API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
 * WIP: [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
-* WIP: [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
+* [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
 * WIP: [Authenticate with Linkedin](authwithlinkedin.md) `GET: /v3/authwithlinkedin`
 * WIP: [Remove Third-party Account](removeaccount-post.md) `POST: /v3/removeaccount`
 * WIP: [Create SuccessWhale Username and Password](swuserpass-post.md) `POST: /v3/swuserpass`
@@ -29,7 +29,6 @@ Handling User Settings
 
 API calls:
 * [Get Accounts](accounts-get.md) `GET: /v3/accounts`
-* WIP: [Set Accounts](accounts-post.md) `POST: /v3/accounts`
 * [Get Columns](columns-get.md) `GET: /v3/columns`
 * WIP: [Set Columns](columns-post.md) `POST: /v3/columns`
 * [Get Banned Phrases](bannedphrases-get.md) `GET: /v3/bannedphrases`
