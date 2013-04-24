@@ -90,11 +90,20 @@ get '/v3/thread.?:format?' do
 
               # Fetch the item
               fbpost = facebookClient.get_object(params[:postid])
+              item = Item.new(params[:service], params[:uid])
+              item.populateFromFacebookPost(fbpost)
 
               # First item, the parent
-              # Skip this if requested, otherwise add the tweet to the array
+              # Skip this if requested, otherwise add the post to the array
               # that will also contain the comments.
               if !(params.has_key?('skipfirst') && params[:skipfirst] == 'true')
+                items << item
+              end
+
+              # If the first item was a notification, get the source of that
+              # so we have something to pull comments from
+              if item.getType == 'facebook_notification'
+                fbpost = facebookClient.get_object(fbpost['object']['id'])
                 item = Item.new(params[:service], params[:uid])
                 item.populateFromFacebookPost(fbpost)
                 items << item

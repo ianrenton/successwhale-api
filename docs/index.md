@@ -15,7 +15,7 @@ Help:
 
 API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
-* WIP: [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
+* [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
 * WIP: [Authenticate with Linkedin](authwithlinkedin.md) `GET: /v3/authwithlinkedin`
 * WIP: [Remove Third-party Account](removeaccount-post.md) `POST: /v3/removeaccount`
