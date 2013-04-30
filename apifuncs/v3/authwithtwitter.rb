@@ -113,6 +113,7 @@ get '/v3/authwithtwitter.?:format?' do
     returnHash[:error] = e.message
     returnHash[:errorclass] = e.class
     returnHash[:trace] = e.backtrace
+    puts e.backtrace
   end
 
   makeOutput(returnHash, params[:format], 'authinfo')

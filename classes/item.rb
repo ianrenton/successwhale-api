@@ -102,7 +102,9 @@ class Item
     # Detect notifications
     if post.has_key?('unread')
       @content.merge!(:unread => post['unread'])
-      @content.merge!(:sourceid => post['object']['id'])
+      if !post['object'].nil?
+        @content.merge!(:sourceid => post['object']['id'])
+      end
       @content.merge!(:type => 'facebook_notification')
     end
 

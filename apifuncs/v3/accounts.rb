@@ -38,6 +38,8 @@ get '/v3/accounts.?:format?' do
     returnHash[:success] = false
     returnHash[:error] = e.message
     returnHash[:errorclass] = e.class
+    returnHash[:trace] = e.backtrace
+    puts e.backtrace
   end
 
   makeOutput(returnHash, params[:format], 'user')
