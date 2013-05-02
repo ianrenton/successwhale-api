@@ -77,7 +77,7 @@ class Item
     @content.merge!(:fromusername => post['from']['name'])
     @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
     if post.has_key?('comments')
-      @content.merge!(:numcomments => post['comments']['count'])
+      @content.merge!(:numcomments => post['comments']['data'].length)
       #@content.merge!(:comments => post['comments']['data'])
     else
       @content.merge!(:numcomments => 0)
