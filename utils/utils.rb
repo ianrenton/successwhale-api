@@ -206,3 +206,79 @@ def addDefaultColumns(sw_uid, service, service_id)
 
   @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
 end
+
+# Generates a title for a column based on the feeds it uses
+def getColumnTitle(feedsWithHashes)
+
+  # Can't deal with combined feeds very well yet, just throw a generic
+  # title unless it's one that we vaguely understand
+  if feedsWithHashes.length > 1
+    # Mentions & Notifications Feeds
+    if feedsWithHashes.all? {|feed| 
+      ((feed[:service] == 'twitter' && feed[:url] == 'statuses/mentions') ||
+       (feed[:service] == 'facebook' && feed[:url] == 'me/notifications')) }
+      return 'Mentions & Notifications'
+
+    else
+      return 'Combined Feed'
+    end
+  end
+
+  # Only one feed, good
+  feed = feedsWithHashes[0]
+
+  # Try Twitter first.
+  if feed[:service] == 'twitter'
+    # Regex matchers for Twitter feeds that have their own title style
+    # Handle these first
+    listMatch1 = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
+    listMatch2 = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
+    listMatch3 = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(feed[:url])
+    userMatch1 = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
+    userMatch2 = /@([A-Za-z0-9\-_]*)/.match(feed[:url])
+
+    if listMatch1
+      return listMatch1[1].gsub(/[\-_]/,' ').titlecase
+    elsif listMatch2
+      return listMatch2[2].gsub(/[\-_]/,' ').titlecase
+    elsif listMatch3
+      return listMatch3[2].gsub(/[\-_]/,' ').titlecase
+    elsif userMatch1
+      return "@#{userMatch1[1]}"
+    elsif userMatch2
+      return "@#{userMatch2[1]}"
+    else
+      # Not a list or a user, so treat this as the requesting user's feed
+      title = "@#{feed[:username]}'s "
+      if feed[:url] == 'statuses/home_timeline'
+        title << 'Home Timeline'
+      elsif feed[:url] == 'statuses/user_timeline'
+        title << 'Timeline'
+      elsif feed[:url] == 'statuses/mentions'
+        title << 'Mentions'
+      elsif feed[:url] == 'direct_messages'
+        title << 'Direct Messages'
+      elsif feed[:url] == 'direct_messages/sent'
+        title << 'Sent Messages'
+      else
+        title = 'Unknown Feed'
+      end
+      return title
+    end
+  elsif feed[:service] == 'facebook'
+    title = "#{feed[:username]}'s "
+    if feed[:url] == 'me/home'
+      title << 'Home Timeline'
+    elsif feed[:url] == 'me'
+      title << 'Wall'
+    elsif feed[:url] == 'me/notifications'
+      title << 'Notifications'
+    elsif feed[:url] == 'me/events'
+      title << 'Events'
+    else
+      title = 'Unknown Feed'
+    end
+  else
+    return 'Unknown Feed'
+  end
+end

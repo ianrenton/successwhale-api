@@ -48,7 +48,7 @@ get '/v3/columns.?:format?' do
           feedsWithHashes << feedHash
         end
 
-        column = {:feeds => feedsWithHashes, :feedpath => feedPath[0..-2]}
+        column = {:feeds => feedsWithHashes, :feedpath => feedPath[0..-2], :title => getColumnTitle(feedsWithHashes)}
         returnHash[:columns] << column
       end
 
