@@ -207,14 +207,58 @@ def addDefaultColumns(sw_uid, service, service_id)
   @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
 end
 
-# Generates a title for a column based on the feeds it uses
-def getColumnTitle(feedsWithHashes)
+# Makes a default list of sources for the given accounts. This is not the complete set of
+# sources that can be used - for example, a Twitter account can have a source that is the
+# feed of any other Twitter user, which we can't predict in advance. We catch most common
+# cases though!
+# This is for clients using the GET /sources call to help their users build columns.
+def makeSourcesList(accounts)
+  sources = []
+
+  accounts.each do |account|
+    if account[:service] == 'twitter'
+      sources << buildSourceHash(account, 'Home Timeline', 'statuses/home_timeline')
+      sources << buildSourceHash(account, 'Own Tweets', 'statuses/user_timeline')
+      sources << buildSourceHash(account, 'Mentions', 'statuses/mentions')
+      sources << buildSourceHash(account, 'Direct Messages', 'direct_messages')
+      sources << buildSourceHash(account, 'Sent Messages', 'sent_messages')
+    elsif account[:service] == 'facebook'
+      sources << buildSourceHash(account, 'Home Feed', 'me/home')
+      sources << buildSourceHash(account, 'Wall', 'me')
+      sources << buildSourceHash(account, 'Events', 'me/events')
+      sources << buildSourceHash(account, 'Notifications', 'me/notifications')
+    end
+  end
+
+  return sources
+end
+
+# Utility method for makeSourcesList to build a hash describing a single source
+def buildSourceHash(account, shortname, url)
+  source = {}
+  source.merge!(:service => account[:service])
+  source.merge!(:username => account[:username])
+  source.merge!(:uid => account[:uid])
+  source.merge!(:shortname => shortname)
+  fullname = "#{account[:username]}'s #{shortname}"
+  if account[:service] == 'twitter'
+    fullname.prepend '@'
+  end
+  source.merge!(:fullname => fullname)
+  source.merge!(:shorturl => url)
+  source.merge!(:fullurl => "#{account[:service]}/#{account[:uid]}/#{url}")
+  return source
+end
+
+# Generates a title for a column based on the sources it uses
+# TODO: base this on a lookup of the output of makeSourcesList().
+def getColumnTitle(sourcesWithHashes)
 
   # Can't deal with combined feeds very well yet, just throw a generic
   # title unless it's one that we vaguely understand
-  if feedsWithHashes.length > 1
+  if sourcesWithHashes.length > 1
     # Mentions & Notifications Feeds
-    if feedsWithHashes.all? {|feed| 
+    if sourcesWithHashes.all? {|feed| 
       ((feed[:service] == 'twitter' && feed[:url] == 'statuses/mentions') ||
        (feed[:service] == 'facebook' && feed[:url] == 'me/notifications')) }
       return 'Mentions & Notifications'
@@ -225,7 +269,7 @@ def getColumnTitle(feedsWithHashes)
   end
 
   # Only one feed, good
-  feed = feedsWithHashes[0]
+  feed = sourcesWithHashes[0]
 
   # Try Twitter first.
   if feed[:service] == 'twitter'
