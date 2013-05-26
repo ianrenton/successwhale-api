@@ -18,8 +18,8 @@ API calls:
 * [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
 * WIP: [Authenticate with Linkedin](authwithlinkedin.md) `GET: /v3/authwithlinkedin`
-* WIP: [Remove Third-party Account](removeaccount-post.md) `POST: /v3/removeaccount`
-* WIP: [Create SuccessWhale Username and Password](swuserpass-post.md) `POST: /v3/swuserpass`
+* WIP: [Remove Third-party Account](account-delete.md) `DELETE: /v3/account`
+* WIP: [Create SuccessWhale Username and Password](swuserpass-put.md) `PUT: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Username and Password](swuserpass-delete.md) `DELETE: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Account](swaccount-delete.md) `DELETE: /v3/swaccount`
 
@@ -29,14 +29,15 @@ Handling User Settings
 
 API calls:
 * [Get Accounts](accounts-get.md) `GET: /v3/accounts`
+* WIP: [Get Sources](sources.md) `GET: /v3/sources` ('sources' are feeds that can be blended to make columns)
 * [Get Columns](columns-get.md) `GET: /v3/columns`
-* WIP: [Set Columns](columns-post.md) `POST: /v3/columns`
+* WIP: [Set Columns](columns-put.md) `PUT: /v3/columns`
 * [Get Banned Phrases](bannedphrases-get.md) `GET: /v3/bannedphrases`
-* WIP: [Set Banned Phrases](bannedphrases-post.md) `POST: /v3/bannedphrases`
+* WIP: [Set Banned Phrases](bannedphrases-put.md) `PUT: /v3/bannedphrases`
 * [Get "Post to" Accounts](posttoaccounts-get.md) `GET: /v3/posttoaccounts`
-* WIP: [Set "Post to" Accounts](posttoaccounts-post.md) `POST: /v3/posttoaccounts`
+* WIP: [Set "Post to" Accounts](posttoaccounts-put.md) `PUT: /v3/posttoaccounts`
 * [Get Display Settings](displaysettings-get.md) `GET: /v3/displaysettings`
-* WIP: [Set Display Settings](displaysettings-post.md) `POST: /v3/displaysettings`
+* WIP: [Set Display Settings](displaysettings-put.md) `PUT: /v3/displaysettings`
 
 
 Social Network Interaction
