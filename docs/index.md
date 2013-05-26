@@ -7,11 +7,13 @@ This is a list of all the API calls supported by the SuccessWhale API, together 
 
 Each call can return JSON or XML as requested by the client. HTTP status codes are used for each response, and for clients that cannot properly handle HTTP status codes, each return structure contains a boolean `success` attribute and, if `success` is false (status codes >=300) also an `error` parameter.
 
+Some explanation:
+* [Terminology](terminology.md)
+* [How does authentication work in SuccessWhale?](howto-auth.md)
+
+
 Authentication
 --------------
-
-Help:
-* [How does authentication work in SuccessWhale?](howto-auth.md)
 
 API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
