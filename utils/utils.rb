@@ -300,7 +300,7 @@ def getColumnTitle(sources)
     else
       # Not a list or a user, so treat this as the requesting user's feed
       title = "@#{source[:username]}'s "
-      if source[:url] == 'statuses/home_timeline'
+      if source[:shorturl] == 'statuses/home_timeline'
         title << 'Home Timeline'
       elsif source[:shorturl] == 'statuses/user_timeline'
         title << 'Timeline'
