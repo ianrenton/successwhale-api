@@ -248,7 +248,7 @@ def buildSourceHash(account, shortname, url)
     fullname = "#{account[:username]}'s #{shortname}"
     # Add '@' to usernames for twitter accounts
     if account[:service] == 'twitter'
-      fullname.prepend '@'
+      fullname = "@#{fullname}"
     end
     source.merge!(:fullname => fullname)
   end
