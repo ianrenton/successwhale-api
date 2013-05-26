@@ -22,6 +22,8 @@ And for backwards-compatability with SuccessWhale v2:
     twitter/1234567890/@SOMEUSER
     twitter/1234567890/@SOMEUSER/THEIRLIST
 
+Some examples of these can be retrieved for the authenticated accounts via the [Get Sources](sources.md) call.
+
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
 Twitter feeds also accept a `since_id` parameter that clients can supply. If this is set to the ID value of a previously-seen tweet, SuccessWhale will not return any tweets older than that the one whose ID was provided. Only Twitter supports this, so any content from other services in a feed will be unaffected by this parameter. Likewise, only a Twitter ID can be provided, not the ID of an item from another service.
@@ -38,7 +40,7 @@ The components of the `content` hash vary depending on the `service`. All share 
 
 URL Format:
 
-    /v3/feed[.json|.xml]?sources=twitter/1234567890/statuses/mentions:facebook/1234567891/me/notifications&count=1
+    /v3/feed[.json|.xml]?sources=twitter/1234567890/statuses/mentions:facebook/1234567891/me/notifications&count=2
 
 Example Response (JSON):
 

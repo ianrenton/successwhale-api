@@ -142,31 +142,31 @@ def makeOutput(hash, format, xmlRoot)
 end
 
 
-# Includes the usernames of the feeds as well as just the uids
-def includeUsernames(feedHash)
+# Includes the usernames of the accounts as well as just the uids
+def includeUsernames(accountHash)
   # Check if we already have a username, if we're supporting a SWv2 database
   # we probably do already
-  if !feedHash.has_key?(:username)
-    if feedHash[:service] == 'twitter'
-      twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+  if !accountHash.has_key?(:username)
+    if accountHash[:service] == 'twitter'
+      twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
       twitter_user = twitter_users.fetch_hash
-      feedHash.merge!(:username => twitter_user['username'])
+      accountHash.merge!(:username => twitter_user['username'])
     end
-    if feedHash[:service] == 'facebook'
-      facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(feedHash[:uid])}'")
+    if accountHash[:service] == 'facebook'
+      facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
       facebook_user = facebook_users.fetch_hash
       if facebook_user['username'] != nil
-        feedHash.merge!(:username => facebook_user['username'])
+        accountHash.merge!(:username => facebook_user['username'])
       else
         # If we're supporting an SWv2 database, we can't get the Facebook
         # username from the table, so make a call to Facebook to get it.
         facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
         name = facebookClient.get_object("me")['name']
-        feedHash.merge!(:username => name)
+        accountHash.merge!(:username => name)
       end
     end
   end
-  return feedHash
+  return accountHash
 end
 
 # Add a new SW user to the database with default settings, and returns
@@ -239,28 +239,34 @@ def buildSourceHash(account, shortname, url)
   source.merge!(:service => account[:service])
   source.merge!(:username => account[:username])
   source.merge!(:uid => account[:uid])
-  source.merge!(:shortname => shortname)
-  fullname = "#{account[:username]}'s #{shortname}"
-  if account[:service] == 'twitter'
-    fullname.prepend '@'
-  end
-  source.merge!(:fullname => fullname)
   source.merge!(:shorturl => url)
   source.merge!(:fullurl => "#{account[:service]}/#{account[:uid]}/#{url}")
+
+  # Only add name parameters if a name was provided
+  if !shortname.nil? && !shortname.empty?
+    source.merge!(:shortname => shortname)
+    fullname = "#{account[:username]}'s #{shortname}"
+    # Add '@' to usernames for twitter accounts
+    if account[:service] == 'twitter'
+      fullname.prepend '@'
+    end
+    source.merge!(:fullname => fullname)
+  end
+  
   return source
 end
 
 # Generates a title for a column based on the sources it uses
 # TODO: base this on a lookup of the output of makeSourcesList().
-def getColumnTitle(sourcesWithHashes)
+def getColumnTitle(sources)
 
   # Can't deal with combined feeds very well yet, just throw a generic
   # title unless it's one that we vaguely understand
-  if sourcesWithHashes.length > 1
-    # Mentions & Notifications Feeds
-    if sourcesWithHashes.all? {|feed| 
-      ((feed[:service] == 'twitter' && feed[:url] == 'statuses/mentions') ||
-       (feed[:service] == 'facebook' && feed[:url] == 'me/notifications')) }
+  if sources.length > 1
+    # Mentions & Notifications Sources
+    if sources.all? {|source| 
+      ((source[:service] == 'twitter' && source[:shorturl] == 'statuses/mentions') ||
+       (source[:service] == 'facebook' && source[:shorturl] == 'me/notifications')) }
       return 'Mentions & Notifications'
 
     else
@@ -269,17 +275,17 @@ def getColumnTitle(sourcesWithHashes)
   end
 
   # Only one feed, good
-  feed = sourcesWithHashes[0]
+  source = sources[0]
 
   # Try Twitter first.
-  if feed[:service] == 'twitter'
+  if source[:service] == 'twitter'
     # Regex matchers for Twitter feeds that have their own title style
     # Handle these first
-    listMatch1 = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
-    listMatch2 = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
-    listMatch3 = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(feed[:url])
-    userMatch1 = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(feed[:url])
-    userMatch2 = /@([A-Za-z0-9\-_]*)/.match(feed[:url])
+    listMatch1 = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
+    listMatch2 = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
+    listMatch3 = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(source[:shorturl])
+    userMatch1 = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
+    userMatch2 = /@([A-Za-z0-9\-_]*)/.match(source[:shorturl])
 
     if listMatch1
       return listMatch1[1].gsub(/[\-_]/,' ').titlecase
@@ -293,31 +299,31 @@ def getColumnTitle(sourcesWithHashes)
       return "@#{userMatch2[1]}"
     else
       # Not a list or a user, so treat this as the requesting user's feed
-      title = "@#{feed[:username]}'s "
-      if feed[:url] == 'statuses/home_timeline'
+      title = "@#{source[:username]}'s "
+      if source[:url] == 'statuses/home_timeline'
         title << 'Home Timeline'
-      elsif feed[:url] == 'statuses/user_timeline'
+      elsif source[:shorturl] == 'statuses/user_timeline'
         title << 'Timeline'
-      elsif feed[:url] == 'statuses/mentions'
+      elsif source[:shorturl] == 'statuses/mentions'
         title << 'Mentions'
-      elsif feed[:url] == 'direct_messages'
+      elsif source[:shorturl] == 'direct_messages'
         title << 'Direct Messages'
-      elsif feed[:url] == 'direct_messages/sent'
+      elsif source[:shorturl] == 'direct_messages/sent'
         title << 'Sent Messages'
       else
         title = 'Unknown Feed'
       end
       return title
     end
-  elsif feed[:service] == 'facebook'
-    title = "#{feed[:username]}'s "
-    if feed[:url] == 'me/home'
+  elsif source[:service] == 'facebook'
+    title = "#{source[:username]}'s "
+    if source[:shorturl] == 'me/home'
       title << 'Home Timeline'
-    elsif feed[:url] == 'me'
+    elsif source[:shorturl] == 'me'
       title << 'Wall'
-    elsif feed[:url] == 'me/notifications'
+    elsif source[:shorturl] == 'me/notifications'
       title << 'Notifications'
-    elsif feed[:url] == 'me/events'
+    elsif source[:shorturl] == 'me/events'
       title << 'Events'
     else
       title = 'Unknown Feed'
