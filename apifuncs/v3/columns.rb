@@ -44,7 +44,7 @@ get '/v3/columns.?:format?' do
           sourceHash = buildSourceHash(account, '', url)
 
           # Combined "source path"
-          fullPath << sourceHash[:fullurl]
+          fullPath << sourceHash[:fullurl] << ':'
 
           sourceHashes << sourceHash
         end
