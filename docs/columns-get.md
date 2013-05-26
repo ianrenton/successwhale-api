@@ -69,7 +69,7 @@ Example Response (JSON):
               "fullurl":"facebook/1234567891/me/notifications"
             }
           ],
-          fullpath: "facebook/1234567891/me/home:twitter/1234567890/statuses/mentions;facebook/1234567891/me/notifications",
+          fullpath: "facebook/1234567891/me/home:twitter/1234567890/statuses/mentions:facebook/1234567891/me/notifications",
           title: "Combined Feed"
         }
       ]
