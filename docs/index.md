@@ -31,7 +31,7 @@ Handling User Settings
 
 API calls:
 * [Get Accounts](accounts-get.md) `GET: /v3/accounts`
-* WIP: [Get Sources](sources.md) `GET: /v3/sources` ('sources' are feeds that can be blended to make columns)
+* [Get Sources](sources.md) `GET: /v3/sources` ('sources' are feeds that can be blended to make columns)
 * [Get Columns](columns-get.md) `GET: /v3/columns`
 * WIP: [Set Columns](columns-put.md) `PUT: /v3/columns`
 * [Get Banned Phrases](bannedphrases-get.md) `GET: /v3/bannedphrases`
