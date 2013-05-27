@@ -252,11 +252,26 @@ class Item
   # previews of the picture. This fixes that.
   def addExtraPreviews(links)
     links.each do |link|
+      # Check for Instagram URLs
       instagramMatch = INSTAGRAM_URL_REGEX.match(link[:expanded_url])
       if instagramMatch
         # Add /media/ to the end to get a direct link, but this is a redirect
         # so follow it and return the real URL
         url = "#{link[:expanded_url]}media/"
+        r = Net::HTTP.get_response(URI(url))
+        if r.code == "302"
+          link[:preview] = r.header['location']
+        else
+          link[:preview] = url
+        end
+      end
+
+      # Check for Twitpic URLs
+      twitpicMatch = TWITPIC_URL_REGEX.match(link[:expanded_url])
+      if twitpicMatch
+        # Convert to a Twitpic thumbnail. Only 150x150, but it's the best we can
+        # legitimately get.
+        url = "http://twitpic.com/show/thumb/#{twitpicMatch[1]}.jpg"
         r = Net::HTTP.get_response(URI(url))
         if r.code == "302"
           link[:preview] = r.header['location']
