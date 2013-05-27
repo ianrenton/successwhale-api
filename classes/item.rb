@@ -217,7 +217,12 @@ class Item
       # TODO: URL expansion (the hard way)
       urlitem.merge!({:url => post['link'], :title => post['name']})
       if post.has_key?('picture')
-        urlitem.merge!({:preview => post['picture']})
+        # Horrible hack to get large size previews
+        if post['picture'].include?('_s.jpg')
+          urlitem.merge!({:preview => post['picture'].gsub('_s.jpg', '_n.jpg')}) 
+        else
+          urlitem.merge!({:preview => post['picture']})
+        end
       end
       finishedArray << urlitem
     end
