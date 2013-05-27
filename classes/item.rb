@@ -254,7 +254,15 @@ class Item
     links.each do |link|
       instagramMatch = INSTAGRAM_URL_REGEX.match(link[:expanded_url])
       if instagramMatch
-        link[:preview] = "#{link[:expanded_url]}media"
+        # Add /media/ to the end to get a direct link, but this is a redirect
+        # so follow it and return the real URL
+        url = "#{link[:expanded_url]}media/"
+        r = Net::HTTP.get_response(URI(url))
+        if r.code == "302"
+          link[:preview] = r.header['location']
+        else
+          link[:preview] = url
+        end
       end
     end
   end
