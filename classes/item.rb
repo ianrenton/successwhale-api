@@ -279,6 +279,15 @@ class Item
           link[:preview] = url
         end
       end
+
+      # Check for imgur URLs
+      imgurMatch = IMGUR_URL_REGEX.match(link[:expanded_url])
+      if imgurMatch
+        # Convert to an imgur thumbnail. The extra "l" is not a typo, this
+        # generates the 'large' thumbnail rather than the (even larger)
+        # original image.
+        link[:preview] = "http://i.imgur.com/#{imgurMatch[1]}l.jpg"
+      end
     end
   end
 
