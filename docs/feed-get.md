@@ -82,7 +82,7 @@ Example Response (JSON):
                 url: "http://t.co/1234567890",
                 expanded_url: "http://twitter.com/username2/status/12345678901234567890/photo/1",
                 title: "pic.twitter.com/1234567890",
-                media: "http://blah.twitter.com/realpictureurl.jpg",
+                preview: "http://blah.twitter.com/realpictureurl.jpg",
                 indices: [94, 116]
               }
             ],
