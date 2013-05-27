@@ -224,7 +224,7 @@ def makeSourcesList(accounts)
       sources << buildSourceHash(account, 'Sent Messages', 'sent_messages')
     elsif account[:service] == 'facebook'
       sources << buildSourceHash(account, 'Home Feed', 'me/home')
-      sources << buildSourceHash(account, 'Wall', 'me')
+      sources << buildSourceHash(account, 'Wall', 'me/feed')
       sources << buildSourceHash(account, 'Events', 'me/events')
       sources << buildSourceHash(account, 'Notifications', 'me/notifications')
     end
@@ -319,7 +319,7 @@ def getColumnTitle(sources)
     title = "#{source[:username]}'s "
     if source[:shorturl] == 'me/home'
       title << 'Home Timeline'
-    elsif source[:shorturl] == 'me'
+    elsif source[:shorturl] == 'me/feed'
       title << 'Wall'
     elsif source[:shorturl] == 'me/notifications'
       title << 'Notifications'

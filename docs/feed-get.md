@@ -22,7 +22,7 @@ And for backwards-compatability with SuccessWhale v2:
     twitter/1234567890/@SOMEUSER
     twitter/1234567890/@SOMEUSER/THEIRLIST
 
-Some examples of these can be retrieved for the authenticated accounts via the [Get Sources](sources.md) call.
+Some examples of these can be retrieved for the authenticated accounts via the [Get Sources](sources.md) call. For now, clients can use this as a RESTful way of obtaining some of the valid sources. In future this will be expanded to include a nice way of letting clients know which more complex source strings can be used.
 
 The call also supports a `count` parameter that sets the number of items that should be returned in the feed, starting from the most recent and working backwards. You may not get exactly the requested number back, for example if you request a feed that does not have enough items in it, or when items are removed because they match a Banned Phrase. `count` is optional, the default is 20.
 
