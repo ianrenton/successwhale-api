@@ -129,7 +129,43 @@ class Item
   # TODO: Populate from LinkedIn
 
 
-  # Populates the "urls" array from Twitter data. This contains a set of
+  # Returns the item as a hash.
+  def asHash
+    return {:service => @service, :fetchedforuserid => @fetchedforuserid, :content => @content}
+  end
+
+  # Gets the time that the item was originally posted.  Used to sort
+  # feeds by time.
+  def getTime
+    return @content[:time]
+  end
+
+  # Gets the text of the post.  Used to determine whether the text includes
+  # a phrase in the user's blocklist.
+  def getText
+    return @content['text']
+  end
+
+  # Returns the type
+  def getType()
+    return @content[:type]
+  end
+
+  # Check if the text in the item contains any of the phrases in the list
+  # provided. Used in the feed API for removing items that match phrases in
+  # a user's banned phrases list.
+  def matchesPhrase(phrases)
+    text = @content[:text].force_encoding('UTF-8')
+    for phrase in phrases
+      if text.include? phrase
+        return true
+        break
+      end
+    end
+    return false
+  end
+
+    # Populates the "urls" array from Twitter data. This contains a set of
   # indices for the URL to help with linking, since on Twitter a URL is
   # part of the tweet text itself. Twitter's "media previews" are also
   # included.
@@ -146,6 +182,7 @@ class Item
         :indices => url.indices
       }
     end
+    finishedArray = addExtraPreviews(finishedArray)
     @content.merge!(:links => finishedArray)
   end
 
@@ -187,37 +224,6 @@ class Item
     @content.merge!(:links => finishedArray)
   end
 
-  # Returns the item as a hash.
-  def asHash
-    return {:service => @service, :fetchedforuserid => @fetchedforuserid, :content => @content}
-  end
-
-  # Gets the time that the item was originally posted.  Used to sort
-  # feeds by time.
-  def getTime
-    return @content[:time]
-  end
-
-  # Gets the text of the post.  Used to determine whether the text includes
-  # a phrase in the user's blocklist.
-  def getText
-    return @content['text']
-  end
-
-  # Check if the text in the item contains any of the phrases in the list
-  # provided. Used in the feed API for removing items that match phrases in
-  # a user's banned phrases list.
-  def matchesPhrase(phrases)
-    text = @content[:text].force_encoding('UTF-8')
-    for phrase in phrases
-      if text.include? phrase
-        return true
-        break
-      end
-    end
-    return false
-  end
-
   # Unshortens a tweet, if it can be detected that it has been previously
   # shortened by a service such as Twixt or TwitLonger.
   def unshorten()
@@ -236,9 +242,16 @@ class Item
     end
   end
 
-  # Returns the type
-  def getType()
-    return @content[:type]
+  # Adds image previews for certain services that don't by default. e.g.
+  # for maybe-political reasons Twitter presents Instagram links without
+  # previews of the picture. This fixes that.
+  def addExtraPreviews(links)
+    links.each do |link|
+      instagramMatch = INSTAGRAM_URL_REGEX.match(link[:expanded_url])
+      if instagramMatch
+        link[:preview] = "#{link[:expanded_url]}media"
+      end
+    end
   end
 
 end
