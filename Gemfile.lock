@@ -21,7 +21,6 @@ GEM
       hashie (~> 1.2)
       multi_json (~> 1.0)
       oauth (~> 0.4)
-    mime-types (1.23)
     multi_json (1.7.1)
     multipart-post (1.2.0)
     mysql (2.9.1)
@@ -60,7 +59,6 @@ DEPENDENCIES
   json
   koala
   linkedin
-  mime-types
   multi_json
   mysql
   nokogiri
