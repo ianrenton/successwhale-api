@@ -2,10 +2,11 @@
 # encoding: UTF-8
 
 # SuccessWhale API function to post an item.
-# Takes the text of the item, and a set of accounts to post to. If no
+# Takes the text of the item, a set of accounts to post to, and optionally a media file. If no
 # accounts are supplied, uses the user's defaults (TODO).
-# Supports an in_reply_to_id parameter for replying to Tweets, FB/LinkedIn
-# statuses etc.
+# An error will be thrown if a media file is provided but the type is not compatible with the
+# services that are supposed to be posted to.
+# Supports an in_reply_to_id parameter for replying to Tweets, FB/LinkedIn statuses etc.
 
 post '/v3/item.?:format?' do
 
@@ -75,8 +76,12 @@ post '/v3/item.?:format?' do
                   tweet = URI::unescape(params['text'])
                 end
 
-                # Post
-                twitterClient.update(tweet, options)
+                # Post, with file if necessary
+                if params.has_key?('file')
+                  twitterClient.update_with_media(tweet, params['file'][:tempfile], options)
+                else
+                  twitterClient.update(tweet, options)
+                end
 
               else
                 status 403
@@ -108,6 +113,9 @@ post '/v3/item.?:format?' do
                 if params.has_key?('in_reply_to_id')
                   # Comment
                   facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
+                elsif params.has_key?('file')
+                  # Picture
+                  facebookClient.put_picture(params['file'][:tempfile], params['file'][:type], {:message => URI.unescape(params['text'])})  
                 else
                   # Post
                   facebookClient.put_wall_post(URI.unescape(params['text']))
@@ -131,6 +139,15 @@ post '/v3/item.?:format?' do
           end
           # TODO Linkedin
         end
+
+      # Delete the tempfile if there was one.
+      # Not strictly necessary but good practice.
+      if params.has_key?('file')
+        if File.exist?(params['file'][:tempfile].path)
+          params['file'][:tempfile].close
+          File.delete(params['file'][:tempfile].path)
+        end
+      end
 
       else
         status 400
