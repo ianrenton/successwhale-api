@@ -90,6 +90,11 @@ get '/v3/thread.?:format?' do
 
               # Fetch the item
               fbpost = facebookClient.get_object(params[:postid])
+
+              if fbpost.nil?
+                raise 'There was a problem retrieving the item from Facebook.'
+              end
+
               item = Item.new(params[:service], params[:uid])
               item.populateFromFacebookPost(fbpost)
 
