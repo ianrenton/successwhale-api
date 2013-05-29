@@ -103,6 +103,9 @@ get '/v3/thread.?:format?' do
               # If the first item was a notification, get the source of that
               # so we have something to pull comments from
               if item.getType == 'facebook_notification'
+                if fbpost['object'].nil?
+                  raise 'The application does not have permission to view the item you were notified about. You will have to use the Facebook website.'
+                end
                 fbpost = facebookClient.get_object(fbpost['object']['id'])
                 item = Item.new(params[:service], params[:uid])
                 item.populateFromFacebookPost(fbpost)
