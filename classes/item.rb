@@ -72,7 +72,7 @@ class Item
 
     @content.merge!(:id => post['id'])
     @content.merge!(:type => "facebook_#{post['type']}")
-    @content.merge!(:time => Time.parse(post['created_time']))
+    @content.merge!(:time => Time.parse(post['updated_time']))
     @content.merge!(:fromuserid => post['from']['id'])
     @content.merge!(:fromusername => post['from']['name'])
     @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
