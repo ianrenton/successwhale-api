@@ -72,7 +72,6 @@ class Item
 
     @content.merge!(:id => post['id'])
     @content.merge!(:type => "facebook_#{post['type']}")
-    @content.merge!(:time => Time.parse(post['updated_time']))
     @content.merge!(:fromuserid => post['from']['id'])
     @content.merge!(:fromusername => post['from']['name'])
     @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
@@ -102,10 +101,17 @@ class Item
     # Detect notifications
     if post.has_key?('unread')
       @content.merge!(:unread => post['unread'])
+      # Notifications are given their "updated" time so that if clients cache
+      # objects, updates to the notification can be noticed and thus end up
+      # at the top of the list.
+      @content.merge!(:time => Time.parse(post['updated_time']))
       if !post['object'].nil?
         @content.merge!(:sourceid => post['object']['id'])
       end
       @content.merge!(:type => 'facebook_notification')
+    else
+      # Non-notifications are given their "created" time
+      @content.merge!(:time => Time.parse(post['created_time']))
     end
 
     # Populate URLs and embedded media
