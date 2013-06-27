@@ -198,7 +198,9 @@ def getTwitterSourceFeedFromURL(url, twitterClient, options)
     sourceFeed = twitterClient.home_timeline(options)
   elsif url == 'statuses/user_timeline'
     sourceFeed = twitterClient.user_timeline(options)
-  elsif url == 'statuses/mentions'
+  elsif url == 'statuses/mentions_timeline'
+    sourceFeed = twitterClient.mentions_timeline(options)
+  elsif url == 'statuses/mentions' # this is an old format that some users may still have set
     sourceFeed = twitterClient.mentions_timeline(options)
   elsif url == 'direct_messages'
     sourceFeed = twitterClient.direct_messages_received(options)

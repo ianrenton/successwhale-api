@@ -196,7 +196,7 @@ def addDefaultColumns(sw_uid, service, service_id)
 
   if service == 'twitter'
     currentCols << "#{service}:#{service_id}:statuses/home_timeline;"
-    currentCols << "#{service}:#{service_id}:statuses/mentions;"
+    currentCols << "#{service}:#{service_id}:statuses/mentions_timeline;"
     currentCols << "#{service}:#{service_id}:direct_messages"
   elsif service == 'facebook'
     currentCols << "#{service}:#{service_id}:/me/home;"
@@ -219,7 +219,7 @@ def makeSourcesList(accounts)
     if account[:service] == 'twitter'
       sources << buildSourceHash(account, 'Home Timeline', 'statuses/home_timeline')
       sources << buildSourceHash(account, 'Own Tweets', 'statuses/user_timeline')
-      sources << buildSourceHash(account, 'Mentions', 'statuses/mentions')
+      sources << buildSourceHash(account, 'Mentions', 'statuses/mentions_timeline')
       sources << buildSourceHash(account, 'Direct Messages', 'direct_messages')
       sources << buildSourceHash(account, 'Sent Messages', 'sent_messages')
     elsif account[:service] == 'facebook'
@@ -265,7 +265,7 @@ def getColumnTitle(sources)
   if sources.length > 1
     # Mentions & Notifications Sources
     if sources.all? {|source| 
-      ((source[:service] == 'twitter' && source[:shorturl] == 'statuses/mentions') ||
+      ((source[:service] == 'twitter' && source[:shorturl] == 'statuses/mentions_timeline') ||
        (source[:service] == 'facebook' && source[:shorturl] == 'me/notifications')) }
       return 'Mentions & Notifications'
 
@@ -304,7 +304,7 @@ def getColumnTitle(sources)
         title << 'Home Timeline'
       elsif source[:shorturl] == 'statuses/user_timeline'
         title << 'Timeline'
-      elsif source[:shorturl] == 'statuses/mentions'
+      elsif source[:shorturl] == 'statuses/mentions_timeline'
         title << 'Mentions'
       elsif source[:shorturl] == 'direct_messages'
         title << 'Direct Messages'

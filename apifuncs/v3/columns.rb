@@ -110,5 +110,8 @@ def fixURL(account, url)
   if (account[:service] == 'facebook') && (url == 'notifications')
     url = 'me/notifications'
   end
+  if (account[:service] == 'twitter') && (url == 'statuses/mentions')
+    url = 'statuses/mentions_timeline'
+  end
   return url
 end
