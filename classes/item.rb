@@ -82,7 +82,7 @@ class Item
       @content.merge!(:numcomments => 0)
     end
     if post.has_key?('likes')
-      @content.merge!(:numlikes => post['likes']['count'])
+      @content.merge!(:numlikes => post['likes']['data'].length)
       @content.merge!(:likes => post['likes']['data'])
     else
       @content.merge!(:numlikes => 0)
