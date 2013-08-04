@@ -18,8 +18,11 @@ class Item
     @content[:type] = 'tweet'
 
     if tweet.retweet?
-      # Keep the retweet's ID for replies and the time for sorting
+      # Keep the retweet's ID for replies and the time for sorting. We can reply
+      # to a retweet and Twitter handles it, we don't have to reply to the
+      # original tweet's ID.
       @content[:id] = tweet.attrs[:id_str]
+      @content[:replytoid] = tweet.attrs[:id_str]
       @content[:time] = tweet.created_at
 
       # Add extra tags to show who retweeted it and when
@@ -47,6 +50,7 @@ class Item
       # Not a retweet, so populate the content of the item normally.
       @content[:text] = tweet.full_text
       @content[:id] = tweet.attrs[:id_str]
+      @content[:replytoid] = tweet.attrs[:id_str]
       @content[:time] = tweet.created_at
       @content[:fromuser] = tweet.from_user
       @content[:fromusername] = tweet.user.name
@@ -112,11 +116,16 @@ class Item
       @content[:time] = Time.parse(post['updated_time'])
       if !post['object'].nil?
         @content[:sourceid] = post['object']['id']
+        # When a client tries to reply to a notification, they should be replying
+        # to the original post
+        @content[:replytoid] = post['object']['id']
       end
       @content[:type] = 'facebook_notification'
     else
       # Non-notifications are given their "created" time
       @content[:time] = Time.parse(post['created_time'])
+      # Non-notifications can be replied to directly
+      @content[:replytoid] = post['id']
     end
 
     # Populate URLs and embedded media
@@ -137,6 +146,10 @@ class Item
     @content[:fromusername] = comment['from']['name']
     @content[:fromuseravatar] = "http://graph.facebook.com/#{comment['from']['id']}/picture"
     @content[:text] = comment['message']
+    
+    # When a client tries to reply to a comment, they can reply to the comment's
+    # own ID and Facebook will put it in the right place.
+    @content[:replytoid] = comment['id']
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
