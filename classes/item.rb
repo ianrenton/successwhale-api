@@ -75,9 +75,11 @@ class Item
 
     @content.merge!(:id => post['id'])
     @content.merge!(:type => "facebook_#{post['type']}")
-    @content.merge!(:fromuserid => post['from']['id'])
-    @content.merge!(:fromusername => post['from']['name'])
-    @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
+    if post.has_key?('from')
+      @content.merge!(:fromuserid => post['from']['id'])
+      @content.merge!(:fromusername => post['from']['name'])
+      @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
+    end
     if post.has_key?('comments')
       @content.merge!(:numcomments => post['comments']['data'].length)
       #@content.merge!(:comments => post['comments']['data'])
