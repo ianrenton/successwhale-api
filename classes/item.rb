@@ -15,50 +15,50 @@ class Item
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
 
-    @content.merge!(:type => 'tweet')
+    @content[:type] = 'tweet'
 
     if tweet.retweet?
       # Keep the retweet's ID for replies and the time for sorting
-      @content.merge!(:id => tweet.attrs[:id_str])
-      @content.merge!(:time => tweet.created_at)
+      @content[:id] = tweet.attrs[:id_str]
+      @content[:time] = tweet.created_at
 
       # Add extra tags to show who retweeted it and when
-      @content.merge!(:retweetedbyuser => tweet.from_user)
-      @content.merge!(:retweetedbyusername => tweet.user.name)
-      @content.merge!(:originalposttime => tweet.retweeted_status.created_at)
-      @content.merge!(:isretweet => tweet.retweet?)
+      @content[:retweetedbyuser] = tweet.from_user
+      @content[:retweetedbyusername] = tweet.user.name
+      @content[:originalposttime] = tweet.retweeted_status.created_at
+      @content[:isretweet] = tweet.retweet?
 
       # Copy the retweeted status's data into the main body
-      @content.merge!(:text => tweet.retweeted_status.full_text)
-      @content.merge!(:fromuser => tweet.retweeted_status.from_user)
-      @content.merge!(:fromusername => tweet.retweeted_status.user.name)
-      @content.merge!(:fromuseravatar => tweet.retweeted_status.user.profile_image_url)
-      @content.merge!(:isreply => tweet.retweeted_status.reply?)
-      @content.merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
-      @content.merge!(:numretweeted => tweet.retweeted_status.retweeters_count)
-      @content.merge!(:numreplied => tweet.retweeted_status.repliers_count)
-      @content.merge!(:numfavourited => tweet.retweeted_status.favoriters_count)
-      @content.merge!(:inreplytostatusid => tweet.retweeted_status.attrs[:in_reply_to_status_id_str])
-      @content.merge!(:inreplytouserid => tweet.retweeted_status.in_reply_to_user_id)
+      @content[:text] = tweet.retweeted_status.full_text
+      @content[:fromuser] = tweet.retweeted_status.from_user
+      @content[:fromusername] = tweet.retweeted_status.user.name
+      @content[:fromuseravatar] = tweet.retweeted_status.user.profile_image_url
+      @content[:isreply] = tweet.retweeted_status.reply?
+      @content[:numfavourited] = tweet.retweeted_status.favoriters_count
+      @content[:numretweeted] = tweet.retweeted_status.retweeters_count
+      @content[:numreplied] = tweet.retweeted_status.repliers_count
+      @content[:numfavourited] = tweet.retweeted_status.favoriters_count
+      @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
+      @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.retweeted_status.user_mentions, tweet.retweeted_status.hashtags)
 
     else
       # Not a retweet, so populate the content of the item normally.
-      @content.merge!(:text => tweet.full_text)
-      @content.merge!(:id => tweet.attrs[:id_str])
-      @content.merge!(:time => tweet.created_at)
-      @content.merge!(:fromuser => tweet.from_user)
-      @content.merge!(:fromusername => tweet.user.name)
-      @content.merge!(:fromuseravatar => tweet.user.profile_image_url)
-      @content.merge!(:isreply => tweet.reply?)
-      @content.merge!(:isretweet => tweet.retweet?)
-      @content.merge!(:numfavourited => tweet.favoriters_count)
-      @content.merge!(:numretweeted => tweet.retweeters_count)
-      @content.merge!(:numreplied => tweet.repliers_count)
-      @content.merge!(:numfavourited => tweet.favoriters_count)
-      @content.merge!(:inreplytostatusid => tweet.attrs[:in_reply_to_status_id_str])
-      @content.merge!(:inreplytouserid => tweet.in_reply_to_user_id)
+      @content[:text] = tweet.full_text
+      @content[:id] = tweet.attrs[:id_str]
+      @content[:time] = tweet.created_at
+      @content[:fromuser] = tweet.from_user
+      @content[:fromusername] = tweet.user.name
+      @content[:fromuseravatar] = tweet.user.profile_image_url
+      @content[:isreply] = tweet.reply?
+      @content[:isretweet] = tweet.retweet?
+      @content[:numfavourited] = tweet.favoriters_count
+      @content[:numretweeted] = tweet.retweeters_count
+      @content[:numreplied] = tweet.repliers_count
+      @content[:numfavourited] = tweet.favoriters_count
+      @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
+      @content[:inreplytouserid] = tweet.in_reply_to_user_id
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
@@ -73,50 +73,50 @@ class Item
   # Fills in the contents of the item based on a Facebook post.
   def populateFromFacebookPost (post)
 
-    @content.merge!(:id => post['id'])
-    @content.merge!(:type => "facebook_#{post['type']}")
+    @content[:id] = post['id']
+    @content[:type] = "facebook_#{post['type']}"
     if post.has_key?('from')
-      @content.merge!(:fromuserid => post['from']['id'])
-      @content.merge!(:fromusername => post['from']['name'])
-      @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{post['from']['id']}/picture")
+      @content[:fromuserid] = post['from']['id']
+      @content[:fromusername] = post['from']['name']
+      @content[:fromuseravatar] = "http://graph.facebook.com/#{post['from']['id']}/picture"
     end
     if post.has_key?('comments')
-      @content.merge!(:numcomments => post['comments']['data'].length)
-      #@content.merge!(:comments => post['comments']['data'])
+      @content[:numcomments] = post['comments']['data'].length
+      #@content[:comments] = post['comments']['data']
     else
-      @content.merge!(:numcomments => 0)
+      @content[:numcomments] = 0
     end
     if post.has_key?('likes')
-      @content.merge!(:numlikes => post['likes']['data'].length)
-      @content.merge!(:likes => post['likes']['data'])
+      @content[:numlikes] = post['likes']['data'].length
+      @content[:likes] = post['likes']['data']
     else
-      @content.merge!(:numlikes => 0)
+      @content[:numlikes] = 0
     end
 
     # Get some text for the item by any means necessary
-    @content.merge!(:text => '')
+    @content[:text] = ''
     if post.has_key?('message')
-      @content.merge!(:text => post['message'])
+      @content[:text] = post['message']
     elsif post.has_key?('story')
-      @content.merge!(:text => post['story'])
+      @content[:text] = post['story']
     elsif post.has_key?('title')
-      @content.merge!(:text => post['title'])
+      @content[:text] = post['title']
     end
 
     # Detect notifications
     if post.has_key?('unread')
-      @content.merge!(:unread => post['unread'])
+      @content[:unread] = post['unread']
       # Notifications are given their "updated" time so that if clients cache
       # objects, updates to the notification can be noticed and thus end up
       # at the top of the list.
-      @content.merge!(:time => Time.parse(post['updated_time']))
+      @content[:time] = Time.parse(post['updated_time'])
       if !post['object'].nil?
-        @content.merge!(:sourceid => post['object']['id'])
+        @content[:sourceid] = post['object']['id']
       end
-      @content.merge!(:type => 'facebook_notification')
+      @content[:type] = 'facebook_notification'
     else
       # Non-notifications are given their "created" time
-      @content.merge!(:time => Time.parse(post['created_time']))
+      @content[:time] = Time.parse(post['created_time'])
     end
 
     # Populate URLs and embedded media
@@ -130,13 +130,13 @@ class Item
 
   # Fills in the contents of the item based on a Facebook comment.
   def populateFromFacebookComment (comment)
-    @content.merge!(:type => 'facebook_comment')
-    @content.merge!(:id => comment['id'])
-    @content.merge!(:time => Time.parse(comment['created_time']))
-    @content.merge!(:fromuserid => comment['from']['id'])
-    @content.merge!(:fromusername => comment['from']['name'])
-    @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{comment['from']['id']}/picture")
-    @content.merge!(:text => comment['message'])
+    @content[:type] = 'facebook_comment'
+    @content[:id] = comment['id']
+    @content[:time] = Time.parse(comment['created_time'])
+    @content[:fromuserid] = comment['from']['id']
+    @content[:fromusername] = comment['from']['name']
+    @content[:fromuseravatar] = "http://graph.facebook.com/#{comment['from']['id']}/picture"
+    @content[:text] = comment['message']
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
@@ -200,7 +200,7 @@ class Item
       }
     end
     finishedArray = addExtraPreviews(finishedArray)
-    @content.merge!(:links => finishedArray)
+    @content[:links] = finishedArray
   end
 
   # Populates the "usernames" and "hashtags" arrays from Twitter data.
@@ -212,13 +212,13 @@ class Item
       usernameArray << {:id => username.id, :user => username.screen_name,
        :indices => username.indices}
     end
-    @content.merge!(:usernames => usernameArray)
+    @content[:usernames] = usernameArray
 
     hashtagArray = []
     hashtags.each do |hashtag|
       hashtagArray << {:text => hashtag.text, :indices => hashtag.indices}
     end
-    @content.merge!(:hashtags => hashtagArray)
+    @content[:hashtags] = hashtagArray
   end
 
   # Populates the "urls" array from Facebook data. This does not contain
@@ -243,7 +243,7 @@ class Item
       end
       finishedArray << urlitem
     end
-    @content.merge!(:links => finishedArray)
+    @content[:links] = finishedArray
   end
 
   # Unshortens a tweet, if it can be detected that it has been previously
