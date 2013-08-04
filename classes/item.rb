@@ -63,6 +63,9 @@ class Item
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
 
+		# Unescape HTML entities in text
+		@content[:text] = HTMLEntities.new.decode(@content[:text])
+
     unshorten()
   end
 
@@ -117,6 +120,9 @@ class Item
     # Populate URLs and embedded media
     populateURLsFromFacebook(post)
 
+		# Unescape HTML entities in text
+		@content[:text] = HTMLEntities.new.decode(@content[:text])
+
   end
 
 
@@ -129,6 +135,9 @@ class Item
     @content.merge!(:fromusername => comment['from']['name'])
     @content.merge!(:fromuseravatar => "http://graph.facebook.com/#{comment['from']['id']}/picture")
     @content.merge!(:text => comment['message'])
+
+		# Unescape HTML entities in text
+		@content[:text] = HTMLEntities.new.decode(@content[:text])
   end
 
 
