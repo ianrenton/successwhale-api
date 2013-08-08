@@ -22,7 +22,7 @@ post '/v3/item.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      if params.has_key?('text')
+      if params.has_key?('text') && !params['text'].empty?
         # User gave us a text parameter, so that's OK
         status 201
         returnHash[:success] = true
@@ -152,7 +152,7 @@ post '/v3/item.?:format?' do
       else
         status 400
         returnHash[:success] = false
-        returnHash[:error] = "The required parameter 'text' was not provided."
+        returnHash[:error] = "The required parameter 'text' was not provided or was empty."
       end
 
     else
