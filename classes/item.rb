@@ -119,6 +119,11 @@ class Item
         # When a client tries to reply to a notification, they should be replying
         # to the original post
         @content[:replytoid] = post['object']['id']
+      else
+        # This is a notification about something, but the source item wasn't 
+        # provided.
+        @content[:sourceid] = nil
+        @content[:replytoid] = nil
       end
       @content[:type] = 'facebook_notification'
     else
