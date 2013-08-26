@@ -79,7 +79,7 @@ class Item
 
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
-    if post.has_key?('from')
+    if post.has_key?('from') && post['from'].is_a?(Hash)
       @content[:fromuserid] = post['from']['id']
       @content[:fromusername] = post['from']['name']
       @content[:fromuseravatar] = "http://graph.facebook.com/#{post['from']['id']}/picture"
