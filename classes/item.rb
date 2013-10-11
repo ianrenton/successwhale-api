@@ -135,6 +135,12 @@ class Item
 
     # Populate URLs and embedded media
     populateURLsFromFacebook(post)
+    
+    # If we *still* have no post text at this point, try and get the title
+    # of an included link.
+    if (@content[:text] == '') && @content.has_key?(:links)
+      @content[:text] = @content[:links][0][:title]
+    end
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
