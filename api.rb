@@ -10,6 +10,7 @@ require 'rubygems'
 require 'bundler/setup'
 require 'unicorn'
 require 'sinatra'
+require 'sinatra/cross_origin'
 require 'mysql'
 require 'digest/md5'
 require 'json'
@@ -31,6 +32,11 @@ require_relative 'classes/item'
 
 # Throttle clients to max. 1000 API calls per hour
 use Rack::Throttle::Hourly,   :max => 1000
+
+# Enable CORS for JS client access from other domains
+configure do
+  enable :cross_origin
+end
 
 # Abort if environment variables not set
 if !ENV.has_key?('DB_HOST')
