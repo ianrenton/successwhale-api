@@ -21,6 +21,15 @@ post '/v3/item.?:format?' do
     if authResult[:authenticated]
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
+      
+      # Handle the uploaded media file, if it exists
+      if params.has_key?('file')
+        uploadedFilePath = UPLOAD_DIR + '/' + params['file'][:filename];
+        File.open(uploadedFilePath, "w") do |f|
+          f.write(params['file'][:tempfile].read)
+        end
+        uploadedFile = File.new(uploadedFilePath)
+      end
 
       if params.has_key?('text') && !params['text'].empty?
         # User gave us a text parameter, so that's OK
@@ -77,8 +86,8 @@ post '/v3/item.?:format?' do
                 end
 
                 # Post, with file if necessary
-                if params.has_key?('file')
-                  twitterClient.update_with_media(tweet, params['file'][:tempfile], options)
+                if uploadedFile
+                  twitterClient.update_with_media(tweet, uploadedFile, options)
                 else
                   twitterClient.update(tweet, options)
                 end
@@ -113,9 +122,9 @@ post '/v3/item.?:format?' do
                 if params.has_key?('in_reply_to_id')
                   # Comment
                   facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
-                elsif params.has_key?('file')
+                elsif uploadedFile
                   # Picture
-                  facebookClient.put_picture(params['file'][:tempfile], params['file'][:type], {:message => URI.unescape(params['text'])})  
+                  facebookClient.put_picture(uploadedFile.path, params['file'][:type], {:message => URI.unescape(params['text'])})  
                 else
                   # Post
                   facebookClient.put_wall_post(URI.unescape(params['text']))
@@ -137,15 +146,17 @@ post '/v3/item.?:format?' do
             returnHash[:success] = false
             returnHash[:error] = "A post was requested via a service named '#{service}', but that SuccessWhale does not support that service."
           end
-          # TODO Linkedin
         end
 
-      # Delete the tempfile if there was one.
-      # Not strictly necessary but good practice.
+      # Delete the temporary files if there were any.
       if params.has_key?('file')
         if File.exist?(params['file'][:tempfile].path)
           params['file'][:tempfile].close
           File.delete(params['file'][:tempfile].path)
+        end
+        if File.exist?(uploadedFile.path)
+          uploadedFile.close
+          File.delete(uploadedFile.path)
         end
       end
 

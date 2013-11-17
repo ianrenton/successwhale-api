@@ -13,6 +13,8 @@ INSTAGRAM_URL_REGEX = /http:\/\/instagram.com\/p\/(.*)\//
 TWITPIC_URL_REGEX = /http:\/\/twitpic.com\/(.*)/
 IMGUR_URL_REGEX = /http:\/\/imgur.com\/(.*)/
 
+UPLOAD_DIR = '/tmp'
+
 T_CO_LENGTH = 24
 
 NOT_AUTH_ERROR = 'User is not logged in. Log in at /v3/authenticate first, and use the returned \'token\' string as a parameter to each API call.'
