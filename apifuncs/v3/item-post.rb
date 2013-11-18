@@ -149,7 +149,7 @@ post '/v3/item.?:format?' do
         end
 
       # Delete the temporary files if there were any.
-      if params.has_key?('file')
+      if (params.has_key?('file') && (params['file'] != ''))
         if File.exist?(params['file'][:tempfile].path)
           params['file'][:tempfile].close
           File.delete(params['file'][:tempfile].path)
