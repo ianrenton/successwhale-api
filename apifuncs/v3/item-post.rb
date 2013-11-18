@@ -23,7 +23,7 @@ post '/v3/item.?:format?' do
       sw_uid = authResult[:sw_uid]
       
       # Handle the uploaded media file, if it exists
-      if params.has_key?('file')
+      if (params.has_key?('file') && (params['file'] != ''))
         uploadedFilePath = UPLOAD_DIR + '/' + params['file'][:filename];
         File.open(uploadedFilePath, "w") do |f|
           f.write(params['file'][:tempfile].read)
