@@ -59,6 +59,7 @@ require_relative 'apifuncs/v3/thread'
 require_relative 'apifuncs/v3/item-post'
 require_relative 'apifuncs/v3/item-delete'
 require_relative 'apifuncs/v3/action'
+require_relative 'apifuncs/v3/status'
 
 
 # 404

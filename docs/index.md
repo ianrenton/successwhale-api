@@ -52,3 +52,10 @@ API calls:
 * [Post Item](item-post.md) `POST: /v3/item`
 * [Delete Item](item-delete.md) `DELETE: /v3/item`
 * [Perform Action](action.md) (Retweet, favorite, like...) `POST: /v3/action`
+
+
+Miscellaneous
+-------------
+
+API calls:
+* [Get Status](status-get.md) `GET: /v3/status`
