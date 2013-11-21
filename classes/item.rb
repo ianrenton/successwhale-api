@@ -66,6 +66,14 @@ class Item
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
+    
+    # Actions
+    @content[:actions] = [
+      {:name => 'reply', :path => '/item', :params => [{:replytoid => @content[:replytoid]}]},
+      {:name => 'retweet', :path => '/actions', :params => [{:action => 'retweet'}, {:postid => @content[:replytoid]}]},
+      {:name => 'favorite', :path => '/actions', :params => [{:action => 'favorite'}, {:postid => @content[:replytoid]}]},
+      {:name => 'conversation', :path => '/thread', :params => [{:postid => @content[:replytoid]}]}
+    ]
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
@@ -135,6 +143,17 @@ class Item
 
     # Populate URLs and embedded media
     populateURLsFromFacebook(post)
+    
+    # Actions
+    if !@content[:replytoid].nil?
+      @content[:actions] = [
+        {:name => 'reply', :path => '/item', :params => [{:replytoid => @content[:replytoid]}]},
+        {:name => 'like', :path => '/actions', :params => [{:action => 'like'}, {:postid => @content[:replytoid]}]},
+        {:name => 'conversation', :path => '/thread', :params => [{:postid => @content[:replytoid]}]}
+      ]
+    else
+      @content[:actions] = []
+    end
     
     # If we *still* have no post text at this point, try and get the title
     # of an included link.
