@@ -283,6 +283,11 @@ class Item
           doc.xpath('//p').each do |p|
             @content[:text] = p.content
           end
+          # Remove link start/end positions from the link object so that clients
+          # don't try to tag a URL that is no longer there. Leave the rest of the
+          # link metadata so clients can make a permalink to the Twixt page if they
+          # like.
+          link[:indices] = []
         end
       end
     end
