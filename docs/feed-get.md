@@ -32,6 +32,8 @@ The `items` array that is returned contains hashes that have three components: `
 
 The components of the `content` hash vary depending on the `service`. All share a few common components, such as `text`, `type`, `id`, `time` and `links`, but there are many service-dependent ones too. For example, a tweet may be a 'retweet', in which case it will contain certain extra parameters indicating who it was retweeted by. Clients can use the `type` component to determine what other components they should expect to see.
 
+The `content` hash also contains an `actions` array, to help clients handle items in ways that are useful to the user. The `actions` array gives the client the blocks it needs to put together to reply to an item, fetch its associated conversation thread, retweet it, like it, etc.
+
 * Request type: GET
 * Authentication required: yes
 * Required parameters: `token`, `sources`
@@ -60,6 +62,7 @@ Example Response (JSON):
           fetchedforuserid: "1234567890",
           content: {
             id: 12345678901234567890,
+            replytoid: 12345678901234567890,
             type: "tweet",
             time: "2013-03-26T21:05:45+00:00",
             retweetedbyuser: "username",
@@ -100,6 +103,51 @@ Example Response (JSON):
                 text: "yolo",
                 indices: [120, 124]
               }
+            ],
+            "actions":
+            [
+                {
+                    "name": "reply",
+                    "path": "/item",
+                    "params": [
+                        {
+                            "replytoid": "12345678901234567890"
+                        }
+                    ]
+                },
+                {
+                    "name": "retweet",
+                    "path": "/actions",
+                    "params": [
+                        {
+                            "action": "retweet"
+                        },
+                        {
+                            "postid": "12345678901234567890"
+                        }
+                    ]
+                },
+                {
+                    "name": "favorite",
+                    "path": "/actions",
+                    "params": [
+                        {
+                            "action": "favorite"
+                        },
+                        {
+                            "postid": "12345678901234567890"
+                        }
+                    ]
+                },
+                {
+                    "name": "conversation",
+                    "path": "/thread",
+                    "params": [
+                        {
+                            "postid": "12345678901234567890"
+                        }
+                    ]
+                }
             ]
           }
         },
@@ -109,6 +157,7 @@ Example Response (JSON):
           content:
           {
             id: "12345678901234567890_12345678901234567890",
+            replytoid: "12345678901234567890_12345678901234567890",
             type: "facebook_photo",
             time: "2013-03-26T19:34:23+00:00",
             fromuserid: "12345678901234567890",
@@ -125,6 +174,39 @@ Example Response (JSON):
                 title: "The Best Link in the World",
                 preview: "http://blah.com/thumbnail.png"
               }
+            ],
+            "actions":
+            [
+                {
+                    "name": "reply",
+                    "path": "/item",
+                    "params": [
+                        {
+                            "replytoid": "12345678901234567890_12345678901234567890"
+                        }
+                    ]
+                },
+                {
+                    "name": "like",
+                    "path": "/actions",
+                    "params": [
+                        {
+                            "action": "like"
+                        },
+                        {
+                            "postid": "12345678901234567890_12345678901234567890"
+                        }
+                    ]
+                },
+                {
+                    "name": "conversation",
+                    "path": "/thread",
+                    "params": [
+                        {
+                            "postid": "12345678901234567890_12345678901234567890"
+                        }
+                    ]
+                }
             ]
           }
         }
