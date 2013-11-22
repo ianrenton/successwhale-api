@@ -36,6 +36,7 @@ class Item
       @content[:fromuser] = tweet.retweeted_status.from_user
       @content[:fromusername] = tweet.retweeted_status.user.name
       @content[:fromuseravatar] = tweet.retweeted_status.user.profile_image_url
+      @content[:fromuserid] = tweet.retweeted_status.user.attrs[:id_str]
       @content[:isreply] = tweet.retweeted_status.reply?
       @content[:numfavourited] = tweet.retweeted_status.favoriters_count
       @content[:numretweeted] = tweet.retweeted_status.retweeters_count
@@ -55,6 +56,7 @@ class Item
       @content[:fromuser] = tweet.from_user
       @content[:fromusername] = tweet.user.name
       @content[:fromuseravatar] = tweet.user.profile_image_url
+      @content[:fromuserid] = tweet.user.attrs[:id_str]
       @content[:isreply] = tweet.reply?
       @content[:isretweet] = tweet.retweet?
       @content[:numfavourited] = tweet.favoriters_count
@@ -69,11 +71,14 @@ class Item
     
     # Actions
     @content[:actions] = [
-      {:name => 'reply', :path => '/item', :params => [{:replytoid => @content[:replytoid]}]},
-      {:name => 'retweet', :path => '/actions', :params => [{:action => 'retweet'}, {:postid => @content[:replytoid]}]},
-      {:name => 'favorite', :path => '/actions', :params => [{:action => 'favorite'}, {:postid => @content[:replytoid]}]},
-      {:name => 'conversation', :path => '/thread', :params => [{:postid => @content[:replytoid]}]}
+      {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}},
+      {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}},
+      {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
     ]
+    # Can't retweet your own tweets
+    if @content[:fromuserid] != @fetchedforuserid
+      @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
+    end
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
@@ -152,12 +157,12 @@ class Item
     # Actions
     if !@content[:replytoid].nil?
       @content[:actions] = [
-        {:name => 'reply', :path => '/item', :params => [{:replytoid => @content[:replytoid]}]},
-        {:name => 'conversation', :path => '/thread', :params => [{:postid => @content[:replytoid]}]}
+        {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}},
+        {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
       ]
       # Only non-notifications can be liked
       if (@content[:type] != 'facebook_notification')
-        @content[:actions] << {:name => 'like', :path => '/actions', :params => [{:action => 'like'}, {:postid => @content[:replytoid]}]}
+        @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
       end
     else
       @content[:actions] = []
