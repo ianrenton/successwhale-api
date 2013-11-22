@@ -12,6 +12,7 @@ TWIXT_URL_MATCHER = 'twixt.successwhale.com'
 INSTAGRAM_URL_REGEX = /http:\/\/instagram.com\/p\/(.*)\//
 TWITPIC_URL_REGEX = /http:\/\/twitpic.com\/(.*)/
 IMGUR_URL_REGEX = /http:\/\/imgur.com\/(.*)/
+ANY_IMAGE_URL_REGEX = %r{\.(gif|jpe?g|png)$}i
 
 UPLOAD_DIR = '/tmp'
 

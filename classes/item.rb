@@ -225,7 +225,7 @@ class Item
     return false
   end
 
-    # Populates the "urls" array from Twitter data. This contains a set of
+  # Populates the "urls" array from Twitter data. This contains a set of
   # indices for the URL to help with linking, since on Twitter a URL is
   # part of the tweet text itself. Twitter's "media previews" are also
   # included.
@@ -352,6 +352,13 @@ class Item
         # generates the 'large' thumbnail rather than the (even larger)
         # original image.
         link[:preview] = "http://i.imgur.com/#{imgurMatch[1]}l.jpg"
+      end
+      
+      # Catch URLs that are actually to an image even though they weren't given a
+      # 'preview' block, and give them a preview
+      imageURLMatch = ANY_IMAGE_URL_REGEX.match(link[:expanded_url])
+      if imageURLMatch && !link.has_key?(:preview)
+        link[:preview] = link[:expanded_url]
       end
     end
   end
