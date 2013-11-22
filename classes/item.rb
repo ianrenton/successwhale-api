@@ -92,9 +92,6 @@ class Item
       @content[:fromusername] = post['from']['name']
       @content[:fromuseravatar] = "http://graph.facebook.com/#{post['from']['id']}/picture"
     end
-    if post.has_key?('to') && post['to'].is_a?(Hash)
-      @content[:tousername] = post['to']['data'][0]['name']
-    end
     if post.has_key?('comments')
       @content[:numcomments] = post['comments']['data'].length
       #@content[:comments] = post['comments']['data']
@@ -142,6 +139,11 @@ class Item
       @content[:time] = Time.parse(post['created_time'])
       # Non-notifications can be replied to directly
       @content[:replytoid] = post['id']
+      # Non-notifications might be 'to' someone else, e.g. a friend posting on another
+      # friend's wall.
+      if post.has_key?('to') && post['to'].is_a?(Hash) && post['to']['data'].is_a?(Array)
+        @content[:tousername] = post['to']['data'][0]['name']
+      end
     end
 
     # Populate URLs and embedded media
@@ -151,9 +153,12 @@ class Item
     if !@content[:replytoid].nil?
       @content[:actions] = [
         {:name => 'reply', :path => '/item', :params => [{:replytoid => @content[:replytoid]}]},
-        {:name => 'like', :path => '/actions', :params => [{:action => 'like'}, {:postid => @content[:replytoid]}]},
         {:name => 'conversation', :path => '/thread', :params => [{:postid => @content[:replytoid]}]}
       ]
+      # Only non-notifications can be liked
+      if (@content[:type] != 'facebook_notification')
+        @content[:actions] << {:name => 'like', :path => '/actions', :params => [{:action => 'like'}, {:postid => @content[:replytoid]}]}
+      end
     else
       @content[:actions] = []
     end
