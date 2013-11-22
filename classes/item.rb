@@ -92,6 +92,9 @@ class Item
       @content[:fromusername] = post['from']['name']
       @content[:fromuseravatar] = "http://graph.facebook.com/#{post['from']['id']}/picture"
     end
+    if post.has_key?('to') && post['to'].is_a?(Hash)
+      @content[:tousername] = post['to']['data'][0]['name']
+    end
     if post.has_key?('comments')
       @content[:numcomments] = post['comments']['data'].length
       #@content[:comments] = post['comments']['data']
