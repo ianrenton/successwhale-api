@@ -69,16 +69,20 @@ class Item
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
     
-    # Actions
-    @content[:actions] = [
-      {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}},
-      {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}},
-      {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
-    ]
+    # Actions. Add in a nice order because the web UI displays buttons in this order.
+    @content[:actions] = []
+    # Can always reply
+    @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
+    # Can view conversation if it's a reply
+    if @content[:isreply]
+      @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+    end
     # Can't retweet your own tweets
     if @content[:fromuserid] != @fetchedforuserid
       @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
     end
+    # Can always favourite
+    @content[:actions] << {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
 
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
@@ -154,18 +158,21 @@ class Item
     # Populate URLs and embedded media
     populateURLsFromFacebook(post)
     
-    # Actions
+    # Actions.
+    @content[:actions] = []
+    # If Reply To ID is null, we don't really know what we're seeing here so can't
+    # give any actions.
     if !@content[:replytoid].nil?
-      @content[:actions] = [
-        {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}},
-        {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
-      ]
+      # Everything with a Reply To ID can be commented on.
+      @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
+      # Only items with comments have a conversation view
+      if (@content[:numcomments] > 0)
+        @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+      end
       # Only non-notifications can be liked
       if (@content[:type] != 'facebook_notification')
         @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
       end
-    else
-      @content[:actions] = []
     end
     
     # If we *still* have no post text at this point, try and get the title
