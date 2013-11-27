@@ -69,6 +69,9 @@ class Item
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
     
+    # Permalink
+    @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
+    
     # Actions. Add in a nice order because the web UI displays buttons in this order.
     @content[:actions] = []
     # Can always reply
@@ -93,7 +96,7 @@ class Item
 
   # Fills in the contents of the item based on a Facebook post.
   def populateFromFacebookPost (post)
-
+  
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
     if post.has_key?('from') && post['from'].is_a?(Hash)
@@ -136,6 +139,8 @@ class Item
         # When a client tries to reply to a notification, they should be replying
         # to the original post
         @content[:replytoid] = post['object']['id']
+        # Permalink to the original post
+        @content[:permalink] = 'https://facebook.com/' + post['object']['id']
       else
         # This is a notification about something, but the source item wasn't 
         # provided.
@@ -144,8 +149,9 @@ class Item
       end
       @content[:type] = 'facebook_notification'
     else
-      # Non-notifications are given their "created" time
+      # Non-notifications are given their "created" time and permalink
       @content[:time] = Time.parse(post['created_time'])
+      @content[:permalink] = 'https://facebook.com/' + post['id']
       # Non-notifications can be replied to directly
       @content[:replytoid] = post['id']
       # Non-notifications might be 'to' someone else, e.g. a friend posting on another
@@ -204,9 +210,6 @@ class Item
 		# Unescape HTML entities in text
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
   end
-
-
-  # TODO: Populate from LinkedIn
 
 
   # Returns the item as a hash.
