@@ -171,8 +171,8 @@ class Item
     if !@content[:replytoid].nil?
       # Everything with a Reply To ID can be commented on.
       @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
-      # Only items with comments have a conversation view
-      if (@content[:numcomments] > 0)
+      # Only items with comments or which are notifications have a conversation view
+      if (@content[:numcomments] > 0) || (@content[:type] == 'facebook_notification')
         @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
       end
       # Only non-notifications can be liked
