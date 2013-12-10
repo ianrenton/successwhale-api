@@ -73,7 +73,7 @@ delete '/v3/item.?:format?' do
               facebookClient = Koala::Facebook::API.new(user['access_token'])
 
               # Delete the post
-              facebookClient.delete_like(params['postid'])
+              facebookClient.delete_object(params['postid'])
 
             else
               status 403

@@ -75,20 +75,20 @@ class Item
     # Actions. Add in a nice order because the web UI displays buttons in this order.
     @content[:actions] = []
     # Can always reply
-    @content[:actions] << {:name => 'reply', :method => 'POST', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
+    @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
     # Can view conversation if it's a reply
     if @content[:isreply]
-      @content[:actions] << {:name => 'conversation', :method => 'GET', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+      @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
     end
     # Can't retweet your own tweets
     if @content[:fromuserid] != @fetchedforuserid
-      @content[:actions] << {:name => 'retweet', :method => 'POST', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
+      @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
     end
     # Can always favourite
-    @content[:actions] << {:name => 'favorite', :method => 'POST', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
+    @content[:actions] << {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
     # Can delete if it's yours
     if @content[:fromuserid] == @fetchedforuserid
-      @content[:actions] << {:name => 'delete', :method => 'DELETE', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+      @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
     end
 
 		# Unescape HTML entities in text
@@ -174,18 +174,18 @@ class Item
     # give any actions.
     if !@content[:replytoid].nil?
       # Everything with a Reply To ID can be commented on.
-      @content[:actions] << {:name => 'reply', :method => 'POST', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
+      @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
       # Only items with comments or which are notifications have a conversation view
       if (@content[:numcomments] > 0) || (@content[:type] == 'facebook_notification')
-        @content[:actions] << {:name => 'conversation', :method => 'GET', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+        @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
       end
       # Only non-notifications can be liked
       if (@content[:type] != 'facebook_notification')
-        @content[:actions] << {:name => 'like', :method => 'POST', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
+        @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
       end
       # Can delete if it's ours and not a notification
       if (@content[:type] != 'facebook_notification') && (@content[:fromuserid] == @fetchedforuserid)
-        @content[:actions] << {:name => 'delete', :method => 'DELETE', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
+        @content[:actions] << {:name => 'delete', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
       end
     end
     

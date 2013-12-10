@@ -4,7 +4,7 @@
 # SuccessWhale API function to perform a simple action on an item.
 # Takes the ID of an item, the service and user ID to perform the action as,
 # and a verb identifying the action: 'retweet', 'unretweet', 'favorite',
-# 'like' or 'unlike'.
+# 'like', 'unlike' or 'delete'.
 
 post '/v3/action.?:format?' do
 
@@ -51,10 +51,12 @@ post '/v3/action.?:format?' do
                 twitterClient.unfavorite(params['postid'])
               elsif params['action'] == 'retweet'
                 twitterClient.retweet(params['postid'])
+              elsif params['action'] == 'delete'
+                twitterClient.status_destroy(params['postid'])
               else
                 status 400
                 returnHash[:success] = false
-                returnHash[:error] = "The action '@#{params['action']}' was requested on a tweet, but the API only supports 'favorite', 'unfavorite' and 'retweet'."
+                returnHash[:error] = "The action '@#{params['action']}' was requested on a tweet, but the API only supports 'favorite', 'unfavorite', 'retweet' and 'delete'."
               end
 
             else
@@ -88,10 +90,12 @@ post '/v3/action.?:format?' do
                 facebookClient.put_like(params['postid'])
               elsif params['action'] == 'unlike'
                 facebookClient.delete_like(params['postid'])
+              elsif params['action'] == 'delete'
+                facebookClient.delete_object(params['postid'])
               else
                 status 400
                 returnHash[:success] = false
-                returnHash[:error] = "The action '@#{params['action']}' was requested on a Facebook item, but the API only supports 'like'."
+                returnHash[:error] = "The action '@#{params['action']}' was requested on a Facebook item, but the API only supports 'like', 'unlike' and 'delete'."
               end
 
             else
