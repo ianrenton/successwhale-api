@@ -32,7 +32,7 @@ class Item
       @content[:isretweet] = tweet.retweet?
 
       # Copy the retweeted status's data into the main body
-      @content[:text] = tweet.retweeted_status.full_text
+      @content[:text] = tweet.retweeted_status.text
       @content[:fromuser] = tweet.retweeted_status.from_user
       @content[:fromusername] = tweet.retweeted_status.user.name
       @content[:fromuseravatar] = tweet.retweeted_status.user.profile_image_url
@@ -49,7 +49,7 @@ class Item
 
     else
       # Not a retweet, so populate the content of the item normally.
-      @content[:text] = tweet.full_text
+      @content[:text] = tweet.text
       @content[:id] = tweet.attrs[:id_str]
       @content[:replytoid] = tweet.attrs[:id_str]
       @content[:time] = tweet.created_at
