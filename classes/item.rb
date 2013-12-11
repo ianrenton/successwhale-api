@@ -196,6 +196,7 @@ class Item
     end
 
 		# Unescape HTML entities in text
+		@content[:escapedtext] = @content[:text]
 		@content[:text] = HTMLEntities.new.decode(@content[:text])
 
   end
@@ -209,14 +210,14 @@ class Item
     @content[:fromuserid] = comment['from']['id']
     @content[:fromusername] = comment['from']['name']
     @content[:fromuseravatar] = "http://graph.facebook.com/#{comment['from']['id']}/picture"
-    @content[:text] = comment['message']
+    @content[:escapedtext] = comment['message']
     
     # When a client tries to reply to a comment, they can reply to the comment's
     # own ID and Facebook will put it in the right place.
     @content[:replytoid] = comment['id']
 
 		# Unescape HTML entities in text
-		@content[:text] = HTMLEntities.new.decode(@content[:text])
+		@content[:text] = HTMLEntities.new.decode(@content[:escapedtext])
   end
 
 
@@ -331,6 +332,7 @@ class Item
           doc = Nokogiri::HTML(source)
           # Only one p element in a Twixt output, just find and use it.
           doc.xpath('//p').each do |p|
+            @content[:escapedtext] = HTMLEntities.new.encode(p.content)
             @content[:text] = p.content
           end
           # Remove link start/end positions from the link object so that clients
