@@ -285,7 +285,7 @@ class Item
     usernameArray = []
     usernames.each do |username|
       usernameArray << {:id => username.id, :user => username.screen_name,
-       :indices => username.indices}
+       :username => username.name, :indices => username.indices}
     end
     @content[:usernames] = usernameArray
 

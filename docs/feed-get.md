@@ -94,6 +94,7 @@ Example Response (JSON):
               {
                 id: 1234567890,
                 user: "you",
+                username: "You McYou",
                 indices: [0, 3]
               }
             ],
