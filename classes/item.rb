@@ -28,6 +28,7 @@ class Item
       # Add extra tags to show who retweeted it and when
       @content[:retweetedbyuser] = tweet.from_user
       @content[:retweetedbyusername] = tweet.user.name
+      @content[:retweetedbyuserid] = tweet.user.attrs[:id_str]
       @content[:originalposttime] = tweet.retweeted_status.created_at
       @content[:isretweet] = tweet.retweet?
 
