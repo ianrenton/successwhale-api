@@ -221,7 +221,7 @@ def makeSourcesList(accounts)
       sources << buildSourceHash(account, 'Own Tweets', 'statuses/user_timeline')
       sources << buildSourceHash(account, 'Mentions', 'statuses/mentions_timeline')
       sources << buildSourceHash(account, 'Direct Messages', 'direct_messages')
-      sources << buildSourceHash(account, 'Sent Messages', 'sent_messages')
+      sources << buildSourceHash(account, 'Sent Messages', 'direct_messages/sent')
     elsif account[:service] == 'facebook'
       sources << buildSourceHash(account, 'Home Feed', 'me/home')
       sources << buildSourceHash(account, 'Wall', 'me/feed')

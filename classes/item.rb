@@ -15,9 +15,25 @@ class Item
   # Fills in the contents of the item based on a tweet.
   def populateFromTweet (tweet)
 
-    @content[:type] = 'tweet'
-
-    if tweet.retweet?
+    if tweet.is_a?(Twitter::DirectMessage)
+      # Check for DMs separately as these don't have the same fields as everything else
+      @content[:type] = 'twitter_dm'
+      @content[:escapedtext] = tweet.full_text
+      @content[:id] = tweet.attrs[:id_str]
+      @content[:replytoid] = tweet.attrs[:id_str]
+      @content[:time] = tweet.created_at
+      @content[:fromuser] = tweet.attrs[:sender_screen_name]
+      @content[:fromusername] = tweet.sender.attrs[:name]
+      @content[:fromuseravatar] = tweet.sender.attrs[:profile_image_url]
+      @content[:fromuserid] = tweet.attrs[:sender_id_str]
+      @content[:touser] = tweet.attrs[:recipient_screen_name]
+      @content[:tousername] = tweet.recipient.attrs[:name]
+      @content[:touseravatar] = tweet.recipient.attrs[:profile_image_url]
+      @content[:touserid] = tweet.attrs[:recipient_id_str]
+      @content[:links] = {}
+    
+    elsif tweet.retweet?
+      @content[:type] = 'tweet'
       # Keep the retweet's ID for replies and the time for sorting. We can reply
       # to a retweet and Twitter handles it, we don't have to reply to the
       # original tweet's ID.
@@ -45,10 +61,12 @@ class Item
       @content[:numfavourited] = tweet.retweeted_status.favoriters_count
       @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
+      @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.retweeted_status.user_mentions, tweet.retweeted_status.hashtags)
 
     else
+      @content[:type] = 'tweet'
       # Not a retweet, so populate the content of the item normally.
       @content[:escapedtext] = tweet.full_text
       @content[:id] = tweet.attrs[:id_str]
@@ -66,12 +84,10 @@ class Item
       @content[:numfavourited] = tweet.favoriters_count
       @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.in_reply_to_user_id
+      @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
     end
-    
-    # Permalink
-    @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
     
     # Actions. Add in a nice order because the web UI displays buttons in this order.
     @content[:actions] = []
@@ -81,12 +97,14 @@ class Item
     if @content[:isreply]
       @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
     end
-    # Can't retweet your own tweets
-    if @content[:fromuserid] != @fetchedforuserid
+    # Can't retweet your own tweets, or DMs
+    if (@content[:fromuserid] != @fetchedforuserid) && !(tweet.is_a?(Twitter::DirectMessage))
       @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
     end
-    # Can always favourite
-    @content[:actions] << {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
+    # Can't favourite DMs
+    if !(tweet.is_a?(Twitter::DirectMessage))
+      @content[:actions] << {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
+    end
     # Can delete if it's yours
     if @content[:fromuserid] == @fetchedforuserid
       @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}

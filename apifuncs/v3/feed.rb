@@ -139,9 +139,6 @@ get '/v3/feed.?:format?' do
             returnHash[:error] = "A feed was requested for a service named '#{params[:service]}', but that SuccessWhale does not support that service."
           end
 
-
-          # TODO Linkedin
-
         end
 
         # Remove items that match the blocklist
