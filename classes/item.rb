@@ -289,7 +289,7 @@ class Item
     media.each do |url|
       finishedArray << {
         :url => url.url, :expanded_url => url.expanded_url,
-        :title => url.display_url, :preview => url.media_url,
+        :title => url.display_url, :preview => url.media_url_https,
         :indices => url.indices
       }
     end
