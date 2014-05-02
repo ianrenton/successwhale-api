@@ -1,38 +1,52 @@
 Authenticate with Facebook
 --------------------------
 
-This call comes in two GET forms - one, when no parameters are provided, which returns the URL that the client should point the user at in order to authorise the app on Facebook. The second form, when a `code` and a `state` parameter is supplied, is used when data is being returned from Facebook via callback. When a client visits the URL returned by the initial call, Facebook itself will correctly provide the redirect to the callback.
+SuccessWhale API function to authenticate a user using with Facebook.
+
+Comes in two GET forms - one, when `callback_url` provided, which
+returns the URL to visit to authorise the app. This will include the 
+`callback_url` within it, so that once authenticated, the user will be
+redirected back to that URL.
+
+This callback will be a GET containing a parameter called `code` which
+the client must pass back to this API endpoint in order to finish the
+authentication and add the Facebook account to the current user's set
+(if `token` is provided), or create a new SW user for that Facebook
+account (if `token` isn't provided). To do this, use the
+second form of this endpoint, where `code` is provided. To verify that
+it's the same client communicating, it must provide the same value
+of `callback_url` to this call too. 
 
 ### Initial Call
 
 * Request type: GET
-* Authentication required: optional (yes for existing users adding a new Facebook account, no for first-time users starting with a Facebook account.)
-* Required parameters: none
-* Optional parameters: `token`
-* Return formats supported: JSON, XML
-
-URL Format:
-
-    /v3/authwithfacebook[.json|.xml]
-
-Example Response (JSON):
-
-    {
-      "success":true,
-      "url":"https://api.facebook.com/blahblahblah"
-    }
-
-### Callback
-
-* Request type: GET
-* Authentication required: cookie or GET authentication will be used automatically if provided in the initial call
-* Required parameters: `code`, `state`
+* Authentication required: no
+* Required parameters: `callback_url`
 * Optional parameters: none
 * Return formats supported: JSON, XML
 
 URL Format:
 
-    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890?state=123456789012345678901234567890
+    /v3/authwithfacebook[.json|.xml]?callback_url=http://myclient.com/facebookcallback
+
+Example Response (JSON):
+
+    {
+      "success":true,
+      "url":"https://www.facebook.com/blahblahblah"
+    }
+
+### Second Call
+
+* Request type: GET
+* Authentication required: optional (provide `token` to add the Facebook account to an existing SW user, or don't provide it and a new SW user will be created)
+* Required parameters: `code`, `callback_url`
+* Optional parameters: `token`
+* Return formats supported: JSON, XML
+
+URL Format:
+
+    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890&?callback_url=http://myclient.com/facebookcallback
 
 Example Response (JSON):
 

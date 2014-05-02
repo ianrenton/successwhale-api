@@ -5,7 +5,7 @@
 # Comes in two GET forms - one, when no parameters are provided, which
 # returns the URL to visit to authorise the app. The second form, when
 # a code parameter is supplied, is used when data is being returned from
-# Facebook via callback.
+# Twitter via callback.
 
 
 get '/v3/authwithtwitter.?:format?' do

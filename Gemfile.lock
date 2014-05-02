@@ -65,6 +65,7 @@ DEPENDENCIES
   multi_json
   mysql
   nokogiri
+  oauth
   php-serialize
   rack
   rack-throttle
