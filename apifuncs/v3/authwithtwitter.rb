@@ -2,11 +2,17 @@
 # encoding: UTF-8
 
 # SuccessWhale API function to authenticate a user using with Twitter.
-# Comes in two GET forms - one, when no parameters are provided, which
-# returns the URL to visit to authorise the app. The second form, when
-# a code parameter is supplied, is used when data is being returned from
-# Twitter via callback.
-
+# Comes in two GET forms - one, when `callback_url` provided, which
+# returns the URL to visit to authorise the app. This will include the 
+# `callback_url` within it, so that once authenticated, the user will be
+# redirected back to that URL.
+# This callback will be a GET containing parameters called `oauth_token`
+# and `oauth_verifier` which the client must pass back to this API endpoint
+# in order to finish the authentication and add the Twitter account to the
+# current user's set (if `token` is provided), or create a new SW user for 
+# that Twitter account (if `token` isn't provided). To do this, use the
+# second form of this endpoint, where `oauth_token` and `oauth_verifier` are
+# provided.
 
 get '/v3/authwithtwitter.?:format?' do
 
@@ -15,9 +21,12 @@ get '/v3/authwithtwitter.?:format?' do
   begin
 
     connect()
+    oauth = OAuth::Consumer.new(ENV['TWITTER_CONSUMER_KEY'], 
+                                    ENV['TWITTER_CONSUMER_SECRET'],
+                             { :site => "https://api.twitter.com" })
 
-    if !params.has_key?('code')
-      # No code provided, so this isn't a callback - return a URL that
+    if params.has_key?('callback_url')
+      # callback_url provided, so this isn't itself a callback - return a URL that
       # the user can be sent to to kick off authentication, unless there
       # was an explicit auth failure. (New users and properly authenticated
       # users will see the URL, auth failures and errors will see the error)
@@ -25,86 +34,135 @@ get '/v3/authwithtwitter.?:format?' do
       if !authResult[:explicitfailure]
         status 200
         returnHash[:success] = true
-        returnHash[:url] = @facebookOAuth.url_for_oauth_code(:callback => "#{request.base_url}#{request.path_info}", :permissions => FACEBOOK_PERMISSIONS, :state => params[:token])
+        
+        request_token = oauth.get_request_token(:oauth_callback => params[:callback_url])
+        
+        # This kind of breaks the whole RESTful idea, but we need to store these for the
+        # callback to use.
+        session[:request_token] = request_token.token
+        session[:request_token_secret] = request_token.secret
+
+        returnHash[:url] = request_token.authorize_url
       else
         status 401
         returnHash[:success] = false
         returnHash[:error] = authResult[:error]
       end
-    else
-      # A code was returned, so let's validate it
-      token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => "#{request.base_url}#{request.path_info}"})
-      # Get FB userid to add to DB
-      facebookClient = Koala::Facebook::API.new(token)
-      fb_uid = facebookClient.get_object("me")['id']
+    elsif params.has_key?('oauth_token') && params.has_key?('oauth_verifier')
+      # An oauth block was returned, so let's validate it and get an access token
+      request_token = OAuth::RequestToken.new(oauth, session[:request_token],
+                                        session[:request_token_secret])
+      access_token = request_token.get_access_token(
+                 :oauth_verifier => params[:oauth_verifier])
 
       # Everything from here on is a success
       status 200
       returnHash[:success] = true
-
-      # Check if the user is authenticated with SW by checking the 'state'
-      # parameter that FB returned as if it were the token
-      if params.has_key?('state')
-        authResult = checkAuth({'token' => params[:state]})
+      
+      twitterParams = access_token.params
+      returnHash[:test] = access_token.params
+      
+      # Check if the user is authenticated with SW by checking the 'token' param
+      # provided to this call
+      if params.has_key?('token')
+        authResult = checkAuth({'token' => params[:token]})
 
         if authResult[:authenticated]
           # We have an authenticated SW user
-          # Check to see if the token is already in the database
-          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+          # Check to see if the Twitter account is already in the database
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
 
-          if !facebook_users.nil? && facebook_users.num_rows == 1
-            # That Facebook account is already known to SW
-            fb_account_sw_uid = facebook_users.fetch_hash['sw_uid'].to_i
+          if !twitter_users.nil? && twitter_users.num_rows == 1
+            # That Twitter account is already known to SW
+            twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
 
-            if fb_account_sw_uid == authResult[:sw_uid]
-              # The Facebook account is already assigned to the current user,
+            if twitter_account_sw_uid == authResult[:sw_uid]
+              # The Twitter account is already assigned to the current user,
               # update the token and return the user info
-              @db.query("UPDATE facebook_users SET access_token='#{Mysql.escape_string(token)}' WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+              @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
               returnHash.merge!(getUserBlock(authResult[:sw_uid]))
               returnHash[:sw_account_was_new] = false
               returnHash[:service_account_was_new] = false
             else
-              # The Facebook account belongs to a different user, so move it
+              # The Twitter account belongs to a different user, so move it
               # to this one.
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("DELETE FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid.to_s)}'")
-              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-              addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
+              @db.query("DELETE FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'].to_s)}'")
+              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+              addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
               returnHash[:service_account_was_new] = true
             end
           else
-            # This is an existing user activating a new FB account
+            # This is an existing user activating a new Twitter account
             userBlock = getUserBlock(authResult[:sw_uid])
-            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-            addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
+            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+            addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = false
             returnHash[:service_account_was_new] = true
           end
 
         else
-          # This is a new user starting off by activating a FB account
+           # Check to see if the Twitter account is already in the database
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+
+          if !twitter_users.nil? && twitter_users.num_rows == 1
+            # That Twitter account is already known to SW
+            twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
+            # Update the token if necessary
+            @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+            
+            # Log in the user
+            returnHash.merge!(getUserBlock(twitter_account_sw_uid))
+            returnHash[:sw_account_was_new] = false
+            returnHash[:service_account_was_new] = false
+            
+          else
+            # This is a new user starting off by activating a Twitter account
+            sw_uid = makeSWAccount()
+            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+            addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
+            userBlock = getUserBlock(sw_uid)
+            returnHash.merge!(userBlock)
+            returnHash[:sw_account_was_new] = true
+            returnHash[:service_account_was_new] = true
+          end
+
+        end
+
+      else
+        # Check to see if the Twitter account is already in the database
+        twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+
+        if !twitter_users.nil? && twitter_users.num_rows == 1
+          # That Twitter account is already known to SW
+          twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
+          # Update the token if necessary
+          @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+          
+          # Log in the user
+          returnHash.merge!(getUserBlock(twitter_account_sw_uid))
+          returnHash[:sw_account_was_new] = false
+          returnHash[:service_account_was_new] = false
+          
+        else
+          # This is a new user starting off by activating a Twitter account
           sw_uid = makeSWAccount()
-          @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-          addDefaultColumns(sw_uid, 'facebook', fb_uid)
+          @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+          addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
           userBlock = getUserBlock(sw_uid)
           returnHash.merge!(userBlock)
           returnHash[:sw_account_was_new] = true
           returnHash[:service_account_was_new] = true
         end
-
-      else
-        # This is a new user starting off by activating a FB account
-        sw_uid = makeSWAccount()
-        @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-        addDefaultColumns(sw_uid, 'facebook', fb_uid)
-        userBlock = getUserBlock(sw_uid)
-        returnHash.merge!(userBlock)
-        returnHash[:sw_account_was_new] = true
-        returnHash[:service_account_was_new] = true
       end
+
+    else
+      status 400
+      returnHash[:success] = false
+      returnHash[:error] = "This call requires either a 'callback_url' parameter, or both 'oauth_token' and 'oauth_verifier', depending on which stage of the OAuth dance you are at. Check the docs for more info."
     end
 
   rescue => e

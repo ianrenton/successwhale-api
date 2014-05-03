@@ -17,9 +17,7 @@ def connect()
 
   # Configure a Facebook object
   @facebookOAuth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
-
-  # Configure a LinkedIn object
-  @facebookClient = LinkedIn::Client.new(ENV['LINKEDIN_APP_KEY'], ENV['LINKEDIN_SECRET_KEY'])
+  
 end
 
 # Check authentication was provided by a token parameter, and return data
@@ -174,6 +172,7 @@ end
 def makeSWAccount()
   token = createToken()
   result = @db.query("INSERT INTO sw_users (secret) VALUES ('#{Mysql.escape_string(token)}')")
+  p result # todo remove
   return result.last_id
 end
 

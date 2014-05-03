@@ -37,6 +37,7 @@ use Rack::Throttle::Hourly,   :max => 1000
 # Enable CORS for JS client access from other domains
 configure do
   enable :cross_origin
+  enable :sessions
 end
 
 # Abort if environment variables not set

@@ -42,23 +42,23 @@ get '/v3/authwithfacebook.?:format?' do
         end
       else
         # A code was returned, so let's validate it
-        token = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => params[:callback_url]})
+        fbToken = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => params[:callback_url]})
         # Get FB userid to add to DB
-        facebookClient = Koala::Facebook::API.new(token)
+        facebookClient = Koala::Facebook::API.new(fbToken)
         fb_uid = facebookClient.get_object("me")['id']
 
         # Everything from here on is a success
         status 200
         returnHash[:success] = true
 
-        # Check if the user is authenticated with SW by checking the 'state'
-        # parameter that FB returned as if it were the token
+        # Check if the user is authenticated with SW by checking the 'token' param
+        # provided to this call
         if params.has_key?('token')
           authResult = checkAuth({'token' => params[:token]})
 
           if authResult[:authenticated]
             # We have an authenticated SW user
-            # Check to see if the token is already in the database
+            # Check to see if the FB account is already in the database
             facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid)}'")
 
             if !facebook_users.nil? && facebook_users.num_rows == 1
@@ -68,7 +68,7 @@ get '/v3/authwithfacebook.?:format?' do
               if fb_account_sw_uid == authResult[:sw_uid]
                 # The Facebook account is already assigned to the current user,
                 # update the token and return the user info
-                @db.query("UPDATE facebook_users SET access_token='#{Mysql.escape_string(token)}' WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+                @db.query("UPDATE facebook_users SET access_token='#{Mysql.escape_string(fbToken)}' WHERE uid='#{Mysql.escape_string(fb_uid)}'")
                 returnHash.merge!(getUserBlock(authResult[:sw_uid]))
                 returnHash[:sw_account_was_new] = false
                 returnHash[:service_account_was_new] = false
@@ -77,7 +77,7 @@ get '/v3/authwithfacebook.?:format?' do
                 # to this one.
                 userBlock = getUserBlock(authResult[:sw_uid])
                 @db.query("DELETE FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid.to_s)}'")
-                @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+                @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(fbToken)}')")
                 addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
@@ -86,7 +86,7 @@ get '/v3/authwithfacebook.?:format?' do
             else
               # This is an existing user activating a new FB account
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(fbToken)}')")
               addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
@@ -94,25 +94,55 @@ get '/v3/authwithfacebook.?:format?' do
             end
 
           else
+            # Check to see if the FB account is already in the database
+            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+
+            if !facebook_users.nil? && facebook_users.num_rows == 1
+              # That Facebook account is already known to SW
+              fb_account_sw_uid = facebook_users.fetch_hash['sw_uid'].to_i
+              # Update the token if necessary
+              @db.query("UPDATE facebook_users SET access_token='#{Mysql.escape_string(fbToken)}' WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+              
+              # Log in the user
+              returnHash.merge!(getUserBlock(authResult[:sw_uid]))
+              returnHash[:sw_account_was_new] = false
+              returnHash[:service_account_was_new] = false
+            else
+              # This is a new user starting off by activating a FB account
+              sw_uid = makeSWAccount()
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(fbToken)}')")
+              addDefaultColumns(sw_uid, 'facebook', fb_uid)
+              userBlock = getUserBlock(sw_uid)
+              returnHash.merge!(userBlock)
+              returnHash[:sw_account_was_new] = true
+              returnHash[:service_account_was_new] = true
+            end
+          end
+
+        else
+          # Check to see if the FB account is already in the database
+          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+
+          if !facebook_users.nil? && facebook_users.num_rows == 1
+            # That Facebook account is already known to SW
+            fb_account_sw_uid = facebook_users.fetch_hash['sw_uid'].to_i
+            # Update the token if necessary
+            @db.query("UPDATE facebook_users SET access_token='#{Mysql.escape_string(fbToken)}' WHERE uid='#{Mysql.escape_string(fb_uid)}'")
+            
+            # Log in the user
+            returnHash.merge!(getUserBlock(authResult[:sw_uid]))
+            returnHash[:sw_account_was_new] = false
+            returnHash[:service_account_was_new] = false
+          else
             # This is a new user starting off by activating a FB account
             sw_uid = makeSWAccount()
-            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
+            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(fbToken)}')")
             addDefaultColumns(sw_uid, 'facebook', fb_uid)
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = true
             returnHash[:service_account_was_new] = true
           end
-
-        else
-          # This is a new user starting off by activating a FB account
-          sw_uid = makeSWAccount()
-          @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(fb_uid)}', '#{Mysql.escape_string(token)}')")
-          addDefaultColumns(sw_uid, 'facebook', fb_uid)
-          userBlock = getUserBlock(sw_uid)
-          returnHash.merge!(userBlock)
-          returnHash[:sw_account_was_new] = true
-          returnHash[:service_account_was_new] = true
         end
       end
     else
