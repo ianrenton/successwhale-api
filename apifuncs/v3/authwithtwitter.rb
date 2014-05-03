@@ -52,6 +52,10 @@ get '/v3/authwithtwitter.?:format?' do
       # An oauth block was returned, so let's validate it and get an access token
       request_token = OAuth::RequestToken.new(oauth, session[:request_token],
                                         session[:request_token_secret])
+                                        
+      returnHash[:debug_request_token] = session[:request_token]
+      returnHash[:debug_oauth_verifier] = params[:oauth_verifier]
+                                        
       access_token = request_token.get_access_token(
                  :oauth_verifier => params[:oauth_verifier])
 
