@@ -38,6 +38,7 @@ use Rack::Throttle::Hourly,   :max => 1000
 configure do
   enable :cross_origin
   enable :sessions
+  set :session_secret, ENV['SESSION_KEY'] || 'piuayhp3d489up93upwsi'
 end
 
 # Abort if environment variables not set
