@@ -46,7 +46,7 @@ Example Response (JSON):
 
 URL Format:
 
-    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890&?callback_url=http://myclient.com/facebookcallback
+    /v3/authwithfacebook[.json|.xml]?code=1234567890123456789012345678901234567890&callback_url=http://myclient.com/facebookcallback
 
 Example Response (JSON):
 
