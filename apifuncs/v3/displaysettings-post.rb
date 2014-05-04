@@ -5,7 +5,7 @@
 # SW web UI. Probably not useful for other clients!
 
 
-put '/v3/displaysettings.?:format?' do
+post '/v3/displaysettings.?:format?' do
 
   returnHash = {}
 
