@@ -19,7 +19,6 @@ API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
 * [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
-* WIP: [Authenticate with Linkedin](authwithlinkedin.md) `GET: /v3/authwithlinkedin`
 * WIP: [Remove Third-party Account](account-delete.md) `DELETE: /v3/account`
 * WIP: [Create SuccessWhale Username and Password](swuserpass-put.md) `PUT: /v3/swuserpass`
 * WIP: [Remove SuccessWhale Username and Password](swuserpass-delete.md) `DELETE: /v3/swuserpass`
@@ -39,7 +38,7 @@ API calls:
 * [Get "Post to" Accounts](posttoaccounts-get.md) `GET: /v3/posttoaccounts`
 * WIP: [Set "Post to" Accounts](posttoaccounts-put.md) `PUT: /v3/posttoaccounts`
 * [Get Display Settings](displaysettings-get.md) `GET: /v3/displaysettings`
-* WIP: [Set Display Settings](displaysettings-put.md) `PUT: /v3/displaysettings`
+* [Set Display Settings](displaysettings-post.md) `POST: /v3/displaysettings`
 
 
 Social Network Interaction
@@ -48,7 +47,6 @@ Social Network Interaction
 API calls:
 * [Get Feed](feed-get.md) `GET: /v3/feed`
 * [Get Thread](thread-get.md) `GET: /v3/thread`
-* WIP: [Get User Info](userinfo-get.md) `GET: /v3/userinfo`
 * [Post Item](item-post.md) `POST: /v3/item`
 * [Delete Item](item-delete.md) `DELETE: /v3/item`
 * [Perform Action](action.md) (Retweet, favorite, like...) `POST: /v3/action`

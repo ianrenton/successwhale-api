@@ -1,11 +1,11 @@
 #!/usr/bin/env ruby
 # encoding: UTF-8
 
-# SuccessWhale API function to retrieve a user's display settings for the
+# SuccessWhale API function to save a user's display settings for the
 # SW web UI. Probably not useful for other clients!
 
 
-get '/v3/displaysettings.?:format?' do
+post '/v3/displaysettings.?:format?' do
 
   returnHash = {}
 
@@ -19,16 +19,26 @@ get '/v3/displaysettings.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
+      # Fetch existing settings
       users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
       user = users.fetch_hash
+      
+      # Update the settings
+      if params['theme']
+        user['theme'] = params['theme']
+      end
+      if params['colsperscreen']
+        user['colsperscreen'] = params['colsperscreen']
+      end
+      if params['highlighttime']
+        user['highlighttime'] = params['highlighttime']
+      end
+      
+      # Save back to the DB
+      @db.query("UPDATE sw_users SET `theme`='#{Mysql.escape_string(user['theme'])}', `colsperscreen`='#{Mysql.escape_string(user['colsperscreen'])}', `highlighttime`='#{Mysql.escape_string(user['highlighttime'])}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
 
       status 200
       returnHash[:success] = true
-
-      # Get the display settings and add them to the return hash
-      returnHash[:theme] = user['theme']
-      returnHash[:colsperscreen] = user['colsperscreen']
-      returnHash[:highlighttime] = user['highlighttime']
 
     else
       status 401
