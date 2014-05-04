@@ -26,6 +26,7 @@ require 'rack/throttle'
 require 'facets/string/titlecase'
 require 'htmlentities'
 require 'oauth'
+require 'securerandom'
 require_relative 'utils/globals'
 require_relative 'utils/extensions'
 require_relative 'utils/utils'
@@ -37,8 +38,6 @@ use Rack::Throttle::Hourly,   :max => 1000
 # Enable CORS for JS client access from other domains
 configure do
   enable :cross_origin
-  enable :sessions
-  set :session_secret, ENV['SESSION_KEY'] || 'piuayhp3d489up93upwsi'
 end
 
 # Abort if environment variables not set

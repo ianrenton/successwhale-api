@@ -6,30 +6,6 @@ SET SQL_MODE="NO_AUTO_VALUE_ON_ZERO";
 /*!40101 SET NAMES utf8 */;
 
 
-CREATE TABLE IF NOT EXISTS `facebook_users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sw_uid` int(11) NOT NULL,
-  `uid` varchar(80) NOT NULL,
-  `access_token` varchar(500) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
-CREATE TABLE IF NOT EXISTS `linkcache` (
-  `url` varchar(255) NOT NULL,
-  `replacetext` varchar(20000) NOT NULL,
-  `wholeblock` tinyint(1) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`url`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8;
-
-CREATE TABLE IF NOT EXISTS `linkedin_users` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
-  `sw_uid` int(11) NOT NULL,
-  `uid` varchar(80) NOT NULL,
-  `username` varchar(80) NOT NULL,
-  `access_token` varchar(500) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
-
 CREATE TABLE IF NOT EXISTS `sw_users` (
   `sw_uid` int(11) NOT NULL AUTO_INCREMENT,
   `secret` varchar(100) NOT NULL,
@@ -45,6 +21,14 @@ CREATE TABLE IF NOT EXISTS `sw_users` (
   PRIMARY KEY (`sw_uid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
 
+CREATE TABLE IF NOT EXISTS `facebook_users` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `sw_uid` int(11) NOT NULL,
+  `uid` varchar(80) NOT NULL,
+  `access_token` varchar(500) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
 CREATE TABLE IF NOT EXISTS `twitter_users` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `sw_uid` int(11) NOT NULL,
@@ -53,3 +37,10 @@ CREATE TABLE IF NOT EXISTS `twitter_users` (
   `access_token` varchar(500) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 ;
+
+CREATE TABLE IF NOT EXISTS `twitter_oauth_sessions` (
+  `key` varchar(255) NOT NULL COMMENT 'Twitter OAuth Session key, managed by SW',
+  `request_token` varchar(255) NOT NULL COMMENT 'Request Token used to start OAuth',
+  `request_token_secret` varchar(255) NOT NULL COMMENT 'Request Token Secret used to start OAuth',
+  PRIMARY KEY (`key`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 COMMENT='Cache of Twitter Oauth Request Tokens so session can be recovered by callback';
