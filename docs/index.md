@@ -38,7 +38,7 @@ API calls:
 * [Get "Post to" Accounts](posttoaccounts-get.md) `GET: /v3/posttoaccounts`
 * WIP: [Set "Post to" Accounts](posttoaccounts-put.md) `PUT: /v3/posttoaccounts`
 * [Get Display Settings](displaysettings-get.md) `GET: /v3/displaysettings`
-* [Set Display Settings](displaysettings-post.md) `POST: /v3/displaysettings`
+* [Set Display Settings](displaysettings-put.md) `PUT: /v3/displaysettings`
 
 
 Social Network Interaction
