@@ -38,8 +38,6 @@ post '/v3/item.?:format?' do
 
         if params.has_key?('accounts')
           postToAccounts = params['accounts']
-        else
-          postToAccounts = '' # TODO
         end
 
         # Split the token string

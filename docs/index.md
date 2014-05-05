@@ -38,7 +38,7 @@ API calls:
 * [Get Banned Phrases](bannedphrases-get.md) `GET: /v3/bannedphrases`
 * WIP: [Set Banned Phrases](bannedphrases-post.md) `POST: /v3/bannedphrases`
 * [Get "Post to" Accounts](posttoaccounts-get.md) `GET: /v3/posttoaccounts`
-* WIP: [Set "Post to" Accounts](posttoaccounts-post.md) `POST: /v3/posttoaccounts`
+* [Set "Post to" Accounts](posttoaccounts-post.md) `POST: /v3/posttoaccounts`
 * [Get Display Settings](displaysettings-get.md) `GET: /v3/displaysettings`
 * [Set Display Settings](displaysettings-post.md) `POST: /v3/displaysettings`
 
