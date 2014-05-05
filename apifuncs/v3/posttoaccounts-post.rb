@@ -42,7 +42,6 @@ post '/v3/posttoaccounts.?:format?' do
         
         status 200
         returnHash[:success] = true
-        returnHash[:debugPTAS] = postToAccountsString
 
       else
         status 401

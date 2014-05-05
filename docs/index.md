@@ -35,7 +35,7 @@ Handling User Settings
 * [Get Columns](columns-get.md) `GET: /v3/columns`
 * WIP: [Set Columns](columns-post.md) `POST: /v3/columns`
 * [Get Banned Phrases](bannedphrases-get.md) `GET: /v3/bannedphrases`
-* WIP: [Set Banned Phrases](bannedphrases-post.md) `POST: /v3/bannedphrases`
+* [Set Banned Phrases](bannedphrases-post.md) `POST: /v3/bannedphrases`
 * [Get "Post to" Accounts](posttoaccounts-get.md) `GET: /v3/posttoaccounts`
 * [Set "Post to" Accounts](posttoaccounts-post.md) `POST: /v3/posttoaccounts`
 * [Get Display Settings](displaysettings-get.md) `GET: /v3/displaysettings`
