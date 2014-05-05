@@ -80,7 +80,9 @@ def fixAccountHash(account, sw_uid)
     account[:username] = account[:uid]
     twitter_users = @db.query("SELECT * FROM twitter_users WHERE username='#{Mysql.escape_string(account[:uid])}'")
     twitter_user = twitter_users.fetch_hash
-    account.merge!(:uid => twitter_user['uid'])
+    if (twitter_user)
+      account.merge!(:uid => twitter_user['uid'])
+    end
   end
   if (account[:service] == 'facebook') && !(account[:uid].is_i?)
     facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
