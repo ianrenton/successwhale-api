@@ -3,7 +3,7 @@ Successwhale API
 
 Homepage: https://github.com/ianrenton/successwhale-api
 
-This package provides API functions for the "SuccessWhale" social network client (currently supporting Twitter, Facebook and LinkedIn).
+This package provides API functions for the "SuccessWhale" social network client (currently supporting Twitter and Facebook).
 
 This code is under heavy development. It will form the core of the SuccessWhale version 3 web interface, the Android client [OnoSendai](https://github.com/haku/onosendai), and hopefully a number of other apps as well.
 
@@ -24,7 +24,7 @@ Important Info
 Installation
 ------------
 
-If you want to run the SuccessWhale API on your own server, this section is for you. (Before you start, bear in mind that you can't talk to the main successwhale.com database if you run your own copy of the API code -- you'll need to bring your own database.)
+If you want to run the SuccessWhale API on your own server, this section is for you. If you just want to play around with the SuccessWhale web client, you don't need your own copy of the API server &mdash; you can use mine at `api.successwhale.com`. (If you do need to run your own copy of this API server, bear in mind that you can't talk to the main successwhale.com database if you run your own copy of the API code -- you'll need to bring your own database.)
 
 First of all, install the dependencies. If you don't have ruby and ruby-gems installed on your computer, you'll have to get them first. I recommend "RVM" for managing your ruby environment.
 

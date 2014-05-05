@@ -1,5 +1,5 @@
-Get Status
-----------
+Get API Server Status
+---------------------
 
 Returns status information about the SuccessWhale API. Currently limited to the version number.
 

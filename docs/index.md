@@ -14,23 +14,22 @@ Some explanation:
 * [How does authentication work in SuccessWhale?](howto-auth.md)
 
 
-Authentication
---------------
+Authentication and Accounts
+---------------------------
 
-API calls:
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
 * [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
-* WIP: [Remove Third-party Account](deleteaccount.md) `POST: /v3/deleteaccount`
-* WIP: [Create SuccessWhale Username and Password](makeswuserpass.md) `POST: /v3/makeswuserpass`
-* WIP: [Remove SuccessWhale Username and Password](deleteswuserpass.md) `POST: /v3/deleteswuserpass`
-* WIP: [Remove SuccessWhale Account](deleteswaccount.md) `POST: /v3/deleteswaccount`
+* [Remove Third-party Account](deleteaccount.md) `POST: /v3/deleteaccount`
+* WIP: [Get SuccessWhale Account Info](swaccount.md) `POST: /v3/swaccount`
+* WIP: [Create SuccessWhale Username and Password](makeswaccount.md) `POST: /v3/makeswaccount`
+* WIP: [Remove SuccessWhale Username and Password](deleteswaccount.md) `POST: /v3/deleteswaccount`
+* WIP: [Delete All User Data](deletealldata.md) `POST: /v3/deletealldata`
 
 
 Handling User Settings
 ----------------------
 
-API calls:
 * [Get Accounts](accounts-get.md) `GET: /v3/accounts`
 * [Get Sources](sources.md) `GET: /v3/sources`
 * [Get Columns](columns-get.md) `GET: /v3/columns`
@@ -46,7 +45,6 @@ API calls:
 Social Network Interaction
 --------------------------
 
-API calls:
 * [Get Feed](feed-get.md) `GET: /v3/feed`
 * [Get Thread](thread-get.md) `GET: /v3/thread`
 * [Post Item](item-post.md) `POST: /v3/item`
@@ -57,5 +55,4 @@ API calls:
 Miscellaneous
 -------------
 
-API calls:
-* [Get Status](status-get.md) `GET: /v3/status`
+* [Get API Server Status](status-get.md) `GET: /v3/status`
