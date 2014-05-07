@@ -24,11 +24,11 @@ class Item
       @content[:time] = tweet.created_at
       @content[:fromuser] = tweet.attrs[:sender_screen_name]
       @content[:fromusername] = tweet.sender.attrs[:name]
-      @content[:fromuseravatar] = tweet.sender.attrs[:profile_image_url]
+      @content[:fromuseravatar] = tweet.sender.attrs[:profile_image_url_https]
       @content[:fromuserid] = tweet.attrs[:sender_id_str]
       @content[:touser] = tweet.attrs[:recipient_screen_name]
       @content[:tousername] = tweet.recipient.attrs[:name]
-      @content[:touseravatar] = tweet.recipient.attrs[:profile_image_url]
+      @content[:touseravatar] = tweet.recipient.attrs[:profile_image_url_https]
       @content[:touserid] = tweet.attrs[:recipient_id_str]
       @content[:links] = {}
     
@@ -42,7 +42,7 @@ class Item
       @content[:time] = tweet.created_at
 
       # Add extra tags to show who retweeted it and when
-      @content[:retweetedbyuser] = tweet.from_user
+      @content[:retweetedbyuser] = tweet.user.screen_name
       @content[:retweetedbyusername] = tweet.user.name
       @content[:retweetedbyuserid] = tweet.user.attrs[:id_str]
       @content[:originalposttime] = tweet.retweeted_status.created_at
@@ -52,13 +52,11 @@ class Item
       @content[:escapedtext] = tweet.retweeted_status.full_text
       @content[:fromuser] = tweet.retweeted_status.from_user
       @content[:fromusername] = tweet.retweeted_status.user.name
-      @content[:fromuseravatar] = tweet.retweeted_status.user.profile_image_url
+      @content[:fromuseravatar] = tweet.retweeted_status.user.attrs[:profile_image_url_https]
       @content[:fromuserid] = tweet.retweeted_status.user.attrs[:id_str]
       @content[:isreply] = tweet.retweeted_status.reply?
       @content[:numfavourited] = tweet.retweeted_status.favoriters_count
       @content[:numretweeted] = tweet.retweeted_status.retweeters_count
-      @content[:numreplied] = tweet.retweeted_status.repliers_count
-      @content[:numfavourited] = tweet.retweeted_status.favoriters_count
       @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
@@ -72,16 +70,14 @@ class Item
       @content[:id] = tweet.attrs[:id_str]
       @content[:replytoid] = tweet.attrs[:id_str]
       @content[:time] = tweet.created_at
-      @content[:fromuser] = tweet.from_user
+      @content[:fromuser] = tweet.user.screen_name
       @content[:fromusername] = tweet.user.name
-      @content[:fromuseravatar] = tweet.user.profile_image_url
+      @content[:fromuseravatar] = tweet.user.attrs[:profile_image_url_https]
       @content[:fromuserid] = tweet.user.attrs[:id_str]
       @content[:isreply] = tweet.reply?
       @content[:isretweet] = tweet.retweet?
       @content[:numfavourited] = tweet.favoriters_count
       @content[:numretweeted] = tweet.retweeters_count
-      @content[:numreplied] = tweet.repliers_count
-      @content[:numfavourited] = tweet.favoriters_count
       @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.in_reply_to_user_id
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
@@ -119,7 +115,7 @@ class Item
 
   # Fills in the contents of the item based on a Facebook post.
   def populateFromFacebookPost (post)
-  
+
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
     if post.has_key?('from') && post['from'].is_a?(Hash)
@@ -157,13 +153,13 @@ class Item
       # objects, updates to the notification can be noticed and thus end up
       # at the top of the list.
       @content[:time] = Time.parse(post['updated_time'])
+      # Permalink to the original post
+      @content[:permalink] = post['link']
       if !post['object'].nil?
         @content[:sourceid] = post['object']['id']
         # When a client tries to reply to a notification, they should be replying
         # to the original post
         @content[:replytoid] = post['object']['id']
-        # Permalink to the original post
-        @content[:permalink] = 'https://facebook.com/' + post['object']['id']
       else
         # This is a notification about something, but the source item wasn't 
         # provided.

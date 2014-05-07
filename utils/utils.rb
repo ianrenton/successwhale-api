@@ -8,12 +8,9 @@ def connect()
 
   # Connect to the DB, we will need this for all our API functions
   @db = Mysql.new ENV['DB_HOST'], ENV['DB_USER'], ENV['DB_PASS'], ENV['DB_NAME']
-
-  # Configure a Twitter object
-  Twitter.configure do |config|
-    config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
-    config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
-  end
+  
+  # Twitter connection is handled on-demand, there is no global Twitter object
+  # supported by the gem anymore.
 
   # Configure a Facebook object
   @facebookOAuth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
