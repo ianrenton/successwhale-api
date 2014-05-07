@@ -21,10 +21,10 @@ Authentication and Accounts
 * [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
 * [Remove Third-party Account](deleteaccount.md) `POST: /v3/deleteaccount`
-* WIP: [Get SuccessWhale Account Info](swaccount.md) `POST: /v3/swaccount`
-* WIP: [Create SuccessWhale Username and Password](makeswaccount.md) `POST: /v3/makeswaccount`
-* WIP: [Remove SuccessWhale Username and Password](deleteswaccount.md) `POST: /v3/deleteswaccount`
-* WIP: [Delete All User Data](deletealldata.md) `POST: /v3/deletealldata`
+* [Get Alternative Login Info](altlogin.md) `GET: /v3/altlogin`
+* [Create Alternative Login](createaltlogin.md) `POST: /v3/createaltlogin`
+* [Remove Alternative Login](deletealtlogin.md) `POST: /v3/deletealtlogin`
+* [Delete All User Data](deletealldata.md) `POST: /v3/deletealldata`
 
 
 Handling User Settings
