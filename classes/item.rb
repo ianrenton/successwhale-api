@@ -50,13 +50,13 @@ class Item
 
       # Copy the retweeted status's data into the main body
       @content[:escapedtext] = tweet.retweeted_status.full_text
-      @content[:fromuser] = tweet.retweeted_status.from_user
+      @content[:fromuser] = tweet.retweeted_status.user.screen_name
       @content[:fromusername] = tweet.retweeted_status.user.name
       @content[:fromuseravatar] = tweet.retweeted_status.user.attrs[:profile_image_url_https]
       @content[:fromuserid] = tweet.retweeted_status.user.attrs[:id_str]
       @content[:isreply] = tweet.retweeted_status.reply?
-      @content[:numfavourited] = tweet.retweeted_status.favoriters_count
-      @content[:numretweeted] = tweet.retweeted_status.retweeters_count
+      @content[:numfavourited] = tweet.retweeted_status.favorite_count
+      @content[:numretweeted] = tweet.retweeted_status.retweet_count
       @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
@@ -76,8 +76,8 @@ class Item
       @content[:fromuserid] = tweet.user.attrs[:id_str]
       @content[:isreply] = tweet.reply?
       @content[:isretweet] = tweet.retweet?
-      @content[:numfavourited] = tweet.favoriters_count
-      @content[:numretweeted] = tweet.retweeters_count
+      @content[:numfavourited] = tweet.favorite_count
+      @content[:numretweeted] = tweet.retweet_count
       @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.in_reply_to_user_id
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
@@ -279,13 +279,13 @@ class Item
   def populateURLsFromTwitter(urls, media)
     finishedArray = []
     urls.each do |url|
-      finishedArray << {:url => url.url, :expanded_url => url.expanded_url,
+      finishedArray << {:url => url.attrs[:url], :expanded_url => url.attrs[:expanded_url],
        :title => url.display_url, :indices => url.indices}
     end
     media.each do |url|
       finishedArray << {
-        :url => url.url, :expanded_url => url.expanded_url,
-        :title => url.display_url, :preview => url.media_url_https,
+        :url => url.attrs[:url], :expanded_url => url.attrs[:expanded_url],
+        :title => url.display_url, :preview => url.attrs[:media_url_https],
         :indices => url.indices
       }
     end
