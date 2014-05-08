@@ -31,11 +31,21 @@ get '/v3/columns.?:format?' do
         sourceHashes = []
         fullPath = ''
         sources.each do |source|
+          # Try unpacking a SuccessWhale v2 style string
           parts = source.split(':')
-          account = {:service => parts[0],
-                      :uid => parts[1]}
-          url = parts[2]
-
+          if parts.length > 1
+            # It's v2
+            account = {:service => parts[0],
+                        :uid => parts[1]}
+            url = parts[2]
+          else
+            # It's v3
+            parts = source.split('/')
+            account = {:service => parts[0],
+                        :uid => parts[1]}
+            url = parts[2..-1].join('/')
+          end
+            
           # Fixes for running against a SuccessWhale v2 database.
           account = fixAccountHash(account, sw_uid)
           url = fixURL(account, url)
