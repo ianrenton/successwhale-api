@@ -219,7 +219,7 @@ def makeSourcesList(accounts)
       end
       lists = twitterClient.lists()
       lists.each do |list|
-        sources << buildSourceHash(account, "#{list[:name]} list", list[:slug])
+        sources << buildSourceHash(account, "#{list[:name].gsub(/[\-_]/,' ').titlecase} list", list[:slug])
       end
                 
     elsif account[:service] == 'facebook'
@@ -286,18 +286,18 @@ def getColumnTitle(sources)
   if source[:service] == 'twitter'
     # Regex matchers for Twitter feeds that have their own title style
     # Handle these first
-    listMatch1 = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
-    listMatch2 = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
-    listMatch3 = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(source[:shorturl])
+    listMatch1 = /([A-Za-z0-9\-_]*)\/lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
+    listMatch2 = /@([A-Za-z0-9\-_]*)\/([A-Za-z0-9\-_]*)/.match(source[:shorturl])
+    listMatch3 = /lists\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
     userMatch1 = /user\/([A-Za-z0-9\-_]*)\/statuses/.match(source[:shorturl])
     userMatch2 = /@([A-Za-z0-9\-_]*)/.match(source[:shorturl])
 
     if listMatch1
-      return listMatch1[1].gsub(/[\-_]/,' ').titlecase
+      return "@#{listMatch1[1]}'s #{listMatch1[2].gsub(/[\-_]/,' ').titlecase} list"
     elsif listMatch2
-      return listMatch2[2].gsub(/[\-_]/,' ').titlecase
+      return "@#{listMatch2[1]}'s #{listMatch2[2].gsub(/[\-_]/,' ').titlecase} list"
     elsif listMatch3
-      return listMatch3[2].gsub(/[\-_]/,' ').titlecase
+      return "#{listMatch3[1].gsub(/[\-_]/,' ').titlecase} list"
     elsif userMatch1
       return "@#{userMatch1[1]}"
     elsif userMatch2
