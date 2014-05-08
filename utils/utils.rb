@@ -214,10 +214,23 @@ def makeSourcesList(accounts)
   accounts.each do |account|
     if account[:service] == 'twitter'
       sources << buildSourceHash(account, 'Home Timeline', 'statuses/home_timeline')
+      sources << buildSourceHash(account, 'Public Timeline', 'statuses/public_timeline')
       sources << buildSourceHash(account, 'Own Tweets', 'statuses/user_timeline')
       sources << buildSourceHash(account, 'Mentions', 'statuses/mentions_timeline')
       sources << buildSourceHash(account, 'Direct Messages', 'direct_messages')
       sources << buildSourceHash(account, 'Sent Messages', 'direct_messages/sent')
+      # Now we have to auth with Twitter to get the lists
+      twitterClient = Twitter::REST::Client.new do |config|
+        config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
+        config.consumer_secret = ENV['TWITTER_CONSUMER_SECRET']
+        config.access_token = account[:servicetokens]['oauth_token']
+        config.access_token_secret = account[:servicetokens]['oauth_token_secret']
+      end
+      lists = twitterClient.lists()
+      lists.each do |list|
+        sources << buildSourceHash(account, "#{list[:name]} list", list[:slug])
+      end
+                
     elsif account[:service] == 'facebook'
       sources << buildSourceHash(account, 'Home Feed', 'me/home')
       sources << buildSourceHash(account, 'Wall', 'me/feed')
