@@ -88,15 +88,6 @@ def getAllAccountsForUser(sw_uid)
     accounts << userHash
   end
 
-  linkedin_users = @db.query("SELECT * FROM linkedin_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-  linkedin_users.each_hash do |user|
-    userHash = {:service => 'linkedin',
-                :username => user['username'],
-                :uid => user['uid'],
-                :servicetokens => user['access_token']}
-    accounts << userHash
-  end
-
   return accounts
 end
 
@@ -260,6 +251,11 @@ def buildSourceHash(account, shortname, url)
       fullname = "@#{fullname}"
     end
     source.merge!(:fullname => fullname)
+  else
+    # Try to get a full name out of getColumnTitle
+    bestGuessName = getColumnTitle([source])
+    source.merge!(:shortname => bestGuessName)
+    source.merge!(:fullname => bestGuessName)
   end
   
   return source
@@ -311,6 +307,8 @@ def getColumnTitle(sources)
       title = "@#{source[:username]}'s "
       if source[:shorturl] == 'statuses/home_timeline'
         title << 'Home Timeline'
+      elsif source[:shorturl] == 'statuses/public_timeline'
+        title << 'Public Timeline'
       elsif source[:shorturl] == 'statuses/user_timeline'
         title << 'Timeline'
       elsif source[:shorturl] == 'statuses/mentions_timeline'
