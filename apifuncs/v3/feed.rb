@@ -42,11 +42,7 @@ get '/v3/feed.?:format?' do
           parts = feed.split('/')
           tempSource[:service] = parts[0]
           tempSource[:uid] = parts[1]
-          tempURL = ''
-          parts[2..(parts.length-1)].each do |part|
-            tempURL << part << '/'
-          end
-          tempSource[:url] = tempURL[0..-2]
+          tempSource[:url] = parts[2..-1].join('/')
           sources << tempSource
         end
 
@@ -84,10 +80,16 @@ get '/v3/feed.?:format?' do
 
                 # Fetch the feed
                 sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, options)
-                sourceFeed.each do |tweet|
-                  item = Item.new(source[:service], source[:uid])
-                  item.populateFromTweet(tweet)
-                  items << item
+                if sourceFeed
+                  sourceFeed.each do |tweet|
+                    item = Item.new(source[:service], source[:uid])
+                    item.populateFromTweet(tweet)
+                    items << item
+                  end
+                else
+                  status 400
+                  returnHash[:success] = false
+                  returnHash[:error] = "A malformed Twitter feed URL was provided."
                 end
 
               else

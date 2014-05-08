@@ -219,7 +219,7 @@ def makeSourcesList(accounts)
       end
       lists = twitterClient.lists()
       lists.each do |list|
-        sources << buildSourceHash(account, "#{list[:name].gsub(/[\-_]/,' ').titlecase} list", list[:slug])
+        sources << buildSourceHash(account, "#{list[:name].gsub(/[\-_]/,' ').titlecase} list", "lists/#{list[:slug]}/statuses")
       end
                 
     elsif account[:service] == 'facebook'
