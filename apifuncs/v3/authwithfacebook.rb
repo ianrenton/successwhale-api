@@ -25,6 +25,11 @@ get '/v3/authwithfacebook.?:format?' do
     connect()
 
     if params.has_key?('callback_url')
+      
+      # Make a new Facebook OAuth item with the callback URL set by the client,
+      # instead of the normal one generated in connect().
+      @oauth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], params[:callback_url])
+      
       if !params.has_key?('code')
         # No code provided, so this isn't a callback - return a URL that
         # the user can be sent to to kick off authentication, unless there
@@ -34,7 +39,7 @@ get '/v3/authwithfacebook.?:format?' do
         if !authResult[:explicitfailure]
           status 200
           returnHash[:success] = true
-          returnHash[:url] = @facebookOAuth.url_for_oauth_code(:callback => params[:callback_url], :permissions => FACEBOOK_PERMISSIONS)
+          returnHash[:url] = @oauth.url_for_oauth_code(:permissions => FACEBOOK_PERMISSIONS)
         else
           status 401
           returnHash[:success] = false
@@ -42,7 +47,7 @@ get '/v3/authwithfacebook.?:format?' do
         end
       else
         # A code was returned, so let's validate it
-        fbToken = @facebookOAuth.get_access_token(params[:code], {:redirect_uri => params[:callback_url]})
+        fbToken = @oauth.get_access_token(params[:code])
         # Get FB userid to add to DB
         facebookClient = Koala::Facebook::API.new(fbToken)
         fb_uid = facebookClient.get_object("me")['id']
