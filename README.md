@@ -3,9 +3,7 @@ Successwhale API
 
 Homepage: https://github.com/ianrenton/successwhale-api
 
-This package provides API functions for the "SuccessWhale" social network client (currently supporting Twitter and Facebook).
-
-This code is under heavy development. It will form the core of the SuccessWhale version 3 web interface, the Android client [OnoSendai](https://github.com/haku/onosendai), and hopefully a number of other apps as well.
+This package provides API functions for the "SuccessWhale" social network clients (currently supporting Twitter and Facebook). Clients include the [SuccessWhale version 3 web interface](https://github.com/ianrenton/SuccessWhale), the Android client [OnoSendai](https://github.com/haku/onosendai), and hopefully a number of other apps as well.
 
 SuccessWhale's main selling point is that it provides customisable, blended feeds from across a user's social network accounts -- for example, you can create a feed that combines "mentions" from two of your Twitter accounts with "notifications" from Facebook.
 
@@ -13,7 +11,7 @@ In providing an API for SuccessWhale, I am opening this system up for others to 
 
 The API is a Ruby application built on Sinatra and Rack. It comes in a handy Heroku-flavoured wrapper. This is my first time writing Ruby, so I'm sure there are many inefficiencies -- patches, bug reports and constructive criticism are all welcome.
 
-For test purposes, I will host this application at https://api.successwhale.com, running on the SuccessWhale beta test (http://test.successwhale.com) database. This may not always be available, and I will almost certainly break it regularly.
+This application runs at https://api.successwhale.com.
 
 Important Info
 --------------
@@ -30,7 +28,7 @@ First of all, install the dependencies. If you don't have ruby and ruby-gems ins
 
 With those installed, `git clone` this repository into a directory on your computer. `cd` into the directory. Run `gem install bundler` if necessary, then `bundle install` to install all of the SuccessWhale API's dependencies.
 
-You will then need to set up a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`. (This structure will probably change in the run up to the release of SuccessWhale 3, so be prepared to migrate by hand if you store important data in the DB as it currently stands.)
+You will then need to set up a mySQL server. (That's all we support at the moment, but if you'd like to fork the code and add support for something like postgres, I would love to pull it in.)  A query to populate the tables is included as `setup.sql`.
 
 Next, rename `sample.env` to `.env` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter and Facebook) that you want to use, and make a note of the access tokens so that you can enter them in `.env`.
 
