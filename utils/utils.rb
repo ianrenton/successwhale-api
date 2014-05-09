@@ -141,14 +141,16 @@ def includeUsernames(accountHash)
     if accountHash[:service] == 'facebook'
       facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
       facebook_user = facebook_users.fetch_hash
-      if facebook_user['username'] != nil
+      if facebook_user && facebook_user['username']
         accountHash.merge!(:username => facebook_user['username'])
-      else
+      elsif facebook_user && facebook_user['access_token']
         # If we're supporting an SWv2 database, we can't get the Facebook
         # username from the table, so make a call to Facebook to get it.
         facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
         name = facebookClient.get_object("me")['name']
         accountHash.merge!(:username => name)
+      else
+        accountHash.merge!(:username => 'Unknown')
       end
     end
   end
