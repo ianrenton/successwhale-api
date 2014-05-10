@@ -124,6 +124,11 @@ get '/v3/feed.?:format?' do
                   item = Item.new(source[:service], source[:uid])
                   item.populateFromFacebookPost(post)
                   items << item
+                  
+                  # Mark notifications as read
+                  if post['unread']
+                    facebookClient.put_object(post['id'],'', {unread: false})
+                  end
                 end
 
               else
