@@ -31,8 +31,8 @@ require_relative 'utils/extensions'
 require_relative 'utils/utils'
 require_relative 'classes/item'
 
-# Throttle clients to max. 1000 API calls per hour
-use Rack::Throttle::Hourly,   :max => 1000
+# Throttle clients to max. 100000 API calls per hour
+use Rack::Throttle::Hourly,   :max => 100000
 
 # Enable CORS for JS client access from other domains
 configure do
