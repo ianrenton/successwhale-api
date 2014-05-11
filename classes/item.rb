@@ -224,7 +224,7 @@ class Item
     @content[:time] = Time.parse(comment['created_time'])
     @content[:fromuserid] = comment['from']['id']
     @content[:fromusername] = comment['from']['name']
-    @content[:fromuseravatar] = "http://graph.facebook.com/#{comment['from']['id']}/picture"
+    @content[:fromuseravatar] = "https://graph.facebook.com/#{comment['from']['id']}/picture"
     @content[:escapedtext] = comment['message']
     
     # When a client tries to reply to a comment, they can reply to the comment's
