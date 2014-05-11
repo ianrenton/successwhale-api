@@ -3,7 +3,7 @@ Get Web UI Display Settings
 
 Returns the display settings that the current user uses in the web UI. Probably not useful for other clients!
 
-The returned parameters are the theme (`theme`), the number of columns displayed horizontally on a screen before scrolling (`colsperscreen`) and the maximum age of items (in minutes) to draw a "this is new!" highlight box around (`highlighttime`).
+The returned parameters are the theme (`theme`), the number of columns displayed horizontally on a screen before scrolling (`colsperscreen`), the maximum age of items (in minutes) to draw a "this is new!" highlight box around (`highlighttime`), and whether to display media inline in columns in the client (`inlinemedia`).
 
 * Request type: GET
 * Authentication required: yes
@@ -21,5 +21,6 @@ Example Response (JSON):
       "success":true,
       "theme":"default",
       "colsperscreen":"4",
-      "highlighttime":"15"
+      "highlighttime":"15",
+      "inlinemedia":true
     }

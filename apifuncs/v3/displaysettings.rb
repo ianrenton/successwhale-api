@@ -29,6 +29,7 @@ get '/v3/displaysettings.?:format?' do
       returnHash[:theme] = user['theme']
       returnHash[:colsperscreen] = user['colsperscreen']
       returnHash[:highlighttime] = user['highlighttime']
+      returnHash[:inlinemedia] = (user['inlinemedia'] == '1') ? true : false
 
     else
       status 401

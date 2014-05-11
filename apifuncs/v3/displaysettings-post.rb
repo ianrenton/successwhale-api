@@ -33,9 +33,12 @@ post '/v3/displaysettings.?:format?' do
       if params['highlighttime']
         user['highlighttime'] = params['highlighttime']
       end
+      if params['inlinemedia']
+        user['inlinemedia'] = (params['inlinemedia']=='true') ? '1' : '0'
+      end
       
       # Save back to the DB
-      @db.query("UPDATE sw_users SET `theme`='#{Mysql.escape_string(user['theme'])}', `colsperscreen`='#{Mysql.escape_string(user['colsperscreen'])}', `highlighttime`='#{Mysql.escape_string(user['highlighttime'])}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
+      @db.query("UPDATE sw_users SET `theme`='#{Mysql.escape_string(user['theme'])}', `colsperscreen`='#{Mysql.escape_string(user['colsperscreen'])}', `highlighttime`='#{Mysql.escape_string(user['highlighttime'])}', `inlinemedia`='#{Mysql.escape_string(user['inlinemedia'])}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
 
       status 200
       returnHash[:success] = true
