@@ -21,7 +21,7 @@ post '/v3/createaltlogin.?:format?' do
       sw_uid = authResult[:sw_uid]
       
       # Check all required parameters present
-      if params.has_key?('username') && params.has_key?('password')
+      if params['username'] && params['password']
 
         # Get parameters
         username = params[:username]

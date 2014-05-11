@@ -20,7 +20,7 @@ delete '/v3/item.?:format?' do
       sw_uid = authResult[:sw_uid]
 
       # Check we have been given the 'service', 'uid' and 'postid' parameters
-      if params.has_key?('service') && params.has_key?('uid') && params.has_key?('postid')
+      if params['service'] && params['uid'] && params['postid']
 
         status 200
         returnHash[:success] = true

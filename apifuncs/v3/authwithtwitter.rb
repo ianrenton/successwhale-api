@@ -25,7 +25,7 @@ get '/v3/authwithtwitter.?:format?' do
                                     ENV['TWITTER_CONSUMER_SECRET'],
                              { :site => "https://api.twitter.com" })
 
-    if params.has_key?('callback_url')
+    if params['callback_url']
       # callback_url provided, so this isn't itself a callback - return a URL that
       # the user can be sent to to kick off authentication, unless there
       # was an explicit auth failure. (New users and properly authenticated
@@ -55,7 +55,7 @@ get '/v3/authwithtwitter.?:format?' do
         returnHash[:success] = false
         returnHash[:error] = authResult[:error]
       end
-    elsif params.has_key?('oauth_token') && params.has_key?('oauth_verifier') && params.has_key?('swsessionkey')
+    elsif params['oauth_token'] && params['oauth_verifier'] && params['swsessionkey']
       # An oauth block was returned, so let's validate it and get an access token
       
       # First of all we have to get the request token back from the DB where we 
@@ -85,7 +85,7 @@ get '/v3/authwithtwitter.?:format?' do
         
         # Check if the user is authenticated with SW by checking the 'token' param
         # provided to this call
-        if params.has_key?('token')
+        if params['token']
           authResult = checkAuth({'token' => params[:token]})
 
           if authResult[:authenticated]

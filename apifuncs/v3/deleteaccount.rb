@@ -28,7 +28,7 @@ post '/v3/deleteaccount.?:format?' do
       sw_uid = authResult[:sw_uid]
 
       # Check we have been given the 'service' and 'uid' parameters
-      if params.has_key?('service') && params.has_key?('uid')
+      if params['service'] && params['uid']
 
         # Do the action
         if params['service'] == 'twitter'

@@ -13,7 +13,7 @@ post '/v3/authenticate.?:format?' do
     connect()
 
     # Check all required parameters present
-    if params.has_key?('username') && params.has_key?('password')
+    if params['username'] && params['password']
 
       # Get parameters
       username = params[:username]

@@ -40,7 +40,7 @@ configure do
 end
 
 # Abort if environment variables not set
-if !ENV.has_key?('DB_HOST')
+if !ENV['DB_HOST']
   abort('API server is not configured. Edit the values in sample.env and rename the file to .env. If running on Heroku, push the config.')
 end
 

@@ -28,7 +28,7 @@ def checkAuth(params)
 
   begin
 
-    if params.has_key?('token')
+    if params['token']
       # Fetch a DB row for the given uid and secret
       users = @db.query("SELECT * FROM sw_users WHERE secret='#{Mysql.escape_string(params['token'])}'")
 
@@ -132,7 +132,7 @@ end
 def includeUsernames(accountHash)
   # Check if we already have a username, if we're supporting a SWv2 database
   # we probably do already
-  if !accountHash.has_key?(:username)
+  if !accountHash[:username]
     if accountHash[:service] == 'twitter'
       twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
       twitter_user = twitter_users.fetch_hash

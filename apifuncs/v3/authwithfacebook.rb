@@ -24,13 +24,13 @@ get '/v3/authwithfacebook.?:format?' do
 
     connect()
 
-    if params.has_key?('callback_url')
+    if params['callback_url']
       
       # Make a new Facebook OAuth item with the callback URL set by the client,
       # instead of the normal one generated in connect().
       @oauth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'], params[:callback_url])
       
-      if !params.has_key?('code')
+      if !params['code']
         # No code provided, so this isn't a callback - return a URL that
         # the user can be sent to to kick off authentication, unless there
         # was an explicit auth failure. (New users and properly authenticated
@@ -58,7 +58,7 @@ get '/v3/authwithfacebook.?:format?' do
 
         # Check if the user is authenticated with SW by checking the 'token' param
         # provided to this call
-        if params.has_key?('token')
+        if params['token']
           authResult = checkAuth({'token' => params[:token]})
 
           if authResult[:authenticated]

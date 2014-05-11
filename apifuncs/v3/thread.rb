@@ -28,7 +28,7 @@ get '/v3/thread.?:format?' do
       items = []
 
       # Check we have been given the 'service', 'uid' and 'postid' parameters
-      if params.has_key?('service') && params.has_key?('uid') && params.has_key?('postid')
+      if params['service'] && params['uid'] && params['postid']
 
         if params[:service] == 'twitter'
           # Grab the twitter auth tokens for the account
@@ -59,7 +59,7 @@ get '/v3/thread.?:format?' do
                 # Skip first if requested, otherwise (i.e. no skipfirst or
                 # this isn't the first tweet) add the tweet to the array to
                 # return.
-                if !(params.has_key?('skipfirst') && params[:skipfirst] == 'true' && nextID == params[:postid])
+                if !(params['skipfirst'] && params[:skipfirst] == 'true' && nextID == params[:postid])
                   items << item
                 end
                 nextID = tweet.attrs[:in_reply_to_status_id_str]
@@ -103,7 +103,7 @@ get '/v3/thread.?:format?' do
               # First item, the parent
               # Skip this if requested, otherwise add the post to the array
               # that will also contain the comments.
-              if !(params.has_key?('skipfirst') && params[:skipfirst] == 'true')
+              if !(params['skipfirst'] && params[:skipfirst] == 'true')
                 items << item
               end
 
@@ -120,7 +120,7 @@ get '/v3/thread.?:format?' do
               end
 
               # Comments
-              if fbpost.has_key?('comments') && !fbpost['comments']['data'].nil?
+              if fbpost['comments'] && !fbpost['comments']['data'].nil?
                 fbpost['comments']['data'].each do |comment|
                   item = Item.new(params[:service], params[:uid])
                   item.populateFromFacebookComment(comment)

@@ -21,7 +21,7 @@ post '/v3/action.?:format?' do
       sw_uid = authResult[:sw_uid]
 
       # Check we have been given the 'service', 'uid', 'postid' and 'action' parameters
-      if params.has_key?('service') && params.has_key?('uid') && params.has_key?('postid') && params.has_key?('action')
+      if params['service'] && params['uid'] && params['postid'] && params['action']
 
         status 200
         returnHash[:success] = true

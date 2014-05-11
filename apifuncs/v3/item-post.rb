@@ -23,7 +23,7 @@ post '/v3/item.?:format?' do
       sw_uid = authResult[:sw_uid]
       
       # Handle the uploaded media file, if it exists
-      if (params.has_key?('file') && (params['file'] != ''))
+      if (params['file'] && (params['file'] != ''))
         uploadedFilePath = UPLOAD_DIR + '/' + params['file'][:filename];
         File.open(uploadedFilePath, "w") do |f|
           f.write(params['file'][:tempfile].read)
@@ -31,12 +31,12 @@ post '/v3/item.?:format?' do
         uploadedFile = File.new(uploadedFilePath)
       end
 
-      if params.has_key?('text') && !params['text'].empty?
+      if params['text'] && !params['text'].empty?
         # User gave us a text parameter, so that's OK
         status 201
         returnHash[:success] = true
 
-        if params.has_key?('accounts')
+        if params['accounts']
           postToAccounts = params['accounts']
         end
 
@@ -74,7 +74,7 @@ post '/v3/item.?:format?' do
                 options.merge!(:wrap_links => true)
 
                 # Set in-reply-to if required
-                if params.has_key?('in_reply_to_id')
+                if params['in_reply_to_id']
                   options.merge!(:in_reply_to_status_id => params['in_reply_to_id'])
                 end
 
@@ -119,7 +119,7 @@ post '/v3/item.?:format?' do
                 facebookClient = Koala::Facebook::API.new(user['access_token'])
 
                 # Comment if that's what was requested, otherwise post to wall
-                if params.has_key?('in_reply_to_id')
+                if params['in_reply_to_id']
                   # Comment
                   facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
                 elsif uploadedFile
@@ -149,7 +149,7 @@ post '/v3/item.?:format?' do
         end
 
       # Delete the temporary files if there were any.
-      if (params.has_key?('file') && (params['file'] != ''))
+      if (params['file'] && (params['file'] != ''))
         if File.exist?(params['file'][:tempfile].path)
           params['file'][:tempfile].close
           File.delete(params['file'][:tempfile].path)

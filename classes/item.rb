@@ -118,18 +118,18 @@ class Item
   
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
-    if post.has_key?('from') && post['from'].is_a?(Hash)
+    if post['from'] && post['from'].is_a?(Hash)
       @content[:fromuserid] = post['from']['id']
       @content[:fromusername] = post['from']['name']
       @content[:fromuseravatar] = "https://graph.facebook.com/#{post['from']['id']}/picture"
     end
-    if post.has_key?('comments')
+    if post['comments']
       @content[:numcomments] = post['comments']['data'].length
       #@content[:comments] = post['comments']['data']
     else
       @content[:numcomments] = 0
     end
-    if post.has_key?('likes')
+    if post['likes']
       @content[:numlikes] = post['likes']['data'].length
       @content[:likes] = post['likes']['data']
     else
@@ -138,16 +138,16 @@ class Item
 
     # Get some text for the item by any means necessary
     @content[:text] = ''
-    if post.has_key?('message')
+    if post['message']
       @content[:text] = post['message']
-    elsif post.has_key?('story')
+    elsif post['story']
       @content[:text] = post['story']
-    elsif post.has_key?('title')
+    elsif post['title']
       @content[:text] = post['title']
     end
 
     # Detect notifications
-    if post.has_key?('unread')
+    if post['unread']
       @content[:unread] = post['unread']
       # Notifications are given their "updated" time so that if clients cache
       # objects, updates to the notification can be noticed and thus end up
@@ -175,7 +175,7 @@ class Item
       @content[:replytoid] = post['id']
       # Non-notifications might be 'to' someone else, e.g. a friend posting on another
       # friend's wall.
-      if post.has_key?('to') && post['to'].is_a?(Hash) && post['to']['data'].is_a?(Array)
+      if post['to'] && post['to'].is_a?(Hash) && post['to']['data'].is_a?(Array)
         @content[:tousername] = post['to']['data'][0]['name']
       end
     end
@@ -206,7 +206,7 @@ class Item
     
     # If we *still* have no post text at this point, try and get the title
     # of an included link.
-    if (@content[:text] == '') && @content.has_key?(:links)
+    if (@content[:text] == '') && @content[:links]
       @content[:text] = @content[:links][0][:title]
     end
 
@@ -319,11 +319,11 @@ class Item
   # thumbnails are included.
   def populateURLsFromFacebook(post)
     finishedArray = []
-    if post.has_key?('link')
+    if post['link']
       urlitem = {}
       # TODO: URL expansion (the hard way)
       urlitem.merge!({:url => post['link'], :title => post['name']})
-      if post.has_key?('picture')
+      if post['picture']
         # Horrible hack to get large size previews
         if post['picture'].include?('_s.jpg')
           urlitem.merge!({:preview => post['picture'].gsub('_s.jpg', '_n.jpg')}) 
@@ -405,7 +405,7 @@ class Item
       # Catch URLs that are actually to an image even though they weren't given a
       # 'preview' block, and give them a preview
       imageURLMatch = ANY_IMAGE_URL_REGEX.match(link[:expanded_url])
-      if imageURLMatch && !link.has_key?(:preview)
+      if imageURLMatch && !link[:preview]
         link[:preview] = link[:expanded_url]
       end
     end

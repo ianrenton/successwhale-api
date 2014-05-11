@@ -24,10 +24,10 @@ get '/v3/feed.?:format?' do
       items = []
 
       # Check we have been given the 'sources' parameter
-      if params.has_key?('sources')
+      if params['sources']
 
         # Default to returning 20 items if we weren't given a number
-        if params.has_key?('count')
+        if params['count']
           count = params[:count].to_i
         else
           count = 20
@@ -74,7 +74,7 @@ get '/v3/feed.?:format?' do
 
                 # Set options
                 options = {:count => count}
-                if params.has_key?('since_id')
+                if params['since_id']
                   options.merge!(:since_id => params['since_id'])
                 end 
 
