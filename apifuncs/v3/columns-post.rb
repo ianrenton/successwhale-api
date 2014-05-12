@@ -57,7 +57,7 @@ post '/v3/columns.?:format?' do
         fullpath = columnStrings.join(";")
         
         # Write to the DB
-        @db.query("UPDATE sw_users SET `columns`='#{Mysql.escape_string(fullpath)}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
+        @db.query("UPDATE sw_users SET `columns`='#{@db.escape(fullpath)}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
 
       else
         status 401

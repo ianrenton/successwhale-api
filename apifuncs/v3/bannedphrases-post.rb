@@ -27,7 +27,7 @@ post '/v3/bannedphrases.?:format?' do
         bannedPhrases = bannedPhrasesArray.join("\n")
         
         # Write to the DB
-        @db.query("UPDATE sw_users SET `blocklist`='#{Mysql.escape_string(bannedPhrases)}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
+        @db.query("UPDATE sw_users SET `blocklist`='#{@db.escape(bannedPhrases)}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
         
         status 200
         returnHash[:success] = true

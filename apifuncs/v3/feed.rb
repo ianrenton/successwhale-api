@@ -54,11 +54,11 @@ get '/v3/feed.?:format?' do
 
           if source[:service] == 'twitter'
             # Grab the twitter auth tokens for the account
-            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
+            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(source[:uid])}'")
 
             # Check we have an entry for the Twitter account being used
-            if twitter_users.num_rows == 1
-              user = twitter_users.fetch_hash
+            if twitter_users.count == 1
+              user = twitter_users.first
 
               # Check that the currently authenticated user owns that Twitter account
               if user['sw_uid'].to_i == sw_uid
@@ -105,11 +105,11 @@ get '/v3/feed.?:format?' do
 
           elsif source[:service] == 'facebook'
             # Grab the facebook auth token for the account
-            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(source[:uid])}'")
+            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(source[:uid])}'")
 
             # Check we have an entry for the Facebook account being used
-            if facebook_users.num_rows == 1
-              user = facebook_users.fetch_hash
+            if facebook_users.count == 1
+              user = facebook_users.first
 
               # Check that the currently authenticated user owns that Facebook account
               if user['sw_uid'].to_i == sw_uid
@@ -151,8 +151,8 @@ get '/v3/feed.?:format?' do
         end
 
         # Remove items that match the blocklist
-        swusers = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-        swuser = swusers.fetch_hash
+        swusers = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+        swuser = swusers.first
         if !swuser['blocklist'].nil?
           bannedPhrases = swuser['blocklist'].force_encoding('UTF-8').split(/\r?\n/)
         else

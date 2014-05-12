@@ -7,7 +7,7 @@
 def connect()
 
   # Connect to the DB, we will need this for all our API functions
-  @db = Mysql.new ENV['DB_HOST'], ENV['DB_USER'], ENV['DB_PASS'], ENV['DB_NAME']
+  @db = Mysql2::Client.new(:host => ENV['DB_HOST'], :username => ENV['DB_USER'], :password => ENV['DB_PASS'], :database => ENV['DB_NAME'])
   
   # Twitter connection is handled on-demand, there is no global Twitter object
   # supported by the gem anymore.
@@ -30,11 +30,11 @@ def checkAuth(params)
 
     if params['token']
       # Fetch a DB row for the given uid and secret
-      users = @db.query("SELECT * FROM sw_users WHERE secret='#{Mysql.escape_string(params['token'])}'")
+      users = @db.query("SELECT * FROM sw_users WHERE secret='#{@db.escape(params['token'])}'")
 
       # If we didn't find a match, set UID to zero
-      if users.num_rows == 1
-        user = users.fetch_hash
+      if users.count == 1
+        user = users.first
         returnHash[:authenticated] = true
         returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
         returnHash[:sw_uid] = user['sw_uid'].to_i
@@ -64,8 +64,8 @@ end
 def getAllAccountsForUser(sw_uid)
   accounts = []
 
-  twitter_users = @db.query("SELECT * FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-  twitter_users.each_hash do |user|
+  twitter_users = @db.query("SELECT * FROM twitter_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+  twitter_users.each do |user|
     unserializedServiceTokens = PHP.unserialize(user['access_token'])
     userHash = {:service => 'twitter',
                 :username => user['username'],
@@ -74,8 +74,8 @@ def getAllAccountsForUser(sw_uid)
     accounts << userHash
   end
 
-  facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-  facebook_users.each_hash do |user|
+  facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+  facebook_users.each do |user|
     userHash = {:service => 'facebook',
                 :uid => user['uid'],
                 :servicetokens => user['access_token']}
@@ -95,9 +95,9 @@ end
 def getUserBlock(sw_uid)
   returnHash = {}
 
-  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-  if users.num_rows == 1
-    user = users.fetch_hash
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+  if users.count == 1
+    user = users.first
     returnHash[:success] = true
     returnHash[:userid] = user['sw_uid']
     returnHash[:username] = user['username']
@@ -111,7 +111,8 @@ def getUserBlock(sw_uid)
 end
 
 
-# Make JSON or XML from a hash and return it
+# Make JSON or XML from a hash and return it.
+# For convenience, close db connection at this point too.
 def makeOutput(hash, format, xmlRoot)
   if format == 'json'
     content_type 'application/json'
@@ -124,6 +125,12 @@ def makeOutput(hash, format, xmlRoot)
     content_type 'application/json'
     output = hash.to_json
   end
+  
+  # close DB connection
+  if @db
+    @db.close
+  end
+  
   return output
 end
 
@@ -134,13 +141,13 @@ def includeUsernames(accountHash)
   # we probably do already
   if !accountHash[:username]
     if accountHash[:service] == 'twitter'
-      twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
-      twitter_user = twitter_users.fetch_hash
+      twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(accountHash[:uid])}'")
+      twitter_user = twitter_users.first
       accountHash.merge!(:username => twitter_user['username'])
     end
     if accountHash[:service] == 'facebook'
-      facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(accountHash[:uid])}'")
-      facebook_user = facebook_users.fetch_hash
+      facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(accountHash[:uid])}'")
+      facebook_user = facebook_users.first
       if facebook_user && facebook_user['username']
         accountHash.merge!(:username => facebook_user['username'])
       elsif facebook_user && facebook_user['access_token']
@@ -161,7 +168,7 @@ end
 # the sw_uid.
 def makeSWAccount()
   token = createToken()
-  result = @db.query("INSERT INTO sw_users (secret) VALUES ('#{Mysql.escape_string(token)}')")
+  result = @db.query("INSERT INTO sw_users (secret) VALUES ('#{@db.escape(token)}')")
   p result # todo remove
   return result.last_id
 end
@@ -175,8 +182,8 @@ end
 
 # Adds the default columns for a service to a user's list
 def addDefaultColumns(sw_uid, service, service_id)
-  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
-  user = users.fetch_hash
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid)}'")
+  user = users.first
   currentCols = user['columns']
 
   if !currentCols.blank?
@@ -193,7 +200,7 @@ def addDefaultColumns(sw_uid, service, service_id)
     currentCols << "#{service}:#{service_id}:notifications"
   end
 
-  @db.query("UPDATE sw_users SET columns='#{Mysql.escape_string(currentCols)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid)}'")
+  @db.query("UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid)}'")
 end
 
 # Makes a default list of sources for the given accounts. This is not the complete set of

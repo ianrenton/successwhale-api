@@ -18,8 +18,8 @@ get '/v3/columns.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-      user = users.fetch_hash
+      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+      user = users.first
       status 200
       returnHash[:success] = true
 
@@ -88,15 +88,15 @@ end
 def fixAccountHash(account, sw_uid)
   if (account[:service] == 'twitter') && !(account[:uid].is_i?)
     account[:username] = account[:uid]
-    twitter_users = @db.query("SELECT * FROM twitter_users WHERE username='#{Mysql.escape_string(account[:uid])}'")
-    twitter_user = twitter_users.fetch_hash
+    twitter_users = @db.query("SELECT * FROM twitter_users WHERE username='#{@db.escape(account[:uid])}'")
+    twitter_user = twitter_users.first
     if (twitter_user)
       account.merge!(:uid => twitter_user['uid'])
     end
   end
   if (account[:service] == 'facebook') && !(account[:uid].is_i?)
-    facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-    facebook_users.each_hash do |facebook_user|
+    facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+    facebook_users.each do |facebook_user|
       facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
       name = facebookClient.get_object("me")['name']
       if name == account[:uid]

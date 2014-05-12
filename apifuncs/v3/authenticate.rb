@@ -20,15 +20,15 @@ post '/v3/authenticate.?:format?' do
       password = params[:password]
 
       # Fetch a DB row for the given username
-      users = @db.query("SELECT * FROM sw_users WHERE username='#{Mysql.escape_string(username)}'")
+      users = @db.query("SELECT * FROM sw_users WHERE username='#{@db.escape(username)}'")
 
-      if users.num_rows == 1
+      if users.count == 1
         # A user matched the supplied username, so let's see if the password matches
 
-        saltedPassword = Mysql.escape_string("#{password}#{ENV['PASSWORD_SALT']}")
+        saltedPassword = @db.escape("#{password}#{ENV['PASSWORD_SALT']}")
         md5 = Digest::MD5.hexdigest(saltedPassword)
 
-        user = users.fetch_hash
+        user = users.first
         if user['password'] == md5
           # Password matches
           status 200

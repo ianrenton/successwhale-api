@@ -22,8 +22,8 @@ get '/v3/posttoaccounts.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-      user = users.fetch_hash
+      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+      user = users.first
 
       status 200
       returnHash[:success] = true

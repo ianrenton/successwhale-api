@@ -27,11 +27,11 @@ delete '/v3/item.?:format?' do
 
         # Do the action
         if params['service'] == 'twitter'
-          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(params['uid'])}'")
 
           # Check we have an entry for the Twitter account being used
-          if twitter_users.num_rows == 1
-            user = twitter_users.fetch_hash
+          if twitter_users.count == 1
+            user = twitter_users.first
 
             # Check that the currently authenticated user owns that Twitter account
             if user['sw_uid'].to_i == sw_uid
@@ -62,11 +62,11 @@ delete '/v3/item.?:format?' do
 
         elsif params['service'] == 'facebook'
           # Grab the facebook auth token for the account
-          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{Mysql.escape_string(params['uid'])}'")
+          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(params['uid'])}'")
 
           # Check we have an entry for the Facebook account being used
-          if facebook_users.num_rows == 1
-            user = facebook_users.fetch_hash
+          if facebook_users.count == 1
+            user = facebook_users.first
 
             # Check that the currently authenticated user owns that Facebook account
             if user['sw_uid'].to_i == sw_uid

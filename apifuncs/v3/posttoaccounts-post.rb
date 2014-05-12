@@ -38,7 +38,7 @@ post '/v3/posttoaccounts.?:format?' do
         end
         
         # Write to the DB
-        @db.query("UPDATE sw_users SET `posttoservices`='#{Mysql.escape_string(postToAccountsString)}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
+        @db.query("UPDATE sw_users SET `posttoservices`='#{@db.escape(postToAccountsString)}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
         
         status 200
         returnHash[:success] = true

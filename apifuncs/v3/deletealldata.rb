@@ -24,9 +24,9 @@ post '/v3/deletealldata.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      @db.query("DELETE FROM twitter_users WHERE sw_uid='#{Mysql.escape_string(params['uid'])}'")
-      @db.query("DELETE FROM facebook_users WHERE sw_uid='#{Mysql.escape_string(params['uid'])}'")
-      @db.query("DELETE FROM sw_users WHERE sw_uid='#{Mysql.escape_string(params['uid'])}'")
+      @db.query("DELETE FROM twitter_users WHERE sw_uid='#{@db.escape(params['uid'])}'")
+      @db.query("DELETE FROM facebook_users WHERE sw_uid='#{@db.escape(params['uid'])}'")
+      @db.query("DELETE FROM sw_users WHERE sw_uid='#{@db.escape(params['uid'])}'")
       
       status 200
       returnHash[:success] = true

@@ -20,8 +20,8 @@ post '/v3/displaysettings.?:format?' do
       sw_uid = authResult[:sw_uid]
 
       # Fetch existing settings
-      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
-      user = users.fetch_hash
+      users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+      user = users.first
       
       # Update the settings
       if params['theme']
@@ -38,7 +38,7 @@ post '/v3/displaysettings.?:format?' do
       end
       
       # Save back to the DB
-      @db.query("UPDATE sw_users SET `theme`='#{Mysql.escape_string(user['theme'])}', `colsperscreen`='#{Mysql.escape_string(user['colsperscreen'])}', `highlighttime`='#{Mysql.escape_string(user['highlighttime'])}', `inlinemedia`='#{Mysql.escape_string(user['inlinemedia'])}' WHERE `sw_uid`='#{Mysql.escape_string(sw_uid.to_s)}'")
+      @db.query("UPDATE sw_users SET `theme`='#{@db.escape(user['theme'])}', `colsperscreen`='#{@db.escape(user['colsperscreen'])}', `highlighttime`='#{@db.escape(user['highlighttime'])}', `inlinemedia`='#{@db.escape(user['inlinemedia'])}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
 
       status 200
       returnHash[:success] = true

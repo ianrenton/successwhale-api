@@ -28,17 +28,17 @@ post '/v3/createaltlogin.?:format?' do
         password = params[:password]
         
         # Check username isn't already used
-        users = @db.query("SELECT * FROM sw_users WHERE username='#{Mysql.escape_string(username)}'")
-        user = users.fetch_hash
+        users = @db.query("SELECT * FROM sw_users WHERE username='#{@db.escape(username)}'")
+        user = users.first
 
-        if (users.num_rows == 0) || ((users.num_rows == 1) && (user['sw_uid'] == sw_uid.to_s))
+        if (users.count == 0) || ((users.count == 1) && (user['sw_uid'] == sw_uid.to_s))
         
           # Salt and hash password
-          saltedPassword = Mysql.escape_string("#{password}#{ENV['PASSWORD_SALT']}")
+          saltedPassword = @db.escape("#{password}#{ENV['PASSWORD_SALT']}")
           md5 = Digest::MD5.hexdigest(saltedPassword)
 
           # Store username and password
-          @db.query("UPDATE sw_users SET username='#{Mysql.escape_string(username)}', password='#{Mysql.escape_string(md5)}' WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+          @db.query("UPDATE sw_users SET username='#{@db.escape(username)}', password='#{@db.escape(md5)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
           
           status 200
           returnHash[:success] = true

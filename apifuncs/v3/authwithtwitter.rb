@@ -47,7 +47,7 @@ get '/v3/authwithtwitter.?:format?' do
         # back when the callback version of this function is called.
         # This kind of breaks the whole RESTful idea, but we need to store these for the
         # callback to use somehow, and we can't use cookies because of CORS.
-        @db.query("INSERT INTO `twitter_oauth_sessions` (`key`, `request_token`, `request_token_secret`) VALUES ('#{Mysql.escape_string(swsessionkey)}', '#{Mysql.escape_string(request_token.token)}', '#{Mysql.escape_string(request_token.secret)}')")
+        @db.query("INSERT INTO `twitter_oauth_sessions` (`key`, `request_token`, `request_token_secret`) VALUES ('#{@db.escape(swsessionkey)}', '#{@db.escape(request_token.token)}', '#{@db.escape(request_token.secret)}')")
 
         returnHash[:url] = request_token.authorize_url
       else
@@ -60,14 +60,14 @@ get '/v3/authwithtwitter.?:format?' do
       
       # First of all we have to get the request token back from the DB where we 
       # cached it
-      oauth_sessions = @db.query("SELECT * FROM `twitter_oauth_sessions` WHERE `key`='#{Mysql.escape_string(params[:swsessionkey])}'")
+      oauth_sessions = @db.query("SELECT * FROM `twitter_oauth_sessions` WHERE `key`='#{@db.escape(params[:swsessionkey])}'")
 
-      if !oauth_sessions.nil? && oauth_sessions.num_rows == 1
+      if !oauth_sessions.nil? && oauth_sessions.count == 1
       
-        recovered_request = oauth_sessions.fetch_hash
+        recovered_request = oauth_sessions.first
         
         # Now we have what we need, delete the row from the DB to avoid it filling up
-        oauth_sessions = @db.query("DELETE FROM `twitter_oauth_sessions` WHERE `key`='#{Mysql.escape_string(params[:swsessionkey])}'")
+        oauth_sessions = @db.query("DELETE FROM `twitter_oauth_sessions` WHERE `key`='#{@db.escape(params[:swsessionkey])}'")
       
         request_token = OAuth::RequestToken.new(oauth,
                                           recovered_request['request_token'],
@@ -91,16 +91,16 @@ get '/v3/authwithtwitter.?:format?' do
           if authResult[:authenticated]
             # We have an authenticated SW user
             # Check to see if the Twitter account is already in the database
-            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
 
-            if !twitter_users.nil? && twitter_users.num_rows == 1
+            if !twitter_users.nil? && twitter_users.count == 1
               # That Twitter account is already known to SW
-              twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
+              twitter_account_sw_uid = twitter_users.first['sw_uid'].to_i
 
               if twitter_account_sw_uid == authResult[:sw_uid]
                 # The Twitter account is already assigned to the current user,
                 # update the token and return the user info
-                @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+                @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
                 returnHash.merge!(getUserBlock(authResult[:sw_uid]))
                 returnHash[:sw_account_was_new] = false
                 returnHash[:service_account_was_new] = false
@@ -108,8 +108,8 @@ get '/v3/authwithtwitter.?:format?' do
                 # The Twitter account belongs to a different user, so move it
                 # to this one.
                 userBlock = getUserBlock(authResult[:sw_uid])
-                @db.query("DELETE FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'].to_s)}'")
-                @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+                @db.query("DELETE FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
+                @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
                 addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
@@ -118,7 +118,7 @@ get '/v3/authwithtwitter.?:format?' do
             else
               # This is an existing user activating a new Twitter account
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(userBlock[:userid])}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
@@ -127,13 +127,13 @@ get '/v3/authwithtwitter.?:format?' do
 
           else
              # Check to see if the Twitter account is already in the database
-            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
 
-            if !twitter_users.nil? && twitter_users.num_rows == 1
+            if !twitter_users.nil? && twitter_users.count == 1
               # That Twitter account is already known to SW
-              twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
+              twitter_account_sw_uid = twitter_users.first['sw_uid'].to_i
               # Update the token if necessary
-              @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+              @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
               
               # Log in the user
               returnHash.merge!(getUserBlock(twitter_account_sw_uid))
@@ -143,7 +143,7 @@ get '/v3/authwithtwitter.?:format?' do
             else
               # This is a new user starting off by activating a Twitter account
               sw_uid = makeSWAccount()
-              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
               userBlock = getUserBlock(sw_uid)
               returnHash.merge!(userBlock)
@@ -155,13 +155,13 @@ get '/v3/authwithtwitter.?:format?' do
 
         else
           # Check to see if the Twitter account is already in the database
-          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
 
-          if !twitter_users.nil? && twitter_users.num_rows == 1
+          if !twitter_users.nil? && twitter_users.count == 1
             # That Twitter account is already known to SW
-            twitter_account_sw_uid = twitter_users.fetch_hash['sw_uid'].to_i
+            twitter_account_sw_uid = twitter_users.first['sw_uid'].to_i
             # Update the token if necessary
-            @db.query("UPDATE twitter_users SET access_token='#{Mysql.escape_string(PHP.serialize(twitterParams))}' WHERE uid='#{Mysql.escape_string(twitterParams['user_id'])}'")
+            @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
             
             # Log in the user
             returnHash.merge!(getUserBlock(twitter_account_sw_uid))
@@ -171,7 +171,7 @@ get '/v3/authwithtwitter.?:format?' do
           else
             # This is a new user starting off by activating a Twitter account
             sw_uid = makeSWAccount()
-            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{Mysql.escape_string(sw_uid)}', '#{Mysql.escape_string(twitterParams['user_id'])}', '#{Mysql.escape_string(twitterParams['screen_name'])}', '#{Mysql.escape_string(PHP.serialize(twitterParams))}')")
+            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
             addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)

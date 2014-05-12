@@ -20,7 +20,7 @@ post '/v3/deletealtlogin.?:format?' do
       # A user matched the supplied sw_uid and secret, so authentication is OK
       sw_uid = authResult[:sw_uid]
 
-      @db.query("UPDATE sw_users SET username='', password='' WHERE sw_uid='#{Mysql.escape_string(sw_uid.to_s)}'")
+      @db.query("UPDATE sw_users SET username='', password='' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
 
       status 200
       returnHash[:success] = true
