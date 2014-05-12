@@ -34,11 +34,11 @@ post '/v3/displaysettings.?:format?' do
         user['highlighttime'] = params['highlighttime']
       end
       if params['inlinemedia']
-        user['inlinemedia'] = (params['inlinemedia']=='true') ? '1' : '0'
+        user['inlinemedia'] = (params['inlinemedia']=='true') ? 1 : 0
       end
       
       # Save back to the DB
-      @db.query("UPDATE sw_users SET `theme`='#{@db.escape(user['theme'])}', `colsperscreen`='#{@db.escape(user['colsperscreen'])}', `highlighttime`='#{@db.escape(user['highlighttime'])}', `inlinemedia`='#{@db.escape(user['inlinemedia'])}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
+      @db.query("UPDATE sw_users SET `theme`='#{@db.escape(user['theme'])}', `colsperscreen`='#{@db.escape(user['colsperscreen'].to_s)}', `highlighttime`='#{@db.escape(user['highlighttime'].to_s)}', `inlinemedia`='#{@db.escape(user['inlinemedia'].to_s)}' WHERE `sw_uid`='#{@db.escape(sw_uid.to_s)}'")
 
       status 200
       returnHash[:success] = true
