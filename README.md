@@ -32,6 +32,6 @@ You will then need to set up a mySQL server. (That's all we support at the momen
 
 Next, rename `sample.env` to `.env` and fill in the values inside. If you haven't already, you will need to create an app on all the services (e.g. Twitter and Facebook) that you want to use, and make a note of the access tokens so that you can enter them in `.env`.
 
-Twitter needs read/write permissions, and access to your direct messages if you want to see them within SuccessWhale. Facebook needs the following permissions for full functionality: status_update, read_stream, publish_stream, manage_notifications, offline_access.
+Twitter needs read/write permissions, and access to your direct messages if you want to see them within SuccessWhale. Facebook needs the following permissions for full functionality: status_update, read_stream, publish_stream, manage_notifications, user_groups, offline_access.
 
 Your SuccessWhale API is now ready to run. You can run a development instance with Foreman (`foreman start`) or push it to a Heroku instance with the environment vars you set (`heroku create`, `git push heroku master`, `heroku plugins:install git://github.com/ddollar/heroku-config.git`, `heroku config:push`).
