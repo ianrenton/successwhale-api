@@ -97,12 +97,17 @@ def fixAccountHash(account, sw_uid)
   if (account[:service] == 'facebook') && !(account[:uid].is_i?)
     facebook_users = @db.query("SELECT * FROM facebook_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
     facebook_users.each do |facebook_user|
+      begin
       facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
       name = facebookClient.get_object("me")['name']
       if name == account[:uid]
         account.merge!(:uid => facebook_user['uid'])
         account[:username] = name
         break
+      end
+      rescue => e
+        account.merge!(:uid => -1)
+        account[:username] = 'Unknown'
       end
     end
   end
