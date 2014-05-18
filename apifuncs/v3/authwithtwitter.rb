@@ -91,7 +91,7 @@ get '/v3/authwithtwitter.?:format?' do
           if authResult[:authenticated]
             # We have an authenticated SW user
             # Check to see if the Twitter account is already in the database
-            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
+            twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
 
             if !twitter_users.nil? && twitter_users.count == 1
               # That Twitter account is already known to SW
@@ -100,7 +100,7 @@ get '/v3/authwithtwitter.?:format?' do
               if twitter_account_sw_uid == authResult[:sw_uid]
                 # The Twitter account is already assigned to the current user,
                 # update the token and return the user info
-                @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
+                @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
                 returnHash.merge!(getUserBlock(authResult[:sw_uid]))
                 returnHash[:sw_account_was_new] = false
                 returnHash[:service_account_was_new] = false
@@ -109,7 +109,7 @@ get '/v3/authwithtwitter.?:format?' do
                 # to this one.
                 userBlock = getUserBlock(authResult[:sw_uid])
                 @db.query("DELETE FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
-                @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
+                @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
                 addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
@@ -118,7 +118,7 @@ get '/v3/authwithtwitter.?:format?' do
             else
               # This is an existing user activating a new Twitter account
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
+              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
@@ -133,7 +133,7 @@ get '/v3/authwithtwitter.?:format?' do
               # That Twitter account is already known to SW
               twitter_account_sw_uid = twitter_users.first['sw_uid'].to_i
               # Update the token if necessary
-              @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
+              @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
               
               # Log in the user
               returnHash.merge!(getUserBlock(twitter_account_sw_uid))
@@ -143,7 +143,7 @@ get '/v3/authwithtwitter.?:format?' do
             else
               # This is a new user starting off by activating a Twitter account
               sw_uid = makeSWAccount()
-              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
+              @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
               userBlock = getUserBlock(sw_uid)
               returnHash.merge!(userBlock)
@@ -155,13 +155,13 @@ get '/v3/authwithtwitter.?:format?' do
 
         else
           # Check to see if the Twitter account is already in the database
-          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
+          twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
 
           if !twitter_users.nil? && twitter_users.count == 1
             # That Twitter account is already known to SW
             twitter_account_sw_uid = twitter_users.first['sw_uid'].to_i
             # Update the token if necessary
-            @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'])}'")
+            @db.query("UPDATE twitter_users SET access_token='#{@db.escape(PHP.serialize(twitterParams))}' WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
             
             # Log in the user
             returnHash.merge!(getUserBlock(twitter_account_sw_uid))
@@ -171,7 +171,7 @@ get '/v3/authwithtwitter.?:format?' do
           else
             # This is a new user starting off by activating a Twitter account
             sw_uid = makeSWAccount()
-            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(twitterParams['user_id'])}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
+            @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
             addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)

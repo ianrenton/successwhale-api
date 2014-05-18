@@ -186,7 +186,7 @@ end
 
 # Adds the default columns for a service to a user's list
 def addDefaultColumns(sw_uid, service, service_id)
-  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid)}'")
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
   user = users.first
   currentCols = user['columns']
 
@@ -204,7 +204,7 @@ def addDefaultColumns(sw_uid, service, service_id)
     currentCols << "#{service}:#{service_id}:notifications"
   end
 
-  @db.query("UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid)}'")
+  @db.query("UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
 end
 
 # Makes a default list of sources for the given accounts. This is not the complete set of

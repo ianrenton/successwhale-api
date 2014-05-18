@@ -82,7 +82,7 @@ get '/v3/authwithfacebook.?:format?' do
                 # to this one.
                 userBlock = getUserBlock(authResult[:sw_uid])
                 @db.query("DELETE FROM facebook_users WHERE uid='#{@db.escape(fb_uid.to_s)}'")
-                @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(fb_uid)}', '#{@db.escape(fbToken)}')")
+                @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
                 addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
@@ -91,7 +91,7 @@ get '/v3/authwithfacebook.?:format?' do
             else
               # This is an existing user activating a new FB account
               userBlock = getUserBlock(authResult[:sw_uid])
-              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid])}', '#{@db.escape(fb_uid)}', '#{@db.escape(fbToken)}')")
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
               addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
@@ -100,13 +100,13 @@ get '/v3/authwithfacebook.?:format?' do
 
           else
             # Check to see if the FB account is already in the database
-            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(fb_uid)}'")
+            facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(fb_uid.to_s)}'")
 
             if !facebook_users.nil? && facebook_users.count == 1
               # That Facebook account is already known to SW
               fb_account_sw_uid = facebook_users.first['sw_uid'].to_i
               # Update the token if necessary
-              @db.query("UPDATE facebook_users SET access_token='#{@db.escape(fbToken)}' WHERE uid='#{@db.escape(fb_uid)}'")
+              @db.query("UPDATE facebook_users SET access_token='#{@db.escape(fbToken.to_s)}' WHERE uid='#{@db.escape(fb_uid.to_s)}'")
               
               # Log in the user
               returnHash.merge!(getUserBlock(authResult[:sw_uid]))
@@ -115,7 +115,7 @@ get '/v3/authwithfacebook.?:format?' do
             else
               # This is a new user starting off by activating a FB account
               sw_uid = makeSWAccount()
-              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(fb_uid)}', '#{@db.escape(fbToken)}')")
+              @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
               addDefaultColumns(sw_uid, 'facebook', fb_uid)
               userBlock = getUserBlock(sw_uid)
               returnHash.merge!(userBlock)
@@ -126,13 +126,13 @@ get '/v3/authwithfacebook.?:format?' do
 
         else
           # Check to see if the FB account is already in the database
-          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(fb_uid)}'")
+          facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(fb_uid.to_s)}'")
 
           if !facebook_users.nil? && facebook_users.count == 1
             # That Facebook account is already known to SW
             fb_account_sw_uid = facebook_users.first['sw_uid'].to_i
             # Update the token if necessary
-            @db.query("UPDATE facebook_users SET access_token='#{@db.escape(fbToken)}' WHERE uid='#{@db.escape(fb_uid)}'")
+            @db.query("UPDATE facebook_users SET access_token='#{@db.escape(fbToken.to_s)}' WHERE uid='#{@db.escape(fb_uid.to_s)}'")
             
             # Log in the user
             returnHash.merge!(getUserBlock(authResult[:sw_uid]))
@@ -141,7 +141,7 @@ get '/v3/authwithfacebook.?:format?' do
           else
             # This is a new user starting off by activating a FB account
             sw_uid = makeSWAccount()
-            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid)}', '#{@db.escape(fb_uid)}', '#{@db.escape(fbToken)}')")
+            @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
             addDefaultColumns(sw_uid, 'facebook', fb_uid)
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)
