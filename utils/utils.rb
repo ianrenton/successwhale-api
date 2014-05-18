@@ -151,11 +151,15 @@ def includeUsernames(accountHash)
       if facebook_user && facebook_user['username']
         accountHash.merge!(:username => facebook_user['username'])
       elsif facebook_user && facebook_user['access_token']
-        # If we're supporting an SWv2 database, we can't get the Facebook
-        # username from the table, so make a call to Facebook to get it.
-        facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
-        name = facebookClient.get_object("me")['name']
-        accountHash.merge!(:username => name)
+        begin
+          # If we're supporting an SWv2 database, we can't get the Facebook
+          # username from the table, so make a call to Facebook to get it.
+          facebookClient = Koala::Facebook::API.new(facebook_user['access_token'])
+          name = facebookClient.get_object("me")['name']
+          accountHash.merge!(:username => name)
+        rescue => e
+          accountHash.merge!(:username => 'Unknown')
+        end
       else
         accountHash.merge!(:username => 'Unknown')
       end
