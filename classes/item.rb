@@ -206,7 +206,7 @@ class Item
     
     # If we *still* have no post text at this point, try and get the title
     # of an included link.
-    if (@content[:text] == '') && @content[:links]
+    if (@content[:text] == '') && @content[:links] && @content[:links][0] && @content[:links][0][:title]
       @content[:text] = @content[:links][0][:title]
     end
 
