@@ -41,7 +41,7 @@ get '/v3/thread.?:format?' do
             # Check that the currently authenticated user owns that Twitter account
             if user['sw_uid'].to_i == sw_uid
 
-              # Set up a Twitter client to fetch the first item
+              # Set up a Twitter client to fetch the items
               unserializedServiceTokens = PHP.unserialize(user['access_token'])
               twitterClient = Twitter::REST::Client.new do |config|
                 config.consumer_key = ENV['TWITTER_CONSUMER_KEY']
@@ -62,7 +62,12 @@ get '/v3/thread.?:format?' do
                 if !(params['skipfirst'] && params[:skipfirst] == 'true' && nextID == params[:postid])
                   items << item
                 end
-                nextID = tweet.attrs[:in_reply_to_status_id_str]
+                # If it's a retweet, get the original tweet's "in reply to" ID
+                if tweet.retweet?
+                  nextID = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
+                else
+                  nextID = tweet.attrs[:in_reply_to_status_id_str]
+                end
               end until (nextID == nil || nextID == 0)
 
             else
