@@ -54,7 +54,7 @@ get '/v3/thread.?:format?' do
               nextID = params[:postid]
               begin
                 tweet = twitterClient.status(nextID)
-                item = Item.new(params[:service], params[:uid])
+                item = Item.new(params[:service], params[:uid], user['username'])
                 item.populateFromTweet(tweet)
                 # Skip first if requested, otherwise (i.e. no skipfirst or
                 # this isn't the first tweet) add the tweet to the array to
@@ -102,7 +102,7 @@ get '/v3/thread.?:format?' do
                 raise 'There was a problem retrieving the item from Facebook.'
               end
 
-              item = Item.new(params[:service], params[:uid])
+              item = Item.new(params[:service], params[:uid], '')
               item.populateFromFacebookPost(fbpost)
 
               # First item, the parent
@@ -119,7 +119,7 @@ get '/v3/thread.?:format?' do
                   raise 'The application does not have permission to view the item you were notified about. You will have to use the Facebook website.'
                 end
                 fbpost = facebookClient.get_object(fbpost['object']['id'])
-                item = Item.new(params[:service], params[:uid])
+                item = Item.new(params[:service], params[:uid], '')
                 item.populateFromFacebookPost(fbpost)
                 items << item
               end
@@ -127,7 +127,7 @@ get '/v3/thread.?:format?' do
               # Comments
               if fbpost['comments'] && !fbpost['comments']['data'].nil?
                 fbpost['comments']['data'].each do |comment|
-                  item = Item.new(params[:service], params[:uid])
+                  item = Item.new(params[:service], params[:uid], '')
                   item.populateFromFacebookComment(comment)
                   items << item
                 end

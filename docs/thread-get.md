@@ -28,6 +28,7 @@ Example Response for Facebook (JSON):
         {
           service: "facebook",
           fetchedforuserid: "1234567890",
+          fetchedforuser: "",
           content: {
             id: "1234567890_12345678901234567",
             type: "facebook_status",
@@ -43,6 +44,7 @@ Example Response for Facebook (JSON):
         {
             "service": "facebook",
             "fetchedforuserid": "1234567890",
+            "fetchedforuser": "",
             "content": {
                 "type": "facebook_comment",
                 "id": "1234567890_12345678901234567_123456",
@@ -65,6 +67,7 @@ Example Response for Twitter (JSON):
         {
           service: "twitter",
           fetchedforuserid: "1234567890",
+          fetchedforuser: "me",
           content:
           {
             text: "@bobsmith Reply!",
@@ -89,6 +92,7 @@ Example Response for Twitter (JSON):
         {
           service: "twitter",
           fetchedforuserid: "1234567890",
+          fetchedforuser: "me",
           content:
           {
             text: "Post!",

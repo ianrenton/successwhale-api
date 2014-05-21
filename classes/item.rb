@@ -6,9 +6,10 @@
 
 class Item
 
-  def initialize (service, fetchedforuserid)
+  def initialize (service, fetchedforuserid, fetchedforuser)
     @service = service
     @fetchedforuserid = fetchedforuserid
+    @fetchedforuser = fetchedforuser
     @content = {}
   end
 
@@ -238,7 +239,7 @@ class Item
 
   # Returns the item as a hash.
   def asHash
-    return {:service => @service, :fetchedforuserid => @fetchedforuserid, :content => @content}
+    return {:service => @service, :fetchedforuserid => @fetchedforuserid, :fetchedforuser => @fetchedforuser, :content => @content}
   end
 
   # Gets the time that the item was originally posted.  Used to sort

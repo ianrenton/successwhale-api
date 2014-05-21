@@ -82,7 +82,7 @@ get '/v3/feed.?:format?' do
                 sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, options)
                 if sourceFeed
                   sourceFeed.each do |tweet|
-                    item = Item.new(source[:service], source[:uid])
+                    item = Item.new(source[:service], source[:uid], user['username'])
                     item.populateFromTweet(tweet)
                     items << item
                   end
@@ -121,7 +121,7 @@ get '/v3/feed.?:format?' do
                 urlParts = source[:url].split('/', 2)
                 sourceFeed = facebookClient.get_connections(urlParts[0], urlParts[1], {'include_read'=>true, 'limit'=>count})
                 sourceFeed.each do |post|
-                  item = Item.new(source[:service], source[:uid])
+                  item = Item.new(source[:service], source[:uid], '')
                   item.populateFromFacebookPost(post)
                   items << item
                   

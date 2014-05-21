@@ -60,6 +60,7 @@ Example Response (JSON):
         {
           service: "twitter",
           fetchedforuserid: "1234567890",
+          fetchedforuser: "me",
           content: {
             id: 12345678901234567890,
             replytoid: 12345678901234567890,
@@ -157,6 +158,7 @@ Example Response (JSON):
         {
           service: "facebook",
           fetchedforuserid: "1234567891",
+          fetchedforuser: "",
           content:
           {
             id: "12345678901234567890_12345678901234567890",
