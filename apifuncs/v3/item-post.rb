@@ -121,7 +121,24 @@ post '/v3/item.?:format?' do
                 # Comment if that's what was requested, otherwise post to wall
                 if params['in_reply_to_id']
                   # Comment
-                  facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
+                  begin
+                    facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
+                  rescue Koala::Facebook::ServerError => e
+                    # koala has a horrible bug where sometimes it will return "OAuth exception" when actually the comment was posted.
+                    # This causes clients that auto-resend on temporary errors (like OnoSendai) to re-send forever, posting dozens
+                    # of copies of a comment.
+                    # Check for that condition here by fetching the comments for the item, and seeing if the last post matches
+                    # what we just tried to send.
+                    fbpost = facebookClient.get_object(params[:in_reply_to_id])
+                    if fbpost['comments'] && !fbpost['comments']['data'].nil? && (fbpost['comments']['data'][-1]['message'] == URI.unescape(params['text']))
+                      # Actually it was posted just fine
+                      status 201
+                      returnHash[:success] = true 
+                    else
+                      # Looks like there was a real error
+                      throw e
+                    end              
+                  end
                 elsif uploadedFile
                   # Picture
                   facebookClient.put_picture(uploadedFile.path, params['file'][:type], {:message => URI.unescape(params['text'])})  
