@@ -218,7 +218,6 @@ def makeSourcesList(accounts)
   accounts.each do |account|
     if account[:service] == 'twitter'
       sources << buildSourceHash(account, 'Home Timeline', 'statuses/home_timeline')
-      sources << buildSourceHash(account, 'Public Timeline', 'statuses/public_timeline')
       sources << buildSourceHash(account, 'Own Tweets', 'statuses/user_timeline')
       sources << buildSourceHash(account, 'Mentions', 'statuses/mentions_timeline')
       sources << buildSourceHash(account, 'Direct Messages', 'direct_messages')
@@ -320,8 +319,6 @@ def getColumnTitle(sources)
       title = "@#{source[:username]}'s "
       if source[:shorturl] == 'statuses/home_timeline'
         title << 'Home Timeline'
-      elsif source[:shorturl] == 'statuses/public_timeline'
-        title << 'Public Timeline'
       elsif source[:shorturl] == 'statuses/user_timeline'
         title << 'Timeline'
       elsif source[:shorturl] == 'statuses/mentions_timeline'
