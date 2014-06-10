@@ -48,7 +48,6 @@ get '/v3/posttoaccounts.?:format?' do
           accounts.each do |account|
             if (account[:service] == parts[0]) && (account[:username] == parts[1])
               account[:enabled] = true
-            end
             elsif (account[:service] == parts[0]) && (account[:uid] == parts[1])
               # Sometimes we have the UID in the second field, not the username
               account[:enabled] = true
