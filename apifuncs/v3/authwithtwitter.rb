@@ -81,7 +81,6 @@ get '/v3/authwithtwitter.?:format?' do
         returnHash[:success] = true
         
         twitterParams = access_token.params
-        returnHash[:test] = access_token.params
         
         # Check if the user is authenticated with SW by checking the 'token' param
         # provided to this call
