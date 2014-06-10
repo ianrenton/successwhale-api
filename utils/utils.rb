@@ -188,7 +188,6 @@ def addDefaultColumns(sw_uid, service, service_id)
   users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
   user = users.first
   currentCols = user['columns']
-  p "%%%%%%%%%%%%%%%%%%%%%% #{currentCols}"
 
   if !currentCols
     currentCols = ''

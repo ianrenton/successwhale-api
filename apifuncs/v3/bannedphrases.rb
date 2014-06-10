@@ -25,7 +25,12 @@ get '/v3/bannedphrases.?:format?' do
       returnHash[:success] = true
 
       # Get the blocklist data as an array
-      returnHash[:bannedphrases] = user['blocklist'].split(/\r?\n/)
+      if user['blocklist']
+        blocklistArray = user['blocklist'].split(/\r?\n/)
+      else
+        blocklistArray = []
+      end
+      returnHash[:bannedphrases] = blocklistArray
 
     else
       status 401
