@@ -25,7 +25,7 @@ get '/v3/altlogin.?:format?' do
       status 200
       returnHash[:success] = true
       returnHash[:username] = user['username']
-      returnHash[:hasaltlogin] = (user['username'] != '')
+      returnHash[:hasaltlogin] = user['username'] && (user['username'] != '')
 
     else
       status 401
