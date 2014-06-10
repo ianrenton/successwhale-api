@@ -204,6 +204,8 @@ def addDefaultColumns(sw_uid, service, service_id)
   end
 
   @db.query("UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+  
+  p "UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'"
 end
 
 # Makes a default list of sources for the given accounts. This is not the complete set of
