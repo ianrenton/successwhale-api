@@ -173,8 +173,7 @@ end
 def makeSWAccount()
   token = createToken()
   result = @db.query("INSERT INTO sw_users (secret) VALUES ('#{@db.escape(token)}')")
-  p result # todo remove
-  return result.last_id
+  return @db.last_id
 end
 
 # Creates a random hex token string
