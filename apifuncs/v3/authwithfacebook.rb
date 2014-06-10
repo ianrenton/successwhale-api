@@ -138,7 +138,7 @@ get '/v3/authwithfacebook.?:format?' do
             @db.query("UPDATE facebook_users SET access_token='#{@db.escape(fbToken.to_s)}' WHERE uid='#{@db.escape(fb_uid.to_s)}'")
             
             # Log in the user
-            returnHash.merge!(getUserBlock(authResult[:sw_uid]))
+            returnHash.merge!(getUserBlock(fb_account_sw_uid))
             returnHash[:sw_account_was_new] = false
             returnHash[:service_account_was_new] = false
           else
