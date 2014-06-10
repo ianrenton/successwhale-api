@@ -143,7 +143,9 @@ def includeUsernames(accountHash)
     if accountHash[:service] == 'twitter'
       twitter_users = @db.query("SELECT * FROM twitter_users WHERE uid='#{@db.escape(accountHash[:uid])}'")
       twitter_user = twitter_users.first
-      accountHash.merge!(:username => twitter_user['username'])
+      if twitter_user
+        accountHash.merge!(:username => twitter_user['username'])
+      end
     end
     if accountHash[:service] == 'facebook'
       facebook_users = @db.query("SELECT * FROM facebook_users WHERE uid='#{@db.escape(accountHash[:uid])}'")
