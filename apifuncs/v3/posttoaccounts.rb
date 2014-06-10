@@ -39,14 +39,20 @@ get '/v3/posttoaccounts.?:format?' do
 
       # Get the 'post to' field and set the "enabled" value for an account if
       # it matches something in the "post to" list
-      postToAccounts = user['posttoservices'].split(';')
-      postToAccounts.each do |postToAccount|
-        parts = postToAccount.split(':')
-        accountHash = {:service => parts[0],
-                    :user => parts[1]}
-        accounts.each do |account|
-          if (account[:service] == parts[0]) && (account[:username] == parts[1])
-            account[:enabled] = true
+      if user['posttoservices']
+        postToAccounts = user['posttoservices'].split(';')
+        postToAccounts.each do |postToAccount|
+          parts = postToAccount.split(':')
+          accountHash = {:service => parts[0],
+                      :user => parts[1]}
+          accounts.each do |account|
+            if (account[:service] == parts[0]) && (account[:username] == parts[1])
+              account[:enabled] = true
+            end
+            elsif (account[:service] == parts[0]) && (account[:uid] == parts[1])
+              # Sometimes we have the UID in the second field, not the username
+              account[:enabled] = true
+            end
           end
         end
       end

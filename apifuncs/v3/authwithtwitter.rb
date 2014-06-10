@@ -110,6 +110,7 @@ get '/v3/authwithtwitter.?:format?' do
                 @db.query("DELETE FROM twitter_users WHERE uid='#{@db.escape(twitterParams['user_id'].to_s)}'")
                 @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
                 addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
+                addPostToAccount(userBlock[:userid], 'twitter', twitterParams['screen_name'])
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
                 returnHash[:service_account_was_new] = true
@@ -119,6 +120,7 @@ get '/v3/authwithtwitter.?:format?' do
               userBlock = getUserBlock(authResult[:sw_uid])
               @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(userBlock[:userid], 'twitter', twitterParams['user_id'])
+              addPostToAccount(userBlock[:userid], 'twitter', twitterParams['screen_name'])
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
               returnHash[:service_account_was_new] = true
@@ -144,6 +146,7 @@ get '/v3/authwithtwitter.?:format?' do
               sw_uid = makeSWAccount()
               @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
               addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
+              addPostToAccount(sw_uid, 'twitter', twitterParams['screen_name'])
               userBlock = getUserBlock(sw_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = true
@@ -172,6 +175,7 @@ get '/v3/authwithtwitter.?:format?' do
             sw_uid = makeSWAccount()
             @db.query("INSERT INTO twitter_users (sw_uid, uid, username, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(twitterParams['user_id'].to_s)}', '#{@db.escape(twitterParams['screen_name'])}', '#{@db.escape(PHP.serialize(twitterParams))}')")
             addDefaultColumns(sw_uid, 'twitter', twitterParams['user_id'])
+            addPostToAccount(sw_uid, 'twitter', twitterParams['screen_name'])
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = true

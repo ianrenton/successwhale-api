@@ -84,6 +84,7 @@ get '/v3/authwithfacebook.?:format?' do
                 @db.query("DELETE FROM facebook_users WHERE uid='#{@db.escape(fb_uid.to_s)}'")
                 @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
                 addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
+                addPostToAccount(userBlock[:userid], 'facebook', fb_uid)
                 returnHash.merge!(userBlock)
                 returnHash[:sw_account_was_new] = false
                 returnHash[:service_account_was_new] = true
@@ -93,6 +94,7 @@ get '/v3/authwithfacebook.?:format?' do
               userBlock = getUserBlock(authResult[:sw_uid])
               @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(userBlock[:userid].to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
               addDefaultColumns(userBlock[:userid], 'facebook', fb_uid)
+              addPostToAccount(userBlock[:userid], 'facebook', fb_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = false
               returnHash[:service_account_was_new] = true
@@ -117,6 +119,7 @@ get '/v3/authwithfacebook.?:format?' do
               sw_uid = makeSWAccount()
               @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
               addDefaultColumns(sw_uid, 'facebook', fb_uid)
+              addPostToAccount(sw_uid, 'facebook', fb_uid)
               userBlock = getUserBlock(sw_uid)
               returnHash.merge!(userBlock)
               returnHash[:sw_account_was_new] = true
@@ -143,6 +146,7 @@ get '/v3/authwithfacebook.?:format?' do
             sw_uid = makeSWAccount()
             @db.query("INSERT INTO facebook_users (sw_uid, uid, access_token) VALUES ('#{@db.escape(sw_uid.to_s)}', '#{@db.escape(fb_uid.to_s)}', '#{@db.escape(fbToken.to_s)}')")
             addDefaultColumns(sw_uid, 'facebook', fb_uid)
+            addPostToAccount(sw_uid, 'facebook', fb_uid)
             userBlock = getUserBlock(sw_uid)
             returnHash.merge!(userBlock)
             returnHash[:sw_account_was_new] = true

@@ -209,6 +209,24 @@ def addDefaultColumns(sw_uid, service, service_id)
   @db.query("UPDATE sw_users SET columns='#{@db.escape(currentCols)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
 end
 
+# Adds an account to a user's "post to accounts" list
+def addPostToAccount(sw_uid, service, username)
+  users = @db.query("SELECT * FROM sw_users WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+  user = users.first
+  currentPTS = user['posttoservices']
+
+  if !currentPTS
+    currentPTS = ''
+  end
+  if !currentPTS.blank?
+    currentPTS << ';'
+  end
+  
+  currentPTS << "#{service}:#{username};"
+
+  @db.query("UPDATE sw_users SET posttoservices='#{@db.escape(currentPTS)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+end
+
 # Makes a default list of sources for the given accounts. This is not the complete set of
 # sources that can be used - for example, a Twitter account can have a source that is the
 # feed of any other Twitter user, which we can't predict in advance. We catch most common
