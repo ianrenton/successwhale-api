@@ -24,12 +24,10 @@ post '/v3/authenticate.?:format?' do
 
       if users.count == 1
         # A user matched the supplied username, so let's see if the password matches
-
-        saltedPassword = @db.escape("#{password}#{ENV['PASSWORD_SALT']}")
-        md5 = Digest::MD5.hexdigest(saltedPassword)
+        hash = BCrypt::Password.create("#{password}")
 
         user = users.first
-        if user['password'] == md5
+        if user['password'] == hash
           # Password matches
           status 200
           returnHash[:success] = true

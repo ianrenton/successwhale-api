@@ -33,12 +33,11 @@ post '/v3/createaltlogin.?:format?' do
 
         if (users.count == 0) || ((users.count == 1) && (user['sw_uid'] == sw_uid.to_s))
         
-          # Salt and hash password
-          saltedPassword = @db.escape("#{password}#{ENV['PASSWORD_SALT']}")
-          md5 = Digest::MD5.hexdigest(saltedPassword)
+          # Bcrypt password
+          hash = BCrypt::Password.create("#{password}")
 
           # Store username and password
-          @db.query("UPDATE sw_users SET username='#{@db.escape(username)}', password='#{@db.escape(md5)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
+          @db.query("UPDATE sw_users SET username='#{@db.escape(username)}', password='#{@db.escape(hash)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
           
           status 200
           returnHash[:success] = true
