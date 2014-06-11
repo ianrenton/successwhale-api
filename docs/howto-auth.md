@@ -31,7 +31,7 @@ Here is a summary of how the API calls work:
 
 **[Authenticate with SuccessWhale](authenticate-post.md)**
 
-The client provides a SuccessWhale username and password. If they match a SuccessWhale user, the token string is returned.
+The client provides a SuccessWhale username and password. If they match a SuccessWhale user, the token string is returned. The token will be valid for a period of one month.
 
 **[Authenticate with Twitter](authwithtwitter.md)**,
 **[Authenticate with Facebook](authwithfacebook.md)**
@@ -39,6 +39,10 @@ The client provides a SuccessWhale username and password. If they match a Succes
 These are more complex, and best summed up with a diagram:
 
 ![API Decision Tree for Authenticating with Third-Party Accounts](images/authwithservice.png)
+
+**[Check Authentication Token](checkauth.md)**
+
+The client provides the SW token. The API provides information on whether it is valid or not. If so, it can be used in future calls. If not, the client should force the user to log in again using one of the authenticate API calls.
 
 **[Remove Third-party Account](deleteaccount.md)**
 

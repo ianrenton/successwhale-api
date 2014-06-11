@@ -46,6 +46,7 @@ end
 
 # Import API function files.  These contain all the main Sinatra processing
 # code.
+require_relative 'apifuncs/v3/checkauth'
 require_relative 'apifuncs/v3/authenticate'
 require_relative 'apifuncs/v3/authwithtwitter'
 require_relative 'apifuncs/v3/authwithfacebook'

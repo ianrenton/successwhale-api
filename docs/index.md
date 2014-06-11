@@ -20,6 +20,7 @@ Authentication and Accounts
 * [Authenticate with SuccessWhale](authenticate-post.md) `POST: /v3/authenticate`
 * [Authenticate with Twitter](authwithtwitter.md) `GET: /v3/authwithtwitter`
 * [Authenticate with Facebook](authwithfacebook.md) `GET: /v3/authithfacebook`
+* [Check Authentication Token](checkauth.md) `GET: /v3/checkauth`
 * [Remove Third-party Account](deleteaccount.md) `POST: /v3/deleteaccount`
 * [Get Alternative Login Info](altlogin.md) `GET: /v3/altlogin`
 * [Create Alternative Login](createaltlogin.md) `POST: /v3/createaltlogin`

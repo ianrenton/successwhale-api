@@ -29,29 +29,46 @@ def checkAuth(params)
   begin
 
     if params['token']
-      # Fetch a DB row for the given uid and secret
+      # Fetch a DB row for the given secret
       users = @db.query("SELECT * FROM sw_users WHERE secret='#{@db.escape(params['token'])}'")
 
-      # If we didn't find a match, set UID to zero
+      # If we found a match...
       if users.count == 1
         user = users.first
-        returnHash[:authenticated] = true
-        returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
-        returnHash[:sw_uid] = user['sw_uid'].to_i
+        
+        # Check token expiry
+        tokenExpires = user['tokencreated'] + 1.month
+        if (Time.now < tokenExpires)
+          # Token is OK
+          returnHash[:authenticated] = true
+          returnHash[:tokenexpired] = false
+          returnHash[:explicitfailure] = false # Not an explicit failure because it was a success!
+          returnHash[:sw_uid] = user['sw_uid'].to_i
+        else
+          # Token expired, make a new one for next time
+          @db.query("UPDATE sw_users SET `secret`='#{@db.escape(createToken())}', `tokencreated`=NOW() WHERE `sw_uid`='#{user['sw_uid']}'")
+          returnHash[:authenticated] = false
+          returnHash[:tokenexpired] = true
+          returnHash[:explicitfailure] = false
+          returnHash[:error] = 'A token was provided, and it matched an expired token. The user must log in again to get a new token.'
+        end
       else
         returnHash[:authenticated] = false
+        returnHash[:tokenexpired] = false
         returnHash[:explicitfailure] = true # Explicit failure: token was provided but it was wrong.
         returnHash[:error] = 'A token was provided, but it did not match an entry in the database.'
       end
 
     else
       returnHash[:authenticated] = false
+      returnHash[:tokenexpired] = false
       returnHash[:explicitfailure] = false # Not an explicit failure, could just be a new / not logged-in user
       returnHash[:error] = 'No token was provided in the parameters. The user is new or not logged in.'
     end
 
   rescue => e
     returnHash[:authenticated] = false
+    returnHash[:tokenexpired] = false
     returnHash[:explicitfailure] = true # Explicit failure because a proper error occurred.
     returnHash[:error] = e
   end

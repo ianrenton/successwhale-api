@@ -10,7 +10,7 @@ CREATE TABLE IF NOT EXISTS `sw_users` (
   `sw_uid` int(11) NOT NULL AUTO_INCREMENT COMMENT 'SuccessWhale user ID',
   `secret` varchar(100) NOT NULL COMMENT 'API access token',
   `username` varchar(50) DEFAULT NULL COMMENT 'Alternative login username',
-  `password` varchar(200) DEFAULT NULL COMMENT 'Alternative login password',
+  `password` varchar(200) DEFAULT NULL COMMENT 'Alternative login password (bcrypt hash)',
   `columns` varchar(1000) DEFAULT NULL COMMENT 'Column data',
   `colsperscreen` smallint(6) NOT NULL DEFAULT '3' COMMENT 'Number of columns to display per screen width in clients',
   `posttoservices` varchar(1000) DEFAULT NULL COMMENT 'Services to post to by default',
@@ -18,7 +18,8 @@ CREATE TABLE IF NOT EXISTS `sw_users` (
   `blocklist` varchar(1000) DEFAULT NULL COMMENT 'Phrases that will cause items to be hidden from the user',
   `utcoffset` varchar(20) NOT NULL DEFAULT '0' COMMENT 'Users time zone',
   `highlighttime` int(11) NOT NULL DEFAULT '15' COMMENT 'Clients highlight new items until they are X minutes old',
-  `inlinemedia` BOOLEAN NOT NULL DEFAULT '1' COMMENT 'Display inline media in columns when using a client?'
+  `inlinemedia` BOOLEAN NOT NULL DEFAULT '1' COMMENT 'Display inline media in columns when using a client?',
+  `tokencreated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Token creation date for calculating expiry',
   PRIMARY KEY (`sw_uid`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 AUTO_INCREMENT=1 COMMENT='SuccessWhale user data';
 
