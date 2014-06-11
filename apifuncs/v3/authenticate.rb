@@ -24,10 +24,8 @@ post '/v3/authenticate.?:format?' do
 
       if users.count == 1
         # A user matched the supplied username, so let's see if the password matches
-        hash = BCrypt::Password.create("#{password}")
-
         user = users.first
-        if user['password'] == hash
+        if BCrypt::Password.new("#{user['password']}") == password
           # Password matches
           status 200
           returnHash[:success] = true

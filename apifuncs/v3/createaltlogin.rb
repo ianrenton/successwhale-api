@@ -35,6 +35,8 @@ post '/v3/createaltlogin.?:format?' do
         
           # Bcrypt password
           hash = BCrypt::Password.create("#{password}")
+          
+        p "$$$$$$$$$$$$$$$ #{password} #{hash}"
 
           # Store username and password
           @db.query("UPDATE sw_users SET username='#{@db.escape(username)}', password='#{@db.escape(hash)}' WHERE sw_uid='#{@db.escape(sw_uid.to_s)}'")
