@@ -187,14 +187,10 @@ class Item
     # Actions.
     @content[:actions] = []
     # If Reply To ID is null, we don't really know what we're seeing here so can't
-    # give any actions.
+    # give any actions that refer to the source of the item.
     if !@content[:replytoid].nil?
       # Everything with a Reply To ID can be commented on.
       @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
-      # Only items with comments or which are notifications have a conversation view
-      if (@content[:numcomments] > 0) || (@content[:type] == 'facebook_notification')
-        @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
-      end
       # Only non-notifications can be liked
       if (@content[:type] != 'facebook_notification')
         @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
@@ -203,6 +199,14 @@ class Item
       if (@content[:type] != 'facebook_notification') && (@content[:fromuserid] == @fetchedforuserid)
         @content[:actions] << {:name => 'delete', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
       end
+    end
+    # Only items with comments or which are notifications have a conversation view
+    if (@content[:numcomments] > 0) || (@content[:type] == 'facebook_notification')
+      id = @content[:replytoid]
+      if !id
+        id = @content[:id]
+      end
+      @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => id}}
     end
     
     # If we *still* have no post text at this point, try and get the title
