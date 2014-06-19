@@ -163,7 +163,7 @@ class Item
         @content[:replytoid] = post['object']['id']
       else
         # This is a notification about something, but the source item wasn't 
-        # provided.
+        # provided, so we don't know how to fill in these fields.
         @content[:sourceid] = nil
         @content[:replytoid] = nil
       end
@@ -186,19 +186,17 @@ class Item
     
     # Actions.
     @content[:actions] = []
-    # If Reply To ID is null, we don't really know what we're seeing here so can't
-    # give any actions that refer to the source of the item.
+    # Everything with a Reply To ID can be commented on.
     if !@content[:replytoid].nil?
-      # Everything with a Reply To ID can be commented on.
       @content[:actions] << {:name => 'reply', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :replytoid => @content[:replytoid]}}
-      # Only non-notifications can be liked
-      if (@content[:type] != 'facebook_notification')
-        @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
-      end
-      # Can delete if it's ours and not a notification
-      if (@content[:type] != 'facebook_notification') && (@content[:fromuserid] == @fetchedforuserid)
-        @content[:actions] << {:name => 'delete', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
-      end
+    end
+    # Only non-notifications can be liked
+    if (@content[:type] != 'facebook_notification')
+      @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
+    end
+    # Can delete if it's ours and not a notification
+    if (@content[:type] != 'facebook_notification') && (@content[:fromuserid] == @fetchedforuserid)
+      @content[:actions] << {:name => 'delete', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
     end
     # Only items with comments or which are notifications have a conversation view
     if (@content[:numcomments] > 0) || (@content[:type] == 'facebook_notification')

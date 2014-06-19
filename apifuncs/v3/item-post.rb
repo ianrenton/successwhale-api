@@ -118,9 +118,27 @@ post '/v3/item.?:format?' do
                 # Set up a Facebook client to post with
                 facebookClient = Koala::Facebook::API.new(user['access_token'])
 
-                # Comment if that's what was requested, otherwise post to wall
+                # Post the appropriate Facebook object depending on whether this
+                # is a comment, a photo, or a normal post.
                 if params['in_reply_to_id']
-                  # Comment
+                  replyid = params['in_reply_to_id']
+                  # This is a comment
+                  
+                  # First, check if we are trying to comment on a notification. This
+                  # isn't possible, so we assume the user wanted to comment on the item
+                  # that the notification was *about*.
+                  # Clients *should* use SuccessWhale's 'replytoid' field in the 'reply'
+                  # action properly so they will never try this, but some don't! ;)
+                  if replyid.start_with?('notif_')
+                    realPost = facebookClient.get_object(replyid)
+                    if realPost['object'].nil?
+                      raise 'The application does not have permission to comment on the item you were notified about. You will have to use the Facebook website.'
+                    else
+                      replyid = realPost['object']['id']
+                    end
+                  end
+                  
+                  # Now we definitely have the ID of a real post, try to comment on it.
                   begin
                     facebookClient.put_comment(params[:in_reply_to_id], URI.unescape(params['text']))
                   rescue Koala::Facebook::ServerError => e
@@ -140,10 +158,10 @@ post '/v3/item.?:format?' do
                     end              
                   end
                 elsif uploadedFile
-                  # Picture
+                  # This is a picture
                   facebookClient.put_picture(uploadedFile.path, params['file'][:type], {:message => URI.unescape(params['text'])})  
                 else
-                  # Post
+                  # This is a normal post
                   facebookClient.put_wall_post(URI.unescape(params['text']))
                 end
 

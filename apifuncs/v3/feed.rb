@@ -82,6 +82,7 @@ get '/v3/feed.?:format?' do
                 sourceFeed = getTwitterSourceFeedFromURL(source[:url], twitterClient, options)
                 if sourceFeed
                   sourceFeed.each do |tweet|
+                    # Make an 'item' object for each post and add it to the list
                     item = Item.new(source[:service], source[:uid], user['username'])
                     item.populateFromTweet(tweet)
                     items << item
@@ -121,14 +122,31 @@ get '/v3/feed.?:format?' do
                 urlParts = source[:url].split('/', 2)
                 sourceFeed = facebookClient.get_connections(urlParts[0], urlParts[1], {'include_read'=>true, 'limit'=>count})
                 sourceFeed.each do |post|
+                  
+                  # First, some special handling for notifications. (This if
+                  # statement checks for the "unread" field existing, not if
+                  # it's truthy.)
+                  if post['unread']
+                    # Mark notifications as read (*now* we check the actual value)
+                    if post['unread'] == 1
+                      facebookClient.put_object(post['id'],'', {unread: false})
+                    end
+                    # If it's a notification but the source wasn't provided,
+                    # ask for it again individually, as sometimes Facebook does
+                    # provide it for those requests. See
+                    # https://github.com/arsduo/koala/issues/370
+                    if (!post['object'])
+                      newCopy = facebookClient.get_object(post['id'])
+                      if newCopy['object']
+                        post['object'] = newCopy['object']
+                      end
+                    end
+                  end                  
+                  
+                  # Make an 'item' object for each post and add it to the list
                   item = Item.new(source[:service], source[:uid], '')
                   item.populateFromFacebookPost(post)
                   items << item
-                  
-                  # Mark notifications as read
-                  if post['unread']
-                    facebookClient.put_object(post['id'],'', {unread: false})
-                  end
                 end
 
               else
