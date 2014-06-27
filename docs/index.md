@@ -1,7 +1,7 @@
 SuccessWhale API Documentation
 ==============================
 
-SuccessWhale API version: 3.0.0-dev
+SuccessWhale API version: 3.0.5
 
 This is a list of all the API calls supported by the SuccessWhale API, together with some supporting documentation. All URLs are relative to the API root, so if you are using the API at https://api.successwhale.com/, the URLs start there.
 
