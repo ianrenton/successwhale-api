@@ -345,7 +345,7 @@ class Item
           end
         else
           pictureURLParams = CGI::parse(post['picture'])
-          if pictureURLParams['url']
+          if pictureURLParams['url'] && !pictureURLParams['url'].empty? 
             # This is a picture from a third-party site
             urlitem.merge!({:preview => URI.unescape(pictureURLParams['url'][0])})
           else
