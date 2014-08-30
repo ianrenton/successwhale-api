@@ -145,7 +145,7 @@ get '/v3/feed.?:format?' do
                   
                   # Make an 'item' object for each post and add it to the list
                   item = Item.new(source[:service], source[:uid], '')
-                  item.populateFromFacebookPost(post, user['access_token'])
+                  item.populateFromFacebookPost(post, facebookClient)
                   items << item
                 end
 

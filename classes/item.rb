@@ -115,9 +115,9 @@ class Item
 
 
   # Fills in the contents of the item based on a Facebook post.
-  # Require the access token to fetch full size pictures instead of
+  # Require the facebook client to fetch full size pictures instead of
   # thumbnails.
-  def populateFromFacebookPost (post, accessToken)
+  def populateFromFacebookPost (post, facebookClient)
   
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
@@ -184,7 +184,7 @@ class Item
     end
 
     # Populate URLs and embedded media
-    populateURLsFromFacebook(post, accessToken)
+    populateURLsFromFacebook(post, facebookClient)
     
     # Actions.
     @content[:actions] = []
@@ -322,9 +322,9 @@ class Item
   # I think there is only ever one URL attached to a Facebook post, but
   # we return an array to keep consistency with Twitter. Facebook's preview
   # thumbnails are included.
-  # Require the access token to fetch full size pictures instead of
+  # Require the facebook client to fetch full size pictures instead of
   # thumbnails.
-  def populateURLsFromFacebook(post, accessToken)
+  def populateURLsFromFacebook(post, facebookClient)
     finishedArray = []
     if post['link']
       urlitem = {}
@@ -335,10 +335,8 @@ class Item
         # the full size picture for this post instead if we can get it
         if post['object_id']
           # This is a picture in someone's Facebook album
-          # The API doesn't have a nice way to return the fullsize photo
-          # even if we're authenticated (as far as I can see) so stick with
-          # the thumbnail
-          urlitem.merge!({:preview => post['picture']})
+          urlitem.merge!({:preview => facebookClient.get_picture(post['object_id'])})
+          facebookClient.get_picture
         else
           pictureURLParams = CGI::parse(post['picture'])
           if pictureURLParams['url']

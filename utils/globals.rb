@@ -5,7 +5,7 @@
 
 VERSION = "3.0.5"
 
-FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifications,user_groups,offline_access'
+FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifications,user_groups,user_photos,offline_access'
 
 TWIXT_URL = 'http://twixt.successwhale.com/index.php'
 TWIXT_URL_MATCHER = 'twixt.successwhale.com'
