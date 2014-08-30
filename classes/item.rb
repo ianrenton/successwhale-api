@@ -327,11 +327,17 @@ class Item
       # TODO: URL expansion (the hard way)
       urlitem.merge!({:url => post['link'], :title => post['name']})
       if post['picture']
-        # Horrible hack to get large size previews
-        if post['picture'].include?('_s.jpg')
-          urlitem.merge!({:preview => post['picture'].gsub('_s.jpg', '_n.jpg')}) 
+        # Don't use the URL from post['picture'] as it's a tiny preview, get
+        # the full size picture for this post instead if we can get it
+        if post['object_id']
+          urlitem.merge!({:preview => "https://graph.facebook.com/#{post['object_id']}/picture"})
         else
-          urlitem.merge!({:preview => post['picture']})
+          pictureURLParams = CGI::parse(post['picture'])
+          if pictureURLParams['url']
+            urlitem.merge!({:preview => URI.unescape(pictureURLParams['url'][0])})
+          else
+            urlitem.merge!({:preview => post['picture']})
+          end
         end
       end
       finishedArray << urlitem
