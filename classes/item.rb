@@ -335,8 +335,14 @@ class Item
         # the full size picture for this post instead if we can get it
         if post['object_id']
           # This is a picture in someone's Facebook album
-          urlitem.merge!({:preview => facebookClient.get_picture(post['object_id'])})
-          facebookClient.get_picture
+          begin
+            # Try to get it properly
+            fullSizeURL = facebookClient.get_picture(post['object_id'])
+            urlitem.merge!({:preview => fullSizeURL})
+          rescue
+            # Otherwise, just revert to using the thumbnail
+            urlitem.merge!({:preview => post['picture']})
+          end
         else
           pictureURLParams = CGI::parse(post['picture'])
           if pictureURLParams['url']
