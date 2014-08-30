@@ -115,7 +115,9 @@ class Item
 
 
   # Fills in the contents of the item based on a Facebook post.
-  def populateFromFacebookPost (post)
+  # Require the access token to fetch full size pictures instead of
+  # thumbnails.
+  def populateFromFacebookPost (post, accessToken)
   
     @content[:id] = post['id']
     @content[:type] = "facebook_#{post['type']}"
@@ -182,7 +184,7 @@ class Item
     end
 
     # Populate URLs and embedded media
-    populateURLsFromFacebook(post)
+    populateURLsFromFacebook(post, accessToken)
     
     # Actions.
     @content[:actions] = []
@@ -320,7 +322,9 @@ class Item
   # I think there is only ever one URL attached to a Facebook post, but
   # we return an array to keep consistency with Twitter. Facebook's preview
   # thumbnails are included.
-  def populateURLsFromFacebook(post)
+  # Require the access token to fetch full size pictures instead of
+  # thumbnails.
+  def populateURLsFromFacebook(post, accessToken)
     finishedArray = []
     if post['link']
       urlitem = {}
@@ -330,12 +334,19 @@ class Item
         # Don't use the URL from post['picture'] as it's a tiny preview, get
         # the full size picture for this post instead if we can get it
         if post['object_id']
-          urlitem.merge!({:preview => "https://graph.facebook.com/#{post['object_id']}/picture"})
+          # This is a picture in someone's Facebook album
+          # The API doesn't have a nice way to return the fullsize photo
+          # even if we're authenticated (as far as I can see) so stick with
+          # the thumbnail
+          urlitem.merge!({:preview => post['picture']})
         else
           pictureURLParams = CGI::parse(post['picture'])
           if pictureURLParams['url']
+            # This is a picture from a third-party site
             urlitem.merge!({:preview => URI.unescape(pictureURLParams['url'][0])})
           else
+            # No idea what it is, just use what Facebook gives us and hope
+            # for the best
             urlitem.merge!({:preview => post['picture']})
           end
         end
