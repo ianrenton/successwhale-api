@@ -128,7 +128,7 @@ get '/v3/thread.?:format?' do
               if fbpost['comments'] && !fbpost['comments']['data'].nil?
                 fbpost['comments']['data'].each do |comment|
                   item = Item.new(params[:service], params[:uid], '')
-                  item.populateFromFacebookComment(comment, facebookClient)
+                  item.populateFromFacebookComment(comment)
                   items << item
                 end
               end              
