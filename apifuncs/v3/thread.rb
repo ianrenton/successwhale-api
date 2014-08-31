@@ -120,7 +120,7 @@ get '/v3/thread.?:format?' do
                 end
                 fbpost = facebookClient.get_object(fbpost['object']['id'])
                 item = Item.new(params[:service], params[:uid], '')
-                item.populateFromFacebookPost(fbpost)
+                item.populateFromFacebookPost(fbpost, facebookClient)
                 items << item
               end
 
@@ -128,7 +128,7 @@ get '/v3/thread.?:format?' do
               if fbpost['comments'] && !fbpost['comments']['data'].nil?
                 fbpost['comments']['data'].each do |comment|
                   item = Item.new(params[:service], params[:uid], '')
-                  item.populateFromFacebookComment(comment)
+                  item.populateFromFacebookComment(comment, facebookClient)
                   items << item
                 end
               end              
