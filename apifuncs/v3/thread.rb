@@ -103,11 +103,11 @@ get '/v3/thread.?:format?' do
               end
 
               item = Item.new(params[:service], params[:uid], '')
-              item.populateFromFacebookPost(fbpost)
+              item.populateFromFacebookPost(fbpost, facebookClient)
 
               # First item, the parent
               # Skip this if requested, otherwise add the post to the array
-              # that will also contain the comments.
+              # that will also contain the comments.`
               if !(params['skipfirst'] && params[:skipfirst] == 'true')
                 items << item
               end
