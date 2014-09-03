@@ -40,6 +40,7 @@ class Item
       # original tweet's ID.
       @content[:id] = tweet.attrs[:id_str]
       @content[:replytoid] = tweet.attrs[:id_str]
+      @content[:deleteid] = tweet.retweeted_status.attrs[:id_str] # If deleting, must delete the RT not try to delete the original
       @content[:time] = tweet.created_at
 
       # Add extra tags to show who retweeted it and when
@@ -94,8 +95,8 @@ class Item
     if @content[:isreply]
       @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
     end
-    # Can't retweet your own tweets, or DMs
-    if (@content[:fromuserid] != @fetchedforuserid) && !(tweet.is_a?(Twitter::DirectMessage))
+    # Can't retweet your own tweets, retweets, or DMs
+    if (@content[:fromuserid] != @fetchedforuserid) && (@content[:retweetedbyuserid] != @fetchedforuserid) && !(tweet.is_a?(Twitter::DirectMessage))
       @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
     end
     # Can't favourite DMs
@@ -105,10 +106,12 @@ class Item
     # Can delete if it's yours
     if @content[:fromuserid] == @fetchedforuserid
       @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
+    elsif @content[:retweetedbyuserid] == @fetchedforuserid
+      @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:deleteid]}}
     end
 
-		# Unescape HTML entities in text
-		@content[:text] = HTMLEntities.new.decode(@content[:escapedtext])
+    # Unescape HTML entities in text
+    @content[:text] = HTMLEntities.new.decode(@content[:escapedtext])
 
     unshorten()
   end
@@ -215,9 +218,9 @@ class Item
       @content[:text] = @content[:links][0][:title]
     end
 
-		# Unescape HTML entities in text
-		@content[:escapedtext] = @content[:text]
-		@content[:text] = HTMLEntities.new.decode(@content[:text])
+    # Unescape HTML entities in text
+    @content[:escapedtext] = @content[:text]
+    @content[:text] = HTMLEntities.new.decode(@content[:text])
 
   end
 
@@ -236,8 +239,8 @@ class Item
     # own ID and Facebook will put it in the right place.
     @content[:replytoid] = comment['id']
 
-		# Unescape HTML entities in text
-		@content[:text] = HTMLEntities.new.decode(@content[:escapedtext])
+    # Unescape HTML entities in text
+    @content[:text] = HTMLEntities.new.decode(@content[:escapedtext])
   end
 
 
