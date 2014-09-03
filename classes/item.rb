@@ -40,7 +40,6 @@ class Item
       # original tweet's ID.
       @content[:id] = tweet.attrs[:id_str]
       @content[:replytoid] = tweet.attrs[:id_str]
-      @content[:deleteid] = tweet.retweeted_status.attrs[:id_str] # If deleting, must delete the RT not try to delete the original
       @content[:time] = tweet.created_at
 
       # Add extra tags to show who retweeted it and when
@@ -107,7 +106,7 @@ class Item
     if @content[:fromuserid] == @fetchedforuserid
       @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
     elsif @content[:retweetedbyuserid] == @fetchedforuserid
-      @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:deleteid]}}
+      @content[:actions] << {:name => 'delete', :path => '/item', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'delete', :postid => @content[:replytoid]}}
     end
 
     # Unescape HTML entities in text
