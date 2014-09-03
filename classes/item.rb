@@ -60,6 +60,7 @@ class Item
       @content[:numretweeted] = tweet.retweeted_status.retweet_count
       @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
+      @content[:favorited] = tweet.retweeted_status.favorited
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.retweeted_status.user_mentions, tweet.retweeted_status.hashtags)
@@ -81,6 +82,7 @@ class Item
       @content[:numretweeted] = tweet.retweet_count
       @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
       @content[:inreplytouserid] = tweet.in_reply_to_user_id
+      @content[:favorited] = tweet.favorited
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.urls, tweet.media)
       populateUsernamesAndHashtagsFromTwitter(tweet.user_mentions, tweet.hashtags)
@@ -95,12 +97,16 @@ class Item
       @content[:actions] << {:name => 'conversation', :path => '/thread', :params => {:service => @service, :uid => @fetchedforuserid, :postid => @content[:replytoid]}}
     end
     # Can't retweet your own tweets, retweets, or DMs
-    if (@content[:fromuserid] != @fetchedforuserid) && (@content[:retweetedbyuserid] != @fetchedforuserid) && !(tweet.is_a?(Twitter::DirectMessage))
+    if !((@content[:fromuserid] == @fetchedforuserid) || (@content[:retweetedbyuserid] == @fetchedforuserid)  || tweet.is_a?(Twitter::DirectMessage))
       @content[:actions] << {:name => 'retweet', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'retweet', :postid => @content[:replytoid]}}
     end
-    # Can't favourite DMs
-    if !(tweet.is_a?(Twitter::DirectMessage))
+    # Can't favourite DMs or already favourited things
+    if !(tweet.is_a?(Twitter::DirectMessage) || @content[:favorited])
       @content[:actions] << {:name => 'favorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'favorite', :postid => @content[:replytoid]}}
+    end
+    # Can un-favourite favourited things
+    if @content[:favorited]
+      @content[:actions] << {:name => 'unfavorite', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'unfavorite', :postid => @content[:replytoid]}}
     end
     # Can delete if it's yours
     if @content[:fromuserid] == @fetchedforuserid
@@ -137,8 +143,10 @@ class Item
     if post['likes']
       @content[:numlikes] = post['likes']['data'].length
       @content[:likes] = post['likes']['data']
+      @content[:liked] = !post['likes']['data'].select{|x| x['id'] == @fetchedforuserid}.empty?
     else
       @content[:numlikes] = 0
+      @content[:liked] = false
     end
 
     # Get some text for the item by any means necessary
@@ -196,7 +204,12 @@ class Item
     end
     # Only non-notifications can be liked
     if (@content[:type] != 'facebook_notification')
-      @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
+      # Like if not liked yet, dislike if already liked
+      if @content[:liked]
+        @content[:actions] << {:name => 'unlike', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'unlike', :postid => @content[:replytoid]}}
+      else
+        @content[:actions] << {:name => 'like', :path => '/actions', :params => {:service => @service, :uid => @fetchedforuserid, :action => 'like', :postid => @content[:replytoid]}}
+      end
     end
     # Can delete if it's ours and not a notification
     if (@content[:type] != 'facebook_notification') && (@content[:fromuserid] == @fetchedforuserid)
