@@ -438,7 +438,7 @@ class Item
         # Convert to an imgur thumbnail. The extra "l" is not a typo, this
         # generates the 'large' thumbnail rather than the (even larger)
         # original image.
-        link[:preview] = "http://i.imgur.com/#{imgurMatch[1]}l.jpg"
+        link[:preview] = "http://i.imgur.com/#{imgurMatch[2]}l.jpg"
       end
       
       # Catch URLs that are actually to an image even though they weren't given a
