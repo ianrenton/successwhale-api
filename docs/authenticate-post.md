@@ -18,6 +18,6 @@ Example Response (JSON):
     {
       "success":true,
       "userid":"1",
-      "username":"tsuki_chama",
+      "username":"joebloggs",
       "token":"0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
      }

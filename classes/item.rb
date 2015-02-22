@@ -280,13 +280,23 @@ class Item
 
   # Check if the text in the item contains any of the phrases in the list
   # provided. Used in the feed API for removing items that match phrases in
-  # a user's banned phrases list.
+  # a user's banned phrases list. Phrases beginning with "/" are treated as
+  # regexes (the initial "/" and any trailing "/" are not part of the regex).
   def matchesPhrase(phrases)
     text = @content[:text].force_encoding('UTF-8')
     for phrase in phrases
-      if text.include? phrase
-        return true
-        break
+      if phrase.start_with? '/'
+        if phrase.end_with? '/'
+          phrase = phrase[0..-2]
+        end
+        rex = Regexp.new(phrase[1..-1])
+        if rex.match text
+          return true
+        end
+      else
+        if text.include? phrase
+          return true
+        end
       end
     end
     return false

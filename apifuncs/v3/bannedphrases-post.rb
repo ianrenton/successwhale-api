@@ -3,7 +3,11 @@
 
 # SuccessWhale API function to set the banned phrases that the user wishes to use.
 # (Setting a Banned Phrase hides all items that contain a matching phrase from the
-# user's view.)
+# user's view.) Banned Phrases that begin with the forward-slash character are not
+# treated as literal phrases to match but regular expressions, assuming the phrase
+# also ends with /.
+# e.g. to prevent the user seeing any items that contain numbers or the word "fish",
+# supply ["fish", "/\d*/"].
 
 
 post '/v3/bannedphrases.?:format?' do
