@@ -9,9 +9,9 @@ FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifica
 
 TWIXT_URL = 'http://twixt.successwhale.com/index.php'
 TWIXT_URL_MATCHER = 'twixt.successwhale.com'
-INSTAGRAM_URL_REGEX = /http:\/\/instagram.com\/p\/(.*)\//
-TWITPIC_URL_REGEX = /http:\/\/twitpic.com\/(.*)/
-IMGUR_URL_REGEX = /http:\/\/imgur.com\/(.*)/
+INSTAGRAM_URL_REGEX = /https?:\/\/instagram.com\/p\/(.+)\//
+TWITPIC_URL_REGEX = /https?:\/\/twitpic.com\/(.+)/
+IMGUR_URL_REGEX = /https?:\/\/(i\.)?imgur.com\/(?!gallery\/)(?!a\/_)(.+)/
 ANY_IMAGE_URL_REGEX = %r{\.(gif|jpe?g|png)$}i
 
 UPLOAD_DIR = '/tmp'
