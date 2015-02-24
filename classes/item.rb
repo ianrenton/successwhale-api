@@ -417,9 +417,9 @@ class Item
       # Check for Instagram URLs
       instagramMatch = INSTAGRAM_URL_REGEX.match(link[:expanded_url])
       if instagramMatch
-        # Add /media/ to the end to get a direct link, but this is a redirect
+        # Convert to an instagram thumbnail. The URL usually resolves to a redirect
         # so follow it and return the real URL
-        url = "#{link[:expanded_url]}media/"
+        url = "http://instagram.com/p/#{instagramMatch[1]}/media/"
         r = Net::HTTP.get_response(URI(url))
         if r.code == "302"
           link[:preview] = r.header['location']
