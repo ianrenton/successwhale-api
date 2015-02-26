@@ -13,8 +13,8 @@ def connect()
   # supported by the gem anymore.
 
   # Configure a Facebook object
+  Koala.config.api_version = "v2.2"
   @facebookOAuth = Koala::Facebook::OAuth.new(ENV['FACEBOOK_APP_ID'], ENV['FACEBOOK_SECRET'])
-  
 end
 
 # Check authentication was provided by a token parameter, and return data
@@ -268,9 +268,12 @@ def makeSourcesList(accounts)
         config.access_token = account[:servicetokens]['oauth_token']
         config.access_token_secret = account[:servicetokens]['oauth_token_secret']
       end
-      lists = twitterClient.lists()
-      lists.each do |list|
-        sources << buildSourceHash(account, "#{list[:name].gsub(/[\-_]/,' ').titlecase} list", "lists/#{list[:slug]}/statuses")
+      begin
+        lists = twitterClient.lists()
+        lists.each do |list|
+          sources << buildSourceHash(account, "#{list[:name].gsub(/[\-_]/,' ').titlecase} list", "lists/#{list[:slug]}/statuses")
+        end
+      rescue
       end
                 
     elsif account[:service] == 'facebook'
