@@ -187,8 +187,9 @@ class Item
       # Non-notifications can be replied to directly
       @content[:replytoid] = post['id']
       # Non-notifications might be 'to' someone else, e.g. a friend posting on another
-      # friend's wall.
-      if post['to'] && post['to'].is_a?(Hash) && post['to']['data'].is_a?(Array)
+      # friend's wall. There's a lot of ways this can give us incomplete data, hence
+      # the massive If statement.
+      if post['to'] && post['to'].is_a?(Hash) && post['to']['data'].is_a?(Array) && post['to']['data'][0]
         @content[:tousername] = post['to']['data'][0]['name']
       end
     end
