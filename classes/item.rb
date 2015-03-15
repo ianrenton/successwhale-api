@@ -58,8 +58,10 @@ class Item
       @content[:isreply] = tweet.retweeted_status.reply?
       @content[:numfavourited] = tweet.retweeted_status.favorite_count
       @content[:numretweeted] = tweet.retweeted_status.retweet_count
-      @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
-      @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
+      if not tweet.retweeted_status.attrs[:in_reply_to_status_id_str] == nil
+        @content[:inreplytostatusid] = tweet.retweeted_status.attrs[:in_reply_to_status_id_str]
+        @content[:inreplytouserid] = tweet.retweeted_status.in_reply_to_user_id
+      end
       @content[:favorited] = tweet.retweeted_status.favorited
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.retweeted_status.urls, tweet.retweeted_status.media)
@@ -80,8 +82,10 @@ class Item
       @content[:isretweet] = tweet.retweet?
       @content[:numfavourited] = tweet.favorite_count
       @content[:numretweeted] = tweet.retweet_count
-      @content[:inreplytostatusid] = tweet.attrs[:in_reply_to_status_id_str]
-      @content[:inreplytouserid] = tweet.in_reply_to_user_id
+      if not tweet.attrs[:in_reply_to_status_id_str] == nil
+        @content[:inreplytostatusid] =  tweet.attrs[:in_reply_to_status_id_str] 
+        @content[:inreplytouserid] = tweet.in_reply_to_user_id
+      end
       @content[:favorited] = tweet.favorited
       @content[:permalink] = 'https://twitter.com/' +  @content[:fromuser] + '/status/' + @content[:id]
       populateURLsFromTwitter(tweet.urls, tweet.media)
