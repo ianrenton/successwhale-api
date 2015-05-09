@@ -3,7 +3,7 @@
 
 # This is a file containing all the global but non-user-configurable data.
 
-VERSION = "3.0.5"
+VERSION = "3.0.6"
 
 FACEBOOK_PERMISSIONS = 'status_update,read_stream,publish_stream,manage_notifications,user_groups,user_photos,friends_photos,offline_access'
 

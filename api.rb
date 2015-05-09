@@ -27,6 +27,7 @@ require 'htmlentities'
 require 'oauth'
 require 'securerandom'
 require 'cgi'
+require 'dotenv'
 require_relative 'utils/globals'
 require_relative 'utils/extensions'
 require_relative 'utils/utils'
@@ -41,6 +42,7 @@ configure do
 end
 
 # Abort if environment variables not set
+Dotenv.load
 if !ENV['DB_HOST']
   abort('API server is not configured. Edit the values in sample.env and rename the file to .env. If running on Heroku, push the config.')
 end
