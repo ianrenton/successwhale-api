@@ -75,6 +75,11 @@ require_relative 'apifuncs/v3/item-delete'
 require_relative 'apifuncs/v3/action'
 require_relative 'apifuncs/v3/status'
 
+# Cert test page for the web client
+get '/certtest' do
+  status 200
+  '<h1>HTTPS Certificate Test Successful!</h1><p>Awesome! Your browser now trusts my self-signed certificate, allowing you to use SuccessWhale over a secure HTTPS connection. You can now <a href="https://successwhale.com">return to SuccessWhale</a> and use it as normal.</p>'
+end
 
 # 404
 not_found do
