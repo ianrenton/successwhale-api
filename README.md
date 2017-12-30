@@ -10,7 +10,7 @@ In providing an API for SuccessWhale, I am opening this system up for others to 
 
 The API is a Ruby application built on Sinatra and Rack. It comes in a handy Heroku-flavoured wrapper. This is my first time writing Ruby, so I'm sure there are many inefficiencies -- patches, bug reports and constructive criticism are all welcome.
 
-This application runs at [https://api.successwhale.com](https://api.successwhale.com).
+This application runs at [https://successwhale-api.herokuapp.com/](https://successwhale-api.herokuapp.com/).
 
 Important Info
 --------------
@@ -21,7 +21,7 @@ Important Info
 Installation
 ------------
 
-If you want to run the SuccessWhale API on your own server, this section is for you. (If you just want to play around with the SuccessWhale web client, you don't need your own copy of the API server &mdash; you can use mine at `api.successwhale.com`.)
+If you want to run the SuccessWhale API on your own server, this section is for you. (If you just want to play around with the SuccessWhale web client, you don't need your own copy of the API server &mdash; you can use mine at `successwhale-api.herokuapp.com`.)
 
 First of all, install the dependencies. If you don't have ruby and ruby-gems installed on your computer, you'll have to get them first. I recommend "RVM" for managing your ruby environment on Windows, or your native package manager on Linux.
 
